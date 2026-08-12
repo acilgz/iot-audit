@@ -172,14 +172,14 @@ def main():
             run_data = bdf[bdf["run_id"] == run_id]
             if not run_data.empty:
                 run_filename = os.path.join(summary_dir, f"inference_benchmark_{run_id}.csv")
-                run_data.to_csv(run_filename, index=False)
+                # save individual runs without the run_id column
+                run_data_no_runid = run_data.drop(columns=["run_id"], errors="ignore")
+                run_data_no_runid.to_csv(run_filename, index=False)
                 print(f"Run {run_id} saved to {run_filename}")
 
-        avg_data = bdf[bdf["run_id"] == "avg"]
-        if not avg_data.empty:
-            avg_filename = os.path.join(summary_dir, "inference_benchmark_avg.csv")
-            avg_data.to_csv(avg_filename, index=False)
-            print(f"Average data saved to {avg_filename}")
+        final_filename = os.path.join(summary_dir, "inference_benchmark.csv")
+        bdf.to_csv(final_filename, index=False)
+        print(f"All benchmark data saved to {final_filename}")
         
         print(bdf)
 
