@@ -68,7 +68,7 @@ def plot_bar(df: pd.DataFrame, column: str, out_png: str, title: str):
     plt.ylabel(column)
     _savefig(out_png)
 
-def benchmark_inference(base_outdir: str, csv_path: str, model_names: List[str], sample_size: int = 10000, random_state: int = 42) -> pd.DataFrame:
+def benchmark_inference(base_outdir: str, csv_path: str, model_names: List[str], sample_size: int = 10000, random_state: int = 42, num_runs: int = 5) -> pd.DataFrame:
     # Load raw CSV once
     df = pd.read_csv(csv_path, engine="pyarrow")
     if "label" not in df.columns:
@@ -95,19 +95,40 @@ def benchmark_inference(base_outdir: str, csv_path: str, model_names: List[str],
         model = joblib.load(model_pkl)
         preproc = joblib.load(preproc_pkl)
 
-        t0 = time.time()
-        X_trans = preproc.transform(Xs)
-        t1 = time.time()
-        _ = getattr(model, "predict_proba", model.predict)(X_trans)
-        t2 = time.time()
+        run_results = []
+        for run in range(num_runs):
+            t0 = time.time()
+            X_trans = preproc.transform(Xs)
+            t1 = time.time()
+            _ = getattr(model, "predict_proba", model.predict)(X_trans)
+            t2 = time.time()
 
-        results.append({
+            run_results.append({
+                "model": name,
+                "transform_ms_per_1k": (t1 - t0) / (len(Xs)/1000.0) * 1000.0,
+                "predict_ms_per_1k": (t2 - t1) / (len(Xs)/1000.0) * 1000.0,
+                "total_ms_per_1k": (t2 - t0) / (len(Xs)/1000.0) * 1000.0,
+                "n_samples": len(Xs),
+                "run_id": run + 1
+            })
+        
+        results.extend(run_results)
+        
+        avg_result = {
             "model": name,
-            "transform_ms_per_1k": (t1 - t0) / (len(Xs)/1000.0) * 1000.0,
-            "predict_ms_per_1k": (t2 - t1) / (len(Xs)/1000.0) * 1000.0,
-            "total_ms_per_1k": (t2 - t0) / (len(Xs)/1000.0) * 1000.0,
-            "n_samples": len(Xs)
-        })
+            "transform_ms_per_1k": np.mean([r["transform_ms_per_1k"] for r in run_results]),
+            "predict_ms_per_1k": np.mean([r["predict_ms_per_1k"] for r in run_results]),
+            "total_ms_per_1k": np.mean([r["total_ms_per_1k"] for r in run_results]),
+            "n_samples": len(Xs),
+            "run_id": "avg"
+        }
+        
+        avg_result["transform_ms_per_1k"] = f"{avg_result['transform_ms_per_1k']:.6f} ± {np.std([r['transform_ms_per_1k'] for r in run_results]):.6f}"
+        avg_result["predict_ms_per_1k"] = f"{avg_result['predict_ms_per_1k']:.6f} ± {np.std([r['predict_ms_per_1k'] for r in run_results]):.6f}"
+        avg_result["total_ms_per_1k"] = f"{avg_result['total_ms_per_1k']:.6f} ± {np.std([r['total_ms_per_1k'] for r in run_results]):.6f}"
+        
+        results.append(avg_result)
+        
     return pd.DataFrame(results)
 
 def main():
@@ -117,6 +138,7 @@ def main():
     ap.add_argument("--csv", default="data/train_test_network.csv")
     ap.add_argument("--benchmark", action="store_true", help="Run inference speed benchmark on sample of the CSV")
     ap.add_argument("--sample_size", type=int, default=10000)
+    ap.add_argument("--num_runs", type=int, default=5, help="Number of runs to execute for benchmarking (default: 5)")
     args = ap.parse_args()
 
     base_outdir = args.outdir
@@ -144,18 +166,38 @@ def main():
         plot_bar(df, "fn", os.path.join(summary_dir, "fn.png"), "False Negatives by Model")
 
     if args.benchmark:
-        bdf = benchmark_inference(base_outdir, args.csv, args.models, sample_size=args.sample_size)
-        bdf.to_csv(os.path.join(summary_dir, "inference_benchmark.csv"), index=False)
-        print("Benchmark saved to", os.path.join(summary_dir, "inference_benchmark.csv"))
+        bdf = benchmark_inference(base_outdir, args.csv, args.models, sample_size=args.sample_size, num_runs=args.num_runs)
+        
+        for run_id in range(1, args.num_runs + 1):
+            run_data = bdf[bdf["run_id"] == run_id]
+            if not run_data.empty:
+                run_filename = os.path.join(summary_dir, f"inference_benchmark_{run_id}.csv")
+                run_data.to_csv(run_filename, index=False)
+                print(f"Run {run_id} saved to {run_filename}")
+
+        avg_data = bdf[bdf["run_id"] == "avg"]
+        if not avg_data.empty:
+            avg_filename = os.path.join(summary_dir, "inference_benchmark_avg.csv")
+            avg_data.to_csv(avg_filename, index=False)
+            print(f"Average data saved to {avg_filename}")
+        
         print(bdf)
 
-        # plots for benchmark
-        plt.figure(figsize=(6,4))
-        plt.bar(bdf["model"], bdf["total_ms_per_1k"])
-        plt.title("Total latency (ms) per 1k flows")
-        plt.xlabel("Model")
-        plt.ylabel("ms per 1k")
-        _savefig(os.path.join(summary_dir, "latency_total_ms_per_1k.png"))
+        avg_rows = bdf[bdf["run_id"] == "avg"]
+        if not avg_rows.empty:
+            plt.figure(figsize=(6,4))
+            avg_values = []
+            for _, row in avg_rows.iterrows():
+                if isinstance(row["total_ms_per_1k"], str) and "±" in row["total_ms_per_1k"]:
+                    mean_value = float(row["total_ms_per_1k"].split("±")[0].strip())
+                    avg_values.append(mean_value)
+                else:
+                    avg_values.append(row["total_ms_per_1k"])
+            plt.bar(avg_rows["model"], avg_values)
+            plt.title("Total latency (ms) per 1k flows")
+            plt.xlabel("Model")
+            plt.ylabel("ms per 1k")
+            _savefig(os.path.join(summary_dir, "latency_total_ms_per_1k.png"))
 
 if __name__ == "__main__":
     main()
