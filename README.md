@@ -108,9 +108,11 @@ python scripts/train_rf.py    --csv data/train_test_network.csv --outdir reports
 python scripts/train_lgbm.py  --csv data/train_test_network.csv --outdir reports
 python scripts/train_xgb.py   --csv data/train_test_network.csv --outdir reports
 python scripts/train_logreg.py --csv data/train_test_network.csv --outdir reports
+python scripts/train_preproc_only.py --csv data/train_test_network.csv --outdir reports --model-name mlp_int8
+python scripts/extract_tflite.py --header ids_hw/ids_esp32_mlp/mlp.h --outdir reports --model-name mlp_int8
 
 # 6) Binary comparison
-python scripts/compare_models.py --outdir reports --models rf lgbm xgb logreg --benchmark --sample_size 10000
+python scripts/compare_models.py --outdir reports --models rf lgbm xgb logreg mlp_int8 --benchmark --sample_size 10000
 
 # 7) Multiclass training
 python scripts/train_mc_rf.py    --csv data/train_test_network.csv --outdir reports_mc

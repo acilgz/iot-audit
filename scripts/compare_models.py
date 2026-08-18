@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import joblib
 import matplotlib.pyplot as plt
+import ai_edge_litert.interpreter as tflm
 
 def _ensure_dir(path: str):
     os.makedirs(path, exist_ok=True)
@@ -45,19 +46,33 @@ def scan_models(base_outdir: str, model_names: List[str]) -> pd.DataFrame:
         m = read_metrics(mdir)
         model_pkl = os.path.join(mdir, "model.pkl")
         preproc_pkl = os.path.join(mdir, "preprocessor.pkl")
-        rows.append({
-            "model": name,
-            "accuracy": m.get("accuracy"),
-            "f1_pos": m.get("f1_pos"),
-            "f1_neg": m.get("f1_neg"),
-            "roc_auc": m.get("roc_auc"),
-            "pr_auc": m.get("pr_auc"),
-            "fp": m.get("fp"),
-            "fn": m.get("fn"),
-            "model_size_mb": round(file_size_mb(model_pkl), 3),
-            "preproc_size_mb": round(file_size_mb(preproc_pkl), 3),
-            "total_size_mb": round(file_size_mb(model_pkl)+file_size_mb(preproc_pkl), 3),
-        })
+        tflite_model = os.path.join(mdir, "model.tflite")
+        
+        if os.path.exists(tflite_model):
+            # TFLite model
+            model_file = tflite_model
+            model_type = "tflite"
+        elif os.path.exists(model_pkl) and os.path.exists(preproc_pkl):
+            model_file = model_pkl
+            model_type = "sklearn"
+        else:
+            model_file = None
+            model_type = None
+        
+        if model_file:
+            rows.append({
+                "model": name,
+                "accuracy": m.get("accuracy"),
+                "f1_pos": m.get("f1_pos"),
+                "f1_neg": m.get("f1_neg"),
+                "roc_auc": m.get("roc_auc"),
+                "pr_auc": m.get("pr_auc"),
+                "fp": m.get("fp"),
+                "fn": m.get("fn"),
+                "model_size_mb": round(file_size_mb(model_file), 3),
+                "preproc_size_mb": round(file_size_mb(preproc_pkl), 3),
+                "total_size_mb": round(file_size_mb(model_file)+file_size_mb(preproc_pkl), 3),
+            })
     return pd.DataFrame(rows)
 
 def plot_bar(df: pd.DataFrame, column: str, out_png: str, title: str):
@@ -89,45 +104,120 @@ def benchmark_inference(base_outdir: str, csv_path: str, model_names: List[str],
         mdir = os.path.join(base_outdir, "models", name)
         model_pkl = os.path.join(mdir, "model.pkl")
         preproc_pkl = os.path.join(mdir, "preprocessor.pkl")
-        if not (os.path.exists(model_pkl) and os.path.exists(preproc_pkl)):
-            continue
+        tflite_path = os.path.join(mdir, "model.tflite")
 
-        model = joblib.load(model_pkl)
-        preproc = joblib.load(preproc_pkl)
+        if os.path.exists(tflite_path):
+            # TFLite model
+            try:
+                interpreter = tflm.Interpreter(model_path=tflite_path)
+                interpreter.allocate_tensors()
+                
+                # get input details from the model
+                input_details = interpreter.get_input_details()
+                expected_input_shape = input_details[0]['shape']
+                expected_features = expected_input_shape[-1]  # number of features
+                
+                run_results = []
+                for run in range(num_runs):
+                    t0 = time.time()
+                    X_trans = joblib.load(preproc_pkl).transform(Xs)
+                    t1 = time.time()
+                    
+                    if X_trans.shape[1] != expected_features:
+                        print(f"Warning: Feature mismatch for {name}. Got {X_trans.shape[1]} features, expected {expected_features}")
+                        # trim to match expected dimensions
+                        if X_trans.shape[1] > expected_features:
+                            X_trans = X_trans[:, :expected_features]
+                        else:
+                            print(f"Warning: Not enough features for {name}, using truncated data")
+                    
+                    output_details = interpreter.get_output_details()
+                    
+                    target_dtype = input_details[0]['dtype']
+                    X_trans_formatted = np.array(X_trans, dtype=target_dtype)
+                    
+                    y_probs = []
+                    for row in X_trans_formatted:
+                        sample = np.expand_dims(row, axis=0) 
+                        interpreter.set_tensor(input_details[0]['index'], sample)
+                        interpreter.invoke()
+                        output = interpreter.get_tensor(output_details[0]['index'])
+                        y_probs.append(output[0])
+                    
+                    t2 = time.time()
 
-        run_results = []
-        for run in range(num_runs):
-            t0 = time.time()
-            X_trans = preproc.transform(Xs)
-            t1 = time.time()
-            _ = getattr(model, "predict_proba", model.predict)(X_trans)
-            t2 = time.time()
-
-            run_results.append({
+                    run_results.append({
+                        "model": name,
+                        "transform_ms_per_1k": (t1 - t0) / (len(Xs)/1000.0) * 1000.0,
+                        "predict_ms_per_1k": (t2 - t1) / (len(Xs)/1000.0) * 1000.0,
+                        "total_ms_per_1k": (t2 - t0) / (len(Xs)/1000.0) * 1000.0,
+                        "n_samples": len(Xs),
+                        "run_id": run + 1
+                    })
+            except Exception as e:
+                print(f"Error running TFLite model {name}: {e}")
+                continue
+            
+            results.extend(run_results)
+            
+            avg_result = {
                 "model": name,
-                "transform_ms_per_1k": (t1 - t0) / (len(Xs)/1000.0) * 1000.0,
-                "predict_ms_per_1k": (t2 - t1) / (len(Xs)/1000.0) * 1000.0,
-                "total_ms_per_1k": (t2 - t0) / (len(Xs)/1000.0) * 1000.0,
+                "transform_ms_per_1k": np.mean([r["transform_ms_per_1k"] for r in run_results]),
+                "predict_ms_per_1k": np.mean([r["predict_ms_per_1k"] for r in run_results]),
+                "total_ms_per_1k": np.mean([r["total_ms_per_1k"] for r in run_results]),
                 "n_samples": len(Xs),
-                "run_id": run + 1
-            })
+                "run_id": "avg"
+            }
+            
+            avg_result["transform_ms_per_1k"] = f"{avg_result['transform_ms_per_1k']:.6f} ± {np.std([r['transform_ms_per_1k'] for r in run_results]):.6f}"
+            avg_result["predict_ms_per_1k"] = f"{avg_result['predict_ms_per_1k']:.6f} ± {np.std([r['predict_ms_per_1k'] for r in run_results]):.6f}"
+            avg_result["total_ms_per_1k"] = f"{avg_result['total_ms_per_1k']:.6f} ± {np.std([r['total_ms_per_1k'] for r in run_results]):.6f}"
+            
+            results.append(avg_result)
         
-        results.extend(run_results)
-        
-        avg_result = {
-            "model": name,
-            "transform_ms_per_1k": np.mean([r["transform_ms_per_1k"] for r in run_results]),
-            "predict_ms_per_1k": np.mean([r["predict_ms_per_1k"] for r in run_results]),
-            "total_ms_per_1k": np.mean([r["total_ms_per_1k"] for r in run_results]),
-            "n_samples": len(Xs),
-            "run_id": "avg"
-        }
-        
-        avg_result["transform_ms_per_1k"] = f"{avg_result['transform_ms_per_1k']:.6f} ± {np.std([r['transform_ms_per_1k'] for r in run_results]):.6f}"
-        avg_result["predict_ms_per_1k"] = f"{avg_result['predict_ms_per_1k']:.6f} ± {np.std([r['predict_ms_per_1k'] for r in run_results]):.6f}"
-        avg_result["total_ms_per_1k"] = f"{avg_result['total_ms_per_1k']:.6f} ± {np.std([r['total_ms_per_1k'] for r in run_results]):.6f}"
-        
-        results.append(avg_result)
+        elif os.path.exists(model_pkl) and os.path.exists(preproc_pkl):
+            model = joblib.load(model_pkl)
+            preproc = joblib.load(preproc_pkl)
+
+            def run_inference():
+                X_trans = preproc.transform(Xs)
+                return getattr(model, "predict_proba", model.predict)(X_trans)
+            
+            run_results = []
+            for run in range(num_runs):
+                t0 = time.time()
+                X_trans = preproc.transform(Xs)
+                t1 = time.time()
+                
+                _ = run_inference()
+                
+                t2 = time.time()
+
+                run_results.append({
+                    "model": name,
+                    "transform_ms_per_1k": (t1 - t0) / (len(Xs)/1000.0) * 1000.0,
+                    "predict_ms_per_1k": (t2 - t1) / (len(Xs)/1000.0) * 1000.0,
+                    "total_ms_per_1k": (t2 - t0) / (len(Xs)/1000.0) * 1000.0,
+                    "n_samples": len(Xs),
+                    "run_id": run + 1
+                })
+            
+            results.extend(run_results)
+            
+            avg_result = {
+                "model": name,
+                "transform_ms_per_1k": np.mean([r["transform_ms_per_1k"] for r in run_results]),
+                "predict_ms_per_1k": np.mean([r["predict_ms_per_1k"] for r in run_results]),
+                "total_ms_per_1k": np.mean([r["total_ms_per_1k"] for r in run_results]),
+                "n_samples": len(Xs),
+                "run_id": "avg"
+            }
+            
+            avg_result["transform_ms_per_1k"] = f"{avg_result['transform_ms_per_1k']:.6f} ± {np.std([r['transform_ms_per_1k'] for r in run_results]):.6f}"
+            avg_result["predict_ms_per_1k"] = f"{avg_result['predict_ms_per_1k']:.6f} ± {np.std([r['predict_ms_per_1k'] for r in run_results]):.6f}"
+            avg_result["total_ms_per_1k"] = f"{avg_result['total_ms_per_1k']:.6f} ± {np.std([r['total_ms_per_1k'] for r in run_results]):.6f}"
+            
+            results.append(avg_result)
         
     return pd.DataFrame(results)
 

@@ -8,6 +8,8 @@ from sklearn.metrics import (
     roc_curve, precision_recall_curve, average_precision_score
 )
 import pandas as pd
+import joblib
+import ai_edge_litert.interpreter as tflm
 
 def _ensure_dir(path: str):
     os.makedirs(path, exist_ok=True)
@@ -73,7 +75,11 @@ def evaluate_model(
 
     fi_path = os.path.join(model_dir, "feature_importances.csv")
     try:
-        importances = getattr(model, "feature_importances_", None)
+        importances = None
+        
+        if hasattr(model, "feature_importances_"):
+            importances = getattr(model, "feature_importances_")
+        
         if importances is not None and len(feature_names) == len(importances):
             df = pd.DataFrame({"feature": feature_names, "importance": importances})
             df = df.sort_values("importance", ascending=False)
@@ -87,6 +93,74 @@ def evaluate_model(
     except Exception:
         pass
 
+    with open(os.path.join(model_dir,"metrics.json"),"w",encoding="utf-8") as f:
+        json.dump(metrics, f, indent=2)
+    return metrics
+
+def evaluate_tflite_model(
+    y_true, y_pred, y_proba, feature_names: List[str], tflite_model_path: str,
+    model_name: str = "model", base_outdir: str = "reports"
+) -> Dict[str, Any]:
+    model_dir = os.path.join(base_outdir, "models", model_name)
+    fig_dir = os.path.join(base_outdir, "figures", model_name)
+    _ensure_dir(model_dir)
+    _ensure_dir(fig_dir)
+
+    # load the tflite model
+    interpreter = tflm.Interpreter(model_path=tflite_model_path)
+    interpreter.allocate_tensors()
+    
+    # get input details from the model
+    # input_details = interpreter.get_input_details()
+    # expected_input_shape = input_details[0]['shape']
+    # expected_features = expected_input_shape[-1]  # number of features
+    
+    # compute metrics using sklearn functions
+    report = classification_report(y_true, y_pred, output_dict=True, zero_division=0)
+    cm = confusion_matrix(y_true, y_pred)
+
+    metrics = {
+        "accuracy": report["accuracy"],
+        "precision_pos": report["1"]["precision"],
+        "recall_pos": report["1"]["recall"],
+        "f1_pos": report["1"]["f1-score"],
+        "precision_neg": report["0"]["precision"],
+        "recall_neg": report["0"]["recall"],
+        "f1_neg": report["0"]["f1-score"],
+        "confusion_matrix": cm.tolist(),
+    }
+
+    if y_proba is not None:
+        try:
+            roc_auc = roc_auc_score(y_true, y_proba)
+            fpr, tpr, _ = roc_curve(y_true, y_proba)
+            plt.figure(figsize=(5,4))
+            plt.plot(fpr, tpr)
+            plt.plot([0,1],[0,1], linestyle="--")
+            plt.xlabel("FPR"); plt.ylabel("TPR"); plt.title(f"ROC AUC={roc_auc:.4f}")
+            _savefig(os.path.join(fig_dir,"roc_curve.png"))
+            metrics["roc_auc"] = float(roc_auc)
+
+            precision, recall, _ = precision_recall_curve(y_true, y_proba)
+            ap = average_precision_score(y_true, y_proba)
+            plt.figure(figsize=(5,4))
+            plt.plot(recall, precision)
+            plt.xlabel("Recall"); plt.ylabel("Precision"); plt.title(f"PR AUC={ap:.4f}")
+            _savefig(os.path.join(fig_dir,"pr_curve.png"))
+            metrics["pr_auc"] = float(ap)
+        except Exception:
+            pass
+
+    plt.figure(figsize=(4,3))
+    plt.imshow(cm, cmap="Blues")
+    plt.colorbar()
+    plt.xticks([0,1], ["pred 0","pred 1"])
+    plt.yticks([0,1], ["true 0","true 1"])
+    plt.title("Confusion Matrix")
+    for (i,j), v in np.ndenumerate(cm):
+        plt.text(j, i, str(v), ha="center", va="center")
+    _savefig(os.path.join(fig_dir,"confusion_matrix.png"))
+    
     with open(os.path.join(model_dir,"metrics.json"),"w",encoding="utf-8") as f:
         json.dump(metrics, f, indent=2)
     return metrics
