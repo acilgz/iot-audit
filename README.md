@@ -100,33 +100,33 @@ pip install -r requirements.txt
 # data/train_test_network.csv
 
 # 4) EDA
-python scripts/analyze_dataset.py --csv data/train_test_network.csv --outdir reports
-python scripts/visualize_dataset.py --csv data/train_test_network.csv --outdir reports/figures
+python scripts/analyze_dataset.py --csv data/train_test_network.csv --outdir train
+python scripts/visualize_dataset.py --csv data/train_test_network.csv --outdir train/figures
 
 # 5) Binary training
-python scripts/train_rf.py    --csv data/train_test_network.csv --outdir reports
-python scripts/train_lgbm.py  --csv data/train_test_network.csv --outdir reports
-python scripts/train_xgb.py   --csv data/train_test_network.csv --outdir reports
-python scripts/train_logreg.py --csv data/train_test_network.csv --outdir reports
+python scripts/train_rf.py    --csv data/train_test_network.csv --outdir train
+python scripts/train_lgbm.py  --csv data/train_test_network.csv --outdir train
+python scripts/train_xgb.py   --csv data/train_test_network.csv --outdir train
+python scripts/train_logreg.py --csv data/train_test_network.csv --outdir train
 
 # 6) Binary comparison
-python scripts/compare_models.py --outdir reports --models rf lgbm xgb logreg --benchmark --sample_size 10000
+python scripts/compare_models.py --outdir benchmark/sys1/binary --models-dir train/models --models rf lgbm xgb logreg --benchmark --sample_size 10000
 
 # 7) Multiclass training
-python scripts/train_mc_rf.py    --csv data/train_test_network.csv --outdir reports_mc
-python scripts/train_mc_lgbm.py  --csv data/train_test_network.csv --outdir reports_mc
-python scripts/train_mc_xgb.py   --csv data/train_test_network.csv --outdir reports_mc
-python scripts/train_mc_logreg.py --csv data/train_test_network.csv --outdir reports_mc
+python scripts/train_mc_rf.py    --csv data/train_test_network.csv --outdir train_mc
+python scripts/train_mc_lgbm.py  --csv data/train_test_network.csv --outdir train_mc
+python scripts/train_mc_xgb.py   --csv data/train_test_network.csv --outdir train_mc
+python scripts/train_mc_logreg.py --csv data/train_test_network.csv --outdir train_mc
 
 # 8) Multiclass comparison
-python scripts/compare_models_mc.py --outdir reports_mc --models rf_mc lgbm_mc xgb_mc logreg_mc --benchmark --sample_size 10000
+python scripts/compare_models_mc.py --outdir benchmark/sys1/multiclass --models-dir train_mc/models --models rf_mc lgbm_mc xgb_mc logreg_mc --benchmark --sample_size 10000
 ```
 
 ## Artifact layout
 
 ```
-reports/
-  models/
+train/
+  models/          # Moved model artifacts here (instead of inside reports/)
     rf|lgbm|xgb|logreg/
       model.pkl
       preprocessor.pkl
@@ -136,16 +136,39 @@ reports/
   figures/
     rf|lgbm|xgb|logreg/
       roc_curve.png, pr_curve.png, confusion_matrix.png, feature_importances_top30.png
+  summary/
+    charts/        # New subfolder for all generated charts and plots
+      accuracy.png
+      f1_pos.png
+      roc_auc.png
+      fp.png
+      fn.png
+      latency_total_ms_per_1k.png
+    summary_models.csv
+    inference_benchmark*.csv
+    lgbm_xgb_ratios_raw.csv
 
-reports_mc/
-  models/
+train_mc/
+  models/          # Moved model artifacts here (instead of inside reports_mc/)
     <model>_mc/
       model.pkl, preprocessor.pkl, metrics.json, per_class_report.csv, label_map.json, feature_importances.csv
   figures/
     <model>_mc/
       confusion_matrix.png, pr_micro.png, pr_<k>_<class>.png, feature_importances_top30.png
   summary/
-    summary_models_mc.csv, per_class_report_merged.csv, accuracy.png, macro_f1.png, ...
+    charts/        # New subfolder for all generated charts and plots
+      accuracy.png
+      macro_f1.png
+      weighted_f1.png
+      roc_auc_micro.png
+      roc_auc_macro.png
+      pr_auc_micro.png
+      pr_auc_macro.png
+      total_size_mb.png
+      per_class_f1_*.png
+    summary_models_mc.csv
+    per_class_report_merged.csv
+    inference_benchmark_mc*.csv
 ```
 
 ## Reproducibility & Notes

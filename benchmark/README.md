@@ -1,4 +1,8 @@
+## Hardware
+apple_m5: Apple M5, 8 GPU cores, 16 GB, macOS 27.0 Beta 4
 
+## Software
+### Python libraries
 numpy==2.4.6
 pandas==3.0.3
 scikit-learn==1.9.0

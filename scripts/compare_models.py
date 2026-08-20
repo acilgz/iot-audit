@@ -36,10 +36,10 @@ def read_metrics(model_dir: str) -> Dict[str, Any]:
 def file_size_mb(path: str) -> float:
     return os.path.getsize(path)/ (1024*1024) if os.path.exists(path) else 0.0
 
-def scan_models(base_outdir: str, model_names: List[str]) -> pd.DataFrame:
+def scan_models(models_dir: str, model_names: List[str]) -> pd.DataFrame:
     rows = []
     for name in model_names:
-        mdir = os.path.join(base_outdir, "models", name)
+        mdir = os.path.join(models_dir, name)
         if not os.path.isdir(mdir):
             continue
         m = read_metrics(mdir)
@@ -68,7 +68,7 @@ def plot_bar(df: pd.DataFrame, column: str, out_png: str, title: str):
     plt.ylabel(column)
     _savefig(out_png)
 
-def benchmark_inference(base_outdir: str, csv_path: str, model_names: List[str], sample_size: int = 10000, random_state: int = 42, num_runs: int = 5) -> pd.DataFrame:
+def benchmark_inference(models_dir: str, csv_path: str, model_names: List[str], sample_size: int = 10000, random_state: int = 42, num_runs: int = 5) -> pd.DataFrame:
     # Load raw CSV once
     df = pd.read_csv(csv_path, engine="pyarrow")
     if "label" not in df.columns:
@@ -86,7 +86,7 @@ def benchmark_inference(base_outdir: str, csv_path: str, model_names: List[str],
 
     results = []
     for name in model_names:
-        mdir = os.path.join(base_outdir, "models", name)
+        mdir = os.path.join(models_dir, name)
         model_pkl = os.path.join(mdir, "model.pkl")
         preproc_pkl = os.path.join(mdir, "preprocessor.pkl")
         if not (os.path.exists(model_pkl) and os.path.exists(preproc_pkl)):
@@ -134,6 +134,7 @@ def benchmark_inference(base_outdir: str, csv_path: str, model_names: List[str],
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--outdir", default="reports")
+    ap.add_argument("--models-dir", default="reports/models", help="Directory containing trained model artifacts")
     ap.add_argument("--models", nargs="*", default=["rf","lgbm","xgb","logreg"])
     ap.add_argument("--csv", default="data/train_test_network.csv")
     ap.add_argument("--benchmark", action="store_true", help="Run inference speed benchmark on sample of the CSV")
@@ -142,47 +143,47 @@ def main():
     args = ap.parse_args()
 
     base_outdir = args.outdir
-    summary_dir = os.path.join(base_outdir, "summary")
-    _ensure_dir(summary_dir)
+    charts_dir = os.path.join(base_outdir, "charts")
+    _ensure_dir(charts_dir)
 
-    df = scan_models(base_outdir, args.models)
+    df = scan_models(args.models_dir, args.models)
     if df.empty:
         print("No model metrics found. Train some models first.")
         return
 
-    df.to_csv(os.path.join(summary_dir, "summary_models.csv"), index=False)
-    print("Summary saved to", os.path.join(summary_dir, "summary_models.csv"))
+    df.to_csv(os.path.join(base_outdir, "summary_models.csv"), index=False)
+    print("Summary saved to", os.path.join(base_outdir, "summary_models.csv"))
     print(df)
 
     # plots
-    plot_bar(df, "accuracy", os.path.join(summary_dir, "accuracy.png"), "Accuracy by Model")
+    plot_bar(df, "accuracy", os.path.join(charts_dir, "accuracy.png"), "Accuracy by Model")
     if df["f1_pos"].notna().any():
-        plot_bar(df, "f1_pos", os.path.join(summary_dir, "f1_pos.png"), "F1 (attack) by Model")
+        plot_bar(df, "f1_pos", os.path.join(charts_dir, "f1_pos.png"), "F1 (attack) by Model")
     if df["roc_auc"].notna().any():
-        plot_bar(df, "roc_auc", os.path.join(summary_dir, "roc_auc.png"), "ROC AUC by Model")
+        plot_bar(df, "roc_auc", os.path.join(charts_dir, "roc_auc.png"), "ROC AUC by Model")
     if df["fp"].notna().any():
-        plot_bar(df, "fp", os.path.join(summary_dir, "fp.png"), "False Positives by Model")
+        plot_bar(df, "fp", os.path.join(charts_dir, "fp.png"), "False Positives by Model")
     if df["fn"].notna().any():
-        plot_bar(df, "fn", os.path.join(summary_dir, "fn.png"), "False Negatives by Model")
+        plot_bar(df, "fn", os.path.join(charts_dir, "fn.png"), "False Negatives by Model")
 
     if args.benchmark:
-        bdf = benchmark_inference(base_outdir, args.csv, args.models, sample_size=args.sample_size, num_runs=args.num_runs)
+        bdf = benchmark_inference(args.models_dir, args.csv, args.models, sample_size=args.sample_size, num_runs=args.num_runs)
         
         for run_id in range(1, args.num_runs + 1):
             run_data = bdf[bdf["run_id"] == run_id]
             if not run_data.empty:
-                run_filename = os.path.join(summary_dir, f"inference_benchmark_{run_id}.csv")
+                run_filename = os.path.join(base_outdir, f"inference_benchmark_{run_id}.csv")
                 # save individual runs without the run_id column
                 run_data_no_runid = run_data.drop(columns=["run_id"], errors="ignore")
                 run_data_no_runid.to_csv(run_filename, index=False)
                 print(f"Run {run_id} saved to {run_filename}")
 
-        final_filename = os.path.join(summary_dir, "inference_benchmark.csv")
+        final_filename = os.path.join(base_outdir, "inference_benchmark.csv")
         bdf.to_csv(final_filename, index=False)
         print(f"All benchmark data saved to {final_filename}")
         
         print(bdf)
-
+        
         avg_rows = bdf[bdf["run_id"] == "avg"]
         if not avg_rows.empty:
             plt.figure(figsize=(6,4))
@@ -197,7 +198,16 @@ def main():
             plt.title("Total latency (ms) per 1k flows")
             plt.xlabel("Model")
             plt.ylabel("ms per 1k")
-            _savefig(os.path.join(summary_dir, "latency_total_ms_per_1k.png"))
+            _savefig(os.path.join(charts_dir, "latency_total_ms_per_1k.png"))
+
+        # save lgbm/xgb ratios
+        raw_runs = bdf[bdf["run_id"] != "avg"].copy()
+        raw_runs["total_ms_per_1k"] = raw_runs["total_ms_per_1k"].astype(float)
+        pivot_df = raw_runs.pivot(index="run_id", columns="model", values="total_ms_per_1k")
+        if "lgbm" in pivot_df.columns and "xgb" in pivot_df.columns:
+            pivot_df["lgbm_xgb_ratio"] = pivot_df["lgbm"] / pivot_df["xgb"]
+            ratio_path = os.path.join(base_outdir, "lgbm_xgb_ratios.csv")
+            pivot_df.to_csv(ratio_path)
 
 if __name__ == "__main__":
     main()

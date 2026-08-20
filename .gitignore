@@ -14,6 +14,8 @@ env/
 venv/
 
 # Data & reports
+train/
+train_mc/
 data/
 figures/
 *.csv
