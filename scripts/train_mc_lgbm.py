@@ -2,26 +2,28 @@
 from __future__ import annotations
 import os, sys, json, time
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
-from iot_audit.preprocessing_mc import load_and_prepare_multiclass
 from iot_audit.metrics_mc import evaluate_model_multiclass
+from data_loading import load_multiclass_split
 import lightgbm as lgb
+import numpy as np
 import joblib
 import argparse
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--csv", default="data/train_test_network.csv")
-    ap.add_argument("--outdir", default="reports_mc")
+    ap.add_argument("--outdir", default="train_mc")
     ap.add_argument("--num_leaves", type=int, default=64)
     ap.add_argument("--n_estimators", type=int, default=500)
     ap.add_argument("--learning_rate", type=float, default=0.05)
     args = ap.parse_args()
+    preproc_path = os.path.join(args.outdir, "preprocessor", "preprocessor.pkl")
+    meta_path = os.path.join(os.path.dirname(preproc_path), "preprocessor_meta.json")
 
     model_name = "lgbm_mc"
 
-    X_train, X_test, y_train, y_test, feature_names, preproc, class_map = load_and_prepare_multiclass(
-        csv_path=args.csv, target_col="type", test_size=0.2, random_state=42,
-        base_outdir=args.outdir, model_name=model_name
+    X_train, X_test, y_train, y_test, feature_names, preproc, class_map = load_multiclass_split(
+        args.csv, preproc_path, meta_path
     )
 
     model = lgb.LGBMClassifier(
@@ -48,9 +50,8 @@ def main():
     print(f"[lgbm-mc] done in {time.time()-t0:.2f}s")
 
     y_pred = model.predict(X_test)
-    y_proba = model.predict_proba(X_test)  # list of arrays or array, normalize to array
+    y_proba = model.predict_proba(X_test)
     # LightGBM may return list of n_classes arrays; handle both cases
-    import numpy as np
     if isinstance(y_proba, list):
         y_proba = np.vstack(y_proba).T
 

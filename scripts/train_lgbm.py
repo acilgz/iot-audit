@@ -1,8 +1,8 @@
 from __future__ import annotations
 import os, sys, json, time
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
-from iot_audit.preprocessing import load_and_prepare_data
 from iot_audit.metrics import evaluate_model
+from data_loading import load_binary_split
 import lightgbm as lgb
 import joblib
 import argparse
@@ -10,17 +10,18 @@ import argparse
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--csv", default="data/train_test_network.csv")
-    ap.add_argument("--outdir", default="reports")
+    ap.add_argument("--outdir", default="train")
     ap.add_argument("--num_leaves", type=int, default=64)
     ap.add_argument("--n_estimators", type=int, default=400)
     ap.add_argument("--learning_rate", type=float, default=0.05)
     args = ap.parse_args()
+    preproc_path = os.path.join(args.outdir, "preprocessor", "preprocessor.pkl")
+    meta_path = os.path.join(os.path.dirname(preproc_path), "preprocessor_meta.json")
 
     model_name = "lgbm"
 
-    X_train, X_test, y_train, y_test, feature_names, preproc = load_and_prepare_data(
-        csv_path=args.csv, target_col="label", test_size=0.2, random_state=42,
-        leakage_base=args.outdir, model_name=model_name
+    X_train, X_test, y_train, y_test, feature_names, preproc = load_binary_split(
+        args.csv, preproc_path, meta_path
     )
 
     model = lgb.LGBMClassifier(

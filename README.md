@@ -104,6 +104,7 @@ python scripts/analyze_dataset.py --csv data/train_test_network.csv --outdir tra
 python scripts/visualize_dataset.py --csv data/train_test_network.csv --outdir train/figures
 
 # 5) Binary training
+python scripts/prepare_preprocessor.py
 python scripts/train_rf.py    --csv data/train_test_network.csv --outdir train
 python scripts/train_lgbm.py  --csv data/train_test_network.csv --outdir train
 python scripts/train_xgb.py   --csv data/train_test_network.csv --outdir train
@@ -113,6 +114,7 @@ python scripts/train_logreg.py --csv data/train_test_network.csv --outdir train
 python scripts/compare_models.py --outdir benchmark/sys1/binary --models-dir train/models --models rf lgbm xgb logreg --benchmark --sample_size 10000
 
 # 7) Multiclass training
+python scripts/prepare_preprocessor_mc.py
 python scripts/train_mc_rf.py    --csv data/train_test_network.csv --outdir train_mc
 python scripts/train_mc_lgbm.py  --csv data/train_test_network.csv --outdir train_mc
 python scripts/train_mc_xgb.py   --csv data/train_test_network.csv --outdir train_mc

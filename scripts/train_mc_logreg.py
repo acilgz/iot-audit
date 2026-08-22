@@ -2,25 +2,25 @@
 from __future__ import annotations
 import os, sys, json, time
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
-from iot_audit.preprocessing_mc import load_and_prepare_multiclass
 from iot_audit.metrics_mc import evaluate_model_multiclass
+from data_loading import load_multiclass_split
 from sklearn.linear_model import LogisticRegression
 import joblib
 import argparse
-import numpy as np
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--csv", default="data/train_test_network.csv")
-    ap.add_argument("--outdir", default="reports_mc")
+    ap.add_argument("--outdir", default="train_mc")
     ap.add_argument("--C", type=float, default=1.0)
     args = ap.parse_args()
+    preproc_path = os.path.join(args.outdir, "preprocessor", "preprocessor.pkl")
+    meta_path = os.path.join(os.path.dirname(preproc_path), "preprocessor_meta.json")
 
     model_name = "logreg_mc"
 
-    X_train, X_test, y_train, y_test, feature_names, preproc, class_map = load_and_prepare_multiclass(
-        csv_path=args.csv, target_col="type", test_size=0.2, random_state=42,
-        base_outdir=args.outdir, model_name=model_name
+    X_train, X_test, y_train, y_test, feature_names, preproc, class_map = load_multiclass_split(
+        args.csv, preproc_path, meta_path
     )
 
     model = LogisticRegression(
@@ -33,11 +33,7 @@ def main():
     print(f"[logreg-mc] done in {time.time()-t0:.2f}s")
 
     y_pred = model.predict(X_test)
-    if hasattr(model, "predict_proba"):
-        y_proba = model.predict_proba(X_test)
-    else:
-        # fallback: one-vs-rest probabilities are required for PR/ROC; use decision function if available
-        y_proba = None
+    y_proba = model.predict_proba(X_test) if hasattr(model, "predict_proba") else None
 
     model_dir = os.path.join(args.outdir, "models", model_name)
     os.makedirs(model_dir, exist_ok=True)
