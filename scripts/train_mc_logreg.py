@@ -14,7 +14,7 @@ def main():
     ap.add_argument("--outdir", default="train_mc")
     ap.add_argument("--C", type=float, default=1.0)
     args = ap.parse_args()
-    preproc_path = os.path.join(args.outdir, "preprocessor", "preprocessor.pkl")
+    preproc_path = os.path.join(args.outdir, "preprocessor_mc", "preprocessor.pkl")
     meta_path = os.path.join(os.path.dirname(preproc_path), "preprocessor_meta.json")
 
     model_name = "logreg_mc"
@@ -38,7 +38,7 @@ def main():
     model_dir = os.path.join(args.outdir, "models", model_name)
     os.makedirs(model_dir, exist_ok=True)
     joblib.dump(model, os.path.join(model_dir, "model.pkl"))
-    joblib.dump(preproc, os.path.join(model_dir, "preprocessor.pkl"))
+    #joblib.dump(preproc, os.path.join(model_dir, "preprocessor.pkl"))
 
     metrics = evaluate_model_multiclass(
         y_test, y_pred, y_proba, feature_names, model,

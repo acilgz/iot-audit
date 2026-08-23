@@ -17,7 +17,7 @@ def main():
     ap.add_argument("--n_estimators", type=int, default=500)
     ap.add_argument("--learning_rate", type=float, default=0.05)
     args = ap.parse_args()
-    preproc_path = os.path.join(args.outdir, "preprocessor", "preprocessor.pkl")
+    preproc_path = os.path.join(args.outdir, "preprocessor_mc", "preprocessor.pkl")
     meta_path = os.path.join(os.path.dirname(preproc_path), "preprocessor_meta.json")
 
     model_name = "lgbm_mc"
@@ -58,7 +58,7 @@ def main():
     model_dir = os.path.join(args.outdir, "models", model_name)
     os.makedirs(model_dir, exist_ok=True)
     joblib.dump(model, os.path.join(model_dir, "model.pkl"))
-    joblib.dump(preproc, os.path.join(model_dir, "preprocessor.pkl"))
+    #joblib.dump(preproc, os.path.join(model_dir, "preprocessor.pkl"))
 
     metrics = evaluate_model_multiclass(
         y_test, y_pred, y_proba, feature_names, model,

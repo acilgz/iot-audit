@@ -8,3 +8,4 @@ pyarrow==24.0.0
 joblib==1.5.3
 scipy==1.17.1
 tensorflow==2.16.2
+ai_edge_litert==2.2.0
