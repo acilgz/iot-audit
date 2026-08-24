@@ -87,14 +87,17 @@ src_ip,src_port,dst_ip,dst_port,proto,service,duration,src_bytes,dst_bytes,conn_
 ## Quickstart
 
 ```bash
-# 1) Create env
-python -m venv .venv
-. .venv/Scripts/activate  # Windows PowerShell
-# source .venv/bin/activate  # Linux/Mac
+# 1) Create Python 3.12.14 venv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+source $HOME/.local/bin/env
+uv venv --python 3.12.14 --python-preference only-managed .venv
+
+source .venv/bin/activate  # Linux/Mac
+# . .venv/Scripts/activate  # Windows PowerShell
 
 # 2) Install deps
-pip install -U pip
-pip install -r requirements.txt
+uv pip install -U pip
+uv pip install -r requirements.txt
 
 # 3) Put data
 # data/train_test_network.csv
