@@ -88,6 +88,7 @@ src_ip,src_port,dst_ip,dst_port,proto,service,duration,src_bytes,dst_bytes,conn_
 
 ```bash
 # 1) Create Python 3.12.14 venv
+# sudo apt update && sudo apt install -y curl # Debian
 curl -LsSf https://astral.sh/uv/install.sh | sh
 source $HOME/.local/bin/env
 uv venv --python 3.12.14 --python-preference only-managed .venv
