@@ -7,6 +7,7 @@ import numpy as np
 import joblib
 import matplotlib.pyplot as plt
 import ai_edge_litert.interpreter as tflm
+import keras
 
 def _ensure_dir(path: str):
     os.makedirs(path, exist_ok=True)
@@ -39,23 +40,31 @@ def file_size_mb(path: str) -> float:
 
 def scan_models(base_outdir: str, model_names: List[str]) -> pd.DataFrame:
     rows = []
+    global_preproc = os.path.join(base_outdir, "preprocessor", "preprocessor.pkl")
+
     for name in model_names:
         mdir = os.path.join(base_outdir, "models", name)
         if not os.path.isdir(mdir):
             continue
         m = read_metrics(mdir)
+        
+        preproc_pkl = os.path.join(mdir, "preprocessor.pkl")
+        if not os.path.exists(preproc_pkl):
+            preproc_pkl = global_preproc
+            
         model_pkl = os.path.join(mdir, "model.pkl")
-        preproc_pkl = os.path.join(base_outdir, "preprocessor", "preprocessor.pkl")
+        model_keras = os.path.join(mdir, "model.keras")
         tflite_model = os.path.join(mdir, "model.tflite")
         
         if os.path.exists(tflite_model) and os.path.exists(preproc_pkl):
-            # TFLite model
             model_file = tflite_model
+        elif os.path.exists(model_keras) and os.path.exists(preproc_pkl):
+            model_file = model_keras
         elif os.path.exists(model_pkl) and os.path.exists(preproc_pkl):
             model_file = model_pkl
         else:
             model_file = None
-        
+
         if model_file:
             rows.append({
                 "model": name,
@@ -102,6 +111,7 @@ def benchmark_inference(models_dir: str, base_outdir: str, csv_path: str, model_
         model_pkl = os.path.join(mdir, "model.pkl")
         preproc_pkl = os.path.join(models_dir, "preprocessor", "preprocessor.pkl")
         tflite_path = os.path.join(mdir, "model.tflite")
+        keras_path = os.path.join(mdir, "model.keras")
 
         if os.path.exists(tflite_path):
             # TFLite model
@@ -218,13 +228,72 @@ def benchmark_inference(models_dir: str, base_outdir: str, csv_path: str, model_
             
             results.append(avg_result)
         
+        elif os.path.exists(keras_path) and os.path.exists(preproc_pkl):
+            try:
+                model = keras.models.load_model(keras_path)
+                preproc = joblib.load(preproc_pkl)
+                scaler_path = os.path.join(mdir, "scaler.pkl")
+                scaler = joblib.load(scaler_path) if os.path.exists(scaler_path) else None
+
+                meta_path = os.path.join(models_dir, "preprocessor", "preprocessor_meta.json")
+                feature_names = None
+                if os.path.exists(meta_path):
+                    with open(meta_path, "r", encoding="utf-8") as f:
+                        feature_names = json.load(f).get("feature_names")
+
+                run_results = []
+                for run in range(num_runs):
+                    t0 = time.time()
+                    X_trans = preproc.transform(Xs)
+                    
+                    if scaler is not None:
+                        cols = getattr(scaler, "feature_names_in_", feature_names)
+                        if cols is not None and len(cols) == X_trans.shape[1]:
+                            X_trans = pd.DataFrame(X_trans, columns=cols)
+                        X_trans = scaler.transform(X_trans)
+                        
+                    t1 = time.time()
+                    
+                    X_tensor = np.array(X_trans, dtype=np.float32)
+                    _ = model(X_tensor, training=False).numpy()
+                    t2 = time.time()
+
+                    run_results.append({
+                        "model": name,
+                        "transform_ms_per_1k": (t1 - t0) / (len(Xs)/1000.0) * 1000.0,
+                        "predict_ms_per_1k": (t2 - t1) / (len(Xs)/1000.0) * 1000.0,
+                        "total_ms_per_1k": (t2 - t0) / (len(Xs)/1000.0) * 1000.0,
+                        "n_samples": len(Xs),
+                        "run_id": run + 1
+                    })
+            except Exception as e:
+                print(f"Error running Keras model {name}: {e}")
+                continue
+            
+            results.extend(run_results)
+
+            avg_result = {
+                "model": name,
+                "transform_ms_per_1k": np.mean([r["transform_ms_per_1k"] for r in run_results]),
+                "predict_ms_per_1k": np.mean([r["predict_ms_per_1k"] for r in run_results]),
+                "total_ms_per_1k": np.mean([r["total_ms_per_1k"] for r in run_results]),
+                "n_samples": len(Xs),
+                "run_id": "avg"
+            }
+            
+            avg_result["transform_ms_per_1k"] = f"{avg_result['transform_ms_per_1k']:.6f} ± {np.std([r['transform_ms_per_1k'] for r in run_results]):.6f}"
+            avg_result["predict_ms_per_1k"] = f"{avg_result['predict_ms_per_1k']:.6f} ± {np.std([r['predict_ms_per_1k'] for r in run_results]):.6f}"
+            avg_result["total_ms_per_1k"] = f"{avg_result['total_ms_per_1k']:.6f} ± {np.std([r['total_ms_per_1k'] for r in run_results]):.6f}"
+            
+            results.append(avg_result)
+
     return pd.DataFrame(results)
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--outdir", default="reports")
     ap.add_argument("--models-dir", default="train")
-    ap.add_argument("--models", nargs="*", default=["rf","lgbm","xgb","logreg","mlp_int8"])
+    ap.add_argument("--models", nargs="*", default=["rf","lgbm","xgb","logreg","mlp","mlp_int8"])
     ap.add_argument("--csv", default="data/train_test_network.csv")
     ap.add_argument("--benchmark", action="store_true", help="Run inference speed benchmark on sample of the CSV")
     ap.add_argument("--sample_size", type=int, default=10000)

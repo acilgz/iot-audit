@@ -113,10 +113,11 @@ python scripts/train_rf.py    --csv data/train_test_network.csv --outdir train
 python scripts/train_lgbm.py  --csv data/train_test_network.csv --outdir train
 python scripts/train_xgb.py   --csv data/train_test_network.csv --outdir train
 python scripts/train_logreg.py --csv data/train_test_network.csv --outdir train
-python scripts/train_mlp_int8.py --csv data/train_test_network.csv --outdir train
+python scripts/train_mlp.py   --csv data/train_test_network.csv --outdir train
+python scripts/quantize_model.py --input_dir train/models/mlp --csv data/train_test_network.csv
 
 # 6) Binary comparison
-python scripts/compare_models.py --outdir benchmark/sys1/binary --models-dir train --models rf lgbm xgb logreg mlp_int8 --benchmark --sample_size 10000
+python scripts/compare_models.py --outdir benchmark/sys1/binary --models-dir train --models rf lgbm xgb logreg mlp mlp_int8 --benchmark --sample_size 10000
 
 # 7) Multiclass training
 python scripts/prepare_preprocessor_mc.py
@@ -124,10 +125,11 @@ python scripts/train_mc_rf.py    --csv data/train_test_network.csv --outdir trai
 python scripts/train_mc_lgbm.py  --csv data/train_test_network.csv --outdir train_mc
 python scripts/train_mc_xgb.py   --csv data/train_test_network.csv --outdir train_mc
 python scripts/train_mc_logreg.py --csv data/train_test_network.csv --outdir train_mc
-python scripts/train_mc_mlp_int8.py --csv data/train_test_network.csv --outdir train_mc
+python scripts/train_mc_mlp.py   --csv data/train_test_network.csv --outdir train_mc
+python scripts/quantize_model_mc.py --input_dir train_mc/models/mlp_mc --csv data/train_test_network.csv
 
 # 8) Multiclass comparison
-python scripts/compare_models_mc.py --outdir benchmark/sys1/multiclass --models-dir train_mc --models rf_mc lgbm_mc xgb_mc logreg_mc mlp_int8_mc --benchmark --sample_size 10000
+python scripts/compare_models_mc.py --outdir benchmark/sys1/multiclass --models-dir train_mc --models rf_mc lgbm_mc xgb_mc logreg_mc mlp_mc mlp_mc_int8 --benchmark --sample_size 10000
 
 # 9) Mann-Whitney lgbm/xgb
 python scripts/run_mann-whitney.py --benchmark benchmark --legacy apple_m1,bcm2712,corei7-3770,corei5-7200U --modern apple_m5,ryzen7_7700
