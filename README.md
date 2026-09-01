@@ -132,7 +132,7 @@ python scripts/quantize_model_mc.py --input_dir train_mc/models/mlp_mc --csv dat
 python scripts/compare_models_mc.py --outdir benchmark/sys1/multiclass --models-dir train_mc --models rf_mc lgbm_mc xgb_mc logreg_mc mlp_mc mlp_mc_int8 --benchmark --sample_size 10000
 
 # 9) Mann-Whitney lgbm/xgb
-python scripts/run_mann-whitney.py --benchmark benchmark --legacy apple_m1,bcm2712,corei7-3770,corei5-7200U --modern apple_m5,ryzen7_7700
+python scripts/run_mann-whitney.py --benchmark benchmark --legacy apple_m1,bcm2712,corei7_3770,corei5_7200U --modern apple_m5,ryzen7_7700
 ```
 
 ## Artifact layout

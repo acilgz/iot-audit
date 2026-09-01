@@ -83,10 +83,10 @@ def plot_bar(df: pd.DataFrame, column: str, out_png: str, title: str):
     plt.ylabel(column)
     _savefig(out_png)
 
-def per_class_table(base_outdir: str, model_names: List[str]) -> pd.DataFrame:
+def per_class_table(models_dir: str, model_names: List[str]) -> pd.DataFrame:
     merged = None
     for name in model_names:
-        p = os.path.join(base_outdir, "models", name, "per_class_report.csv")
+        p = os.path.join(models_dir, "models", name, "per_class_report.csv")
         if not os.path.exists(p): 
             continue
         df = pd.read_csv(p)
@@ -102,7 +102,7 @@ def per_class_table(base_outdir: str, model_names: List[str]) -> pd.DataFrame:
             merged = pd.merge(merged, df, on="class", how="outer")
     return merged if merged is not None else pd.DataFrame()
 
-def benchmark_inference(models_dir: str, base_outdir: str, csv_path: str, model_names: List[str], y_col: str = "type", sample_size: int = 10000, random_state: int = 42, num_runs: int = 5) -> pd.DataFrame:
+def benchmark_inference(models_dir: str, csv_path: str, model_names: List[str], y_col: str = "type", sample_size: int = 10000, random_state: int = 42, num_runs: int = 5) -> pd.DataFrame:
     df = pd.read_csv(csv_path, engine="pyarrow")
     if y_col not in df.columns:
         raise ValueError(f"CSV must contain '{y_col}' column")
@@ -319,7 +319,7 @@ def main():
     plot_bar(df, "pr_auc_macro", os.path.join(summary_dir, "pr_auc_macro.png"), "PR AUC (macro) by Model")
     plot_bar(df, "total_size_mb", os.path.join(summary_dir, "total_size_mb.png"), "Model+Preproc Size (MB)")
 
-    pct = per_class_table(base_outdir, args.models)
+    pct = per_class_table(args.models_dir, args.models)
     if not pct.empty:
         pct.to_csv(os.path.join(summary_dir, "per_class_report_merged.csv"), index=False)
         print("Per-class report merged saved to", os.path.join(summary_dir, "per_class_report_merged.csv"))

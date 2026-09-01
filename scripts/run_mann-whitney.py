@@ -2,6 +2,8 @@ from __future__ import annotations
 import os
 import argparse
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 from scipy import stats
 
 def load_ratios(systems: list[str], benchmark_dir: str, subtask: str) -> list[float]:
@@ -18,8 +20,54 @@ def load_ratios(systems: list[str], benchmark_dir: str, subtask: str) -> list[fl
             print(f"Warning: File not found: {csv_path}")
     return ratios
 
+def save_chart(
+    legacy_ratios: list[float], 
+    modern_ratios: list[float], 
+    legacy_systems: list[str], 
+    modern_systems: list[str], 
+    subtask: str, 
+    output_dir: str
+):
+    os.makedirs(output_dir, exist_ok=True)
+
+    plt.figure(figsize=(9, 6))
+
+    legacy_label = "Legacy\n(" + ", ".join(legacy_systems) + ")"
+    modern_label = "Modern\n(" + ", ".join(modern_systems) + ")"
+
+    box = plt.boxplot(
+        [legacy_ratios, modern_ratios],
+        labels=[legacy_label, modern_label],
+        patch_artist=True,
+        widths=0.4,
+        showfliers=False
+    )
+
+    colors = ["#6baed6", "#fc9272"]
+    for patch, color in zip(box["boxes"], colors):
+        patch.set_facecolor(color)
+
+    np.random.seed(42)
+    for i, data in enumerate([legacy_ratios, modern_ratios], start=1):
+        x = np.random.normal(i, 0.04, size=len(data))
+        plt.plot(x, data, "ro", color="black", alpha=0.6, markersize=5)
+
+    plt.axhline(1.0, color="red", linestyle="--", linewidth=1, label="Parity (Ratio = 1.0)")
+    plt.title(f"LightGBM / XGBoost Ratio Distribution ({subtask.capitalize()})", fontsize=14, fontweight="bold")
+    plt.xlabel("System Category", fontsize=12)
+    plt.ylabel("LGBM / XGB Ratio", fontsize=12)
+    plt.legend(loc="upper right")
+    plt.grid(axis="y", linestyle=":", alpha=0.7)
+
+    chart_filename = f"lgbm_xgb_ratio_distribution_{subtask}.png"
+    chart_path = os.path.join(output_dir, chart_filename)
+    plt.savefig(chart_path, dpi=300, bbox_inches="tight")
+    plt.close()
+    print(f"Chart saved to: {chart_path}")
+
 def run_mann_whitney_analysis(benchmark_dir: str, legacy_systems: list[str], modern_systems: list[str]):
     subtasks = ["binary", "multiclass"]
+    charts_dir = os.path.join(benchmark_dir, "charts")
 
     for subtask in subtasks:
         legacy_ratios = load_ratios(legacy_systems, benchmark_dir, subtask)
@@ -28,6 +76,8 @@ def run_mann_whitney_analysis(benchmark_dir: str, legacy_systems: list[str], mod
         if not legacy_ratios or not modern_ratios:
             print(f"Skipped {subtask}: not enough data (Legacy: {len(legacy_ratios)}, Modern: {len(modern_ratios)})")
             continue
+
+        save_chart(legacy_ratios, modern_ratios, legacy_systems, modern_systems, subtask, charts_dir)
 
         stat, p_val = stats.mannwhitneyu(legacy_ratios, modern_ratios, alternative="greater")
 

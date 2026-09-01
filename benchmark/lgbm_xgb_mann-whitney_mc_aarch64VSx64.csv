@@ -1,0 +1,2 @@
+subtask,u_statistic,p_value,statistically_significant_0_05,rank_biserial_correlation,n_legacy_samples,n_modern_samples,legacy_mean_ratio,legacy_std_ratio,legacy_median_ratio,modern_mean_ratio,modern_std_ratio,modern_median_ratio,legacy_systems,modern_systems
+multiclass,225.0,1.6959106954125473e-06,True,1.0,15,15,9.992730429073083,3.3220512029516804,8.469352032533223,4.326148247202392,1.301901859602704,4.129780628849995,"apple_m1,apple_m5,bcm2712","ryzen7_7700,corei7_3770,corei5_7200U"
