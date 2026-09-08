@@ -21,10 +21,10 @@ def load_ratios(systems: list[str], benchmark_dir: str, subtask: str) -> list[fl
     return ratios
 
 def save_chart(
-    legacy_ratios: list[float], 
-    modern_ratios: list[float], 
-    legacy_systems: list[str], 
-    modern_systems: list[str], 
+    aarch64_ratios: list[float], 
+    x64_ratios: list[float], 
+    aarch64_systems: list[str], 
+    x64_systems: list[str], 
     subtask: str, 
     output_dir: str
 ):
@@ -32,12 +32,12 @@ def save_chart(
 
     plt.figure(figsize=(9, 6))
 
-    legacy_label = "Legacy\n(" + ", ".join(legacy_systems) + ")"
-    modern_label = "Modern\n(" + ", ".join(modern_systems) + ")"
+    aarch64_label = "aarch64\n(" + ", ".join(aarch64_systems) + ")"
+    x64_label = "x64\n(" + ", ".join(x64_systems) + ")"
 
     box = plt.boxplot(
-        [legacy_ratios, modern_ratios],
-        labels=[legacy_label, modern_label],
+        [aarch64_ratios, x64_ratios],
+        labels=[aarch64_label, x64_label],
         patch_artist=True,
         widths=0.4,
         showfliers=False
@@ -48,7 +48,7 @@ def save_chart(
         patch.set_facecolor(color)
 
     np.random.seed(42)
-    for i, data in enumerate([legacy_ratios, modern_ratios], start=1):
+    for i, data in enumerate([aarch64_ratios, x64_ratios], start=1):
         x = np.random.normal(i, 0.04, size=len(data))
         plt.plot(x, data, "ro", color="black", alpha=0.6, markersize=5)
 
@@ -65,34 +65,34 @@ def save_chart(
     plt.close()
     print(f"Chart saved to: {chart_path}")
 
-def run_mann_whitney_analysis(benchmark_dir: str, legacy_systems: list[str], modern_systems: list[str]):
+def run_mann_whitney_analysis(benchmark_dir: str, aarch64_systems: list[str], x64_systems: list[str]):
     subtasks = ["binary", "multiclass"]
     charts_dir = os.path.join(benchmark_dir, "charts")
 
     for subtask in subtasks:
-        legacy_ratios = load_ratios(legacy_systems, benchmark_dir, subtask)
-        modern_ratios = load_ratios(modern_systems, benchmark_dir, subtask)
+        aarch64_ratios = load_ratios(aarch64_systems, benchmark_dir, subtask)
+        x64_ratios = load_ratios(x64_systems, benchmark_dir, subtask)
 
-        if not legacy_ratios or not modern_ratios:
-            print(f"Skipped {subtask}: not enough data (Legacy: {len(legacy_ratios)}, Modern: {len(modern_ratios)})")
+        if not aarch64_ratios or not x64_ratios:
+            print(f"Skipped {subtask}: not enough data (Legacy: {len(aarch64_ratios)}, Modern: {len(x64_ratios)})")
             continue
 
-        save_chart(legacy_ratios, modern_ratios, legacy_systems, modern_systems, subtask, charts_dir)
+        save_chart(aarch64_ratios, x64_ratios, aarch64_systems, x64_systems, subtask, charts_dir)
 
-        stat, p_val = stats.mannwhitneyu(legacy_ratios, modern_ratios, alternative="greater")
+        stat, p_val = stats.mannwhitneyu(aarch64_ratios, x64_ratios, alternative="greater")
 
-        n1 = len(legacy_ratios)
-        n2 = len(modern_ratios)
+        n1 = len(aarch64_ratios)
+        n2 = len(x64_ratios)
         
         r_rank_biserial = (2.0 * stat) / (n1 * n2) - 1.0 if (n1 * n2) > 0 else None
 
-        mean_legacy = float(pd.Series(legacy_ratios).mean())
-        std_legacy = float(pd.Series(legacy_ratios).std())
-        median_legacy = float(pd.Series(legacy_ratios).median())
+        mean_aarch64 = float(pd.Series(aarch64_ratios).mean())
+        std_aarch64 = float(pd.Series(aarch64_ratios).std())
+        median_aarch64 = float(pd.Series(aarch64_ratios).median())
 
-        mean_modern = float(pd.Series(modern_ratios).mean())
-        std_modern = float(pd.Series(modern_ratios).std())
-        median_modern = float(pd.Series(modern_ratios).median())
+        mean_x64 = float(pd.Series(x64_ratios).mean())
+        std_x64 = float(pd.Series(x64_ratios).std())
+        median_x64 = float(pd.Series(x64_ratios).median())
 
         result_df = pd.DataFrame([{
             "subtask": subtask,
@@ -100,21 +100,21 @@ def run_mann_whitney_analysis(benchmark_dir: str, legacy_systems: list[str], mod
             "p_value": p_val,
             "statistically_significant_0_05": bool(p_val < 0.05),
             "rank_biserial_correlation": r_rank_biserial,
-            "n_legacy_samples": n1,
-            "n_modern_samples": n2,
-            "legacy_mean_ratio": mean_legacy,
-            "legacy_std_ratio": std_legacy,
-            "legacy_median_ratio": median_legacy,
-            "modern_mean_ratio": mean_modern,
-            "modern_std_ratio": std_modern,
-            "modern_median_ratio": median_modern,
-            "legacy_systems": ",".join(legacy_systems),
-            "modern_systems": ",".join(modern_systems)
+            "n_aarch64_samples": n1,
+            "n_x64_samples": n2,
+            "aarch64_mean_ratio": mean_aarch64,
+            "aarch64_std_ratio": std_aarch64,
+            "aarch64_median_ratio": median_aarch64,
+            "x64_mean_ratio": mean_x64,
+            "x64_std_ratio": std_x64,
+            "x64_median_ratio": median_x64,
+            "aarch64_systems": ",".join(aarch64_systems),
+            "x64_systems": ",".join(x64_systems)
         }])
 
         print(f"{subtask.upper()}:")
-        print(f"Legacy (n={n1}) Ratio Avg: {mean_legacy:.4f} ± {std_legacy:.4f} (Median: {median_legacy:.4f})")
-        print(f"Modern (n={n2}) Ratio Avg: {mean_modern:.4f} ± {std_modern:.4f} (Median: {median_modern:.4f})")
+        print(f"aarch64 (n={n1}) Ratio Avg: {mean_aarch64:.4f} ± {std_aarch64:.4f} (Median: {median_aarch64:.4f})")
+        print(f"x64 (n={n2}) Ratio Avg: {mean_x64:.4f} ± {std_x64:.4f} (Median: {median_x64:.4f})")
         print(f"Mann-Whitney U: {stat}, p-value: {p_val:.6e}, Rank-Biserial: {r_rank_biserial:.4f}\n")
 
         suffix = "_mc" if subtask == "multiclass" else ""
@@ -126,15 +126,15 @@ def run_mann_whitney_analysis(benchmark_dir: str, legacy_systems: list[str], mod
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--benchmark", default="benchmark")
-    parser.add_argument("--legacy", default="apple_m1,bcm2712,corei7-3770,corei5-7200U")
-    parser.add_argument("--modern", default="apple_m5,ryzen7_7700")
+    parser.add_argument("--x64", default=",corei7-3770,corei5-7200U,ryzen7_7700")
+    parser.add_argument("--aarch64", default="bcm2712,apple_m1,apple_m5")
 
     args = parser.parse_args()
 
-    legacy_systems = [s.strip() for s in args.legacy.split(",") if s.strip()]
-    modern_systems = [s.strip() for s in args.modern.split(",") if s.strip()]
+    aarch64_systems = [s.strip() for s in args.aarch64.split(",") if s.strip()]
+    x64_systems = [s.strip() for s in args.x64.split(",") if s.strip()]
 
-    run_mann_whitney_analysis(args.benchmark, legacy_systems, modern_systems)
+    run_mann_whitney_analysis(args.benchmark, aarch64_systems, x64_systems)
 
 if __name__ == "__main__":
     main()

@@ -1,2 +1,2 @@
-subtask,u_statistic,p_value,statistically_significant_0_05,rank_biserial_correlation,n_legacy_samples,n_modern_samples,legacy_mean_ratio,legacy_std_ratio,legacy_median_ratio,modern_mean_ratio,modern_std_ratio,modern_median_ratio,legacy_systems,modern_systems
-multiclass,150.0,0.014713829709553655,True,0.5,20,10,8.272015608313607,3.9930449026689208,7.17445826102794,4.934286797785995,2.15629485514187,4.8456149227416825,"apple_m1,bcm2712,corei7_3770,corei5_7200U","apple_m5,ryzen7_7700"
+subtask,u_statistic,p_value,statistically_significant_0_05,rank_biserial_correlation,n_aarch64_samples,n_x64_samples,aarch64_mean_ratio,aarch64_std_ratio,aarch64_median_ratio,x64_mean_ratio,x64_std_ratio,x64_median_ratio,aarch64_systems,x64_systems
+multiclass,225.0,1.6959106954125473e-06,True,1.0,15,15,9.992730429073085,3.3220512029516804,8.469352032533223,4.326148247202392,1.3019018596027039,4.129780628849995,"bcm2712,apple_m1,apple_m5","corei7_3770,corei5_7200U,ryzen7_7700"
