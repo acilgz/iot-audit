@@ -24,7 +24,7 @@ def main():
     )
 
     model = LogisticRegression(
-        C=args.C, max_iter=2000, n_jobs=-1, class_weight="balanced", solver="lbfgs", multi_class="auto"
+        C=args.C, max_iter=2000, n_jobs=-1, class_weight="balanced", solver="lbfgs"
     )
 
     print(f"[logreg-mc] training ({X_train.shape[0]} samples, {X_train.shape[1]} features, classes={len(class_map)})...")

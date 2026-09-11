@@ -5,7 +5,7 @@ import numpy as np
 from typing import Tuple, List
 from sklearn.model_selection import train_test_split
 from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 
@@ -83,7 +83,8 @@ def load_and_prepare_data(
             cat_cols.append(c)
 
     numeric_transformer = Pipeline(steps=[
-        ("imputer", SimpleImputer(strategy="median"))
+        ("imputer", SimpleImputer(strategy="median")),
+        ("scaler", StandardScaler())
     ])
 
     categorical_transformer = Pipeline(steps=[
