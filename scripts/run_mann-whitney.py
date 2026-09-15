@@ -6,18 +6,75 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 
-def load_ratios(systems: list[str], benchmark_dir: str, subtask: str) -> list[float]:
+def load_ratios(
+    systems: list[str],
+    benchmark_dir: str,
+    subtask: str
+) -> list[float]:
     ratios = []
-    for sys in systems:
-        csv_path = os.path.join(benchmark_dir, sys, subtask, "lgbm_xgb_ratios.csv")
-        if os.path.exists(csv_path):
-            df = pd.read_csv(csv_path)
-            if "lgbm_xgb_ratio" in df.columns:
-                ratios.extend(df["lgbm_xgb_ratio"].dropna().tolist())
-            else:
-                print(f"Warning: Missing 'lgbm_xgb_ratio' in {csv_path}")
-        else:
+
+    for system in systems:
+        filename = (
+            "inference_benchmark.csv"
+            if subtask == "binary"
+            else "inference_benchmark_mc.csv"
+        )
+
+        csv_path = os.path.join(
+            benchmark_dir,
+            system,
+            subtask,
+            filename
+        )
+
+        if not os.path.exists(csv_path):
             print(f"Warning: File not found: {csv_path}")
+            continue
+
+        df = pd.read_csv(csv_path)
+
+        raw = df[df["run_id"].astype(str) != "avg"].copy()
+
+        raw["total_ms_per_1k"] = pd.to_numeric(
+            raw["total_ms_per_1k"],
+            errors="coerce"
+        )
+
+        if subtask == "binary":
+            lgbm_name = "lgbm"
+            xgb_name = "xgb"
+        else:
+            lgbm_name = "lgbm_mc"
+            xgb_name = "xgb_mc"
+
+        mean_latency = (
+            raw.groupby("model")["total_ms_per_1k"]
+            .mean()
+        )
+
+        if (
+            lgbm_name not in mean_latency.index
+            or xgb_name not in mean_latency.index
+        ):
+            print(
+                f"Warning: Missing {lgbm_name} or "
+                f"{xgb_name} in {csv_path}"
+            )
+            continue
+
+        mean_lgbm = float(mean_latency[lgbm_name])
+        mean_xgb = float(mean_latency[xgb_name])
+
+        ratio = mean_lgbm / mean_xgb
+        ratios.append(ratio)
+
+        print(
+            f"{system} ({subtask}): "
+            f"LGBM={mean_lgbm:.4f}, "
+            f"XGB={mean_xgb:.4f}, "
+            f"ratio={ratio:.4f}"
+        )
+
     return ratios
 
 def save_chart(
@@ -79,7 +136,12 @@ def run_mann_whitney_analysis(benchmark_dir: str, aarch64_systems: list[str], x6
 
         save_chart(aarch64_ratios, x64_ratios, aarch64_systems, x64_systems, subtask, charts_dir)
 
-        stat, p_val = stats.mannwhitneyu(aarch64_ratios, x64_ratios, alternative="greater")
+        stat, p_val = stats.mannwhitneyu(
+            aarch64_ratios,
+            x64_ratios,
+            alternative="greater",
+            method="exact"
+        )
 
         n1 = len(aarch64_ratios)
         n2 = len(x64_ratios)
@@ -98,10 +160,10 @@ def run_mann_whitney_analysis(benchmark_dir: str, aarch64_systems: list[str], x6
             "subtask": subtask,
             "u_statistic": stat,
             "p_value": p_val,
-            "statistically_significant_0_05": bool(p_val < 0.05),
+            "alpha": 0.05,
             "rank_biserial_correlation": r_rank_biserial,
-            "n_aarch64_samples": n1,
-            "n_x64_samples": n2,
+            "n_aarch64_platforms": n1,
+            "n_x64_platforms": n2,
             "aarch64_mean_ratio": mean_aarch64,
             "aarch64_std_ratio": std_aarch64,
             "aarch64_median_ratio": median_aarch64,
@@ -126,7 +188,7 @@ def run_mann_whitney_analysis(benchmark_dir: str, aarch64_systems: list[str], x6
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--benchmark", default="benchmark")
-    parser.add_argument("--x64", default=",corei7-3770,corei5-7200U,ryzen7_7700")
+    parser.add_argument("--x64", default=",corei7_3770,corei5_7200U,ryzen7_7700")
     parser.add_argument("--aarch64", default="bcm2712,apple_m1,apple_m5")
 
     args = parser.parse_args()
