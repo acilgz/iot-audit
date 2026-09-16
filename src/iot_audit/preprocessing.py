@@ -22,6 +22,9 @@ EXCLUDE_COLUMNS = [
     "http_orig_mime_types","http_resp_mime_types","weird_addl","dns_query"
 ]
 
+# model -> preprocessing: StandardScaler only for scale-sensitive models
+SCALE = {"model": True, "mc_model": True, "logreg": True, "logreg_mc": True, "rf": False, "rf_mc": False, "xgb": False, "xgb_mc": False, "lgbm": False, "lgbm_mc": False}
+
 def _read_csv(csv_path: str) -> pd.DataFrame:
     try:
         return pd.read_csv(csv_path, engine="pyarrow")
@@ -88,7 +91,7 @@ def load_and_prepare_data(
 
     numeric_transformer = Pipeline(steps=[
         ("imputer", SimpleImputer(strategy="median")),
-        ("scaler", StandardScaler())
+        ("scaler", StandardScaler() if SCALE[model_name] else "passthrough")
     ])
 
     categorical_transformer = Pipeline(steps=[
