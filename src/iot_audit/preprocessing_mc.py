@@ -9,6 +9,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
+from iot_audit.preprocessing import SCALE
 
 CATEGORICAL_SAFE = [
     "proto","service","conn_state",
@@ -79,7 +80,7 @@ def load_and_prepare_multiclass(
 
     numeric_transformer = Pipeline(steps=[
         ("imputer", SimpleImputer(strategy="median")),
-        ("scaler", StandardScaler())
+        ("scaler", StandardScaler() if SCALE[model_name] else "passthrough")
     ])
     categorical_transformer = Pipeline(steps=[
         ("imputer", SimpleImputer(strategy="most_frequent")),
