@@ -92,12 +92,20 @@ def plot_bar(df: pd.DataFrame, column: str, out_png: str, title: str):
 def benchmark_inference(models_dir: str, base_outdir: str, csv_path: str, model_names: List[str], sample_size: int = 10000, random_state: int = 42, num_runs: int = 5) -> pd.DataFrame:
     # Load raw CSV once
     df = pd.read_csv(csv_path, engine="pyarrow")
-    if "label" not in df.columns:
-        raise ValueError("CSV must contain 'label' column")
-    X = df.drop(columns=["label"])
-    # optional: drop 'type' if present (was dropped during training by preprocessing)
-    if "type" in X.columns:
-        X = X.drop(columns=["type"])
+    X = df.copy()
+
+    leak_cols = []
+    for c in [
+        "type", "Type", "TYPE",
+        "label", "Label", "LABEL",
+        "target", "Target", "TARGET",
+    ]:
+        if c in X.columns:
+            leak_cols.append(c)
+
+    if leak_cols:
+        X = X.drop(columns=leak_cols)
+        print(f"[benchmark_inference] dropped potential leakage columns: {leak_cols}")
 
     # sample
     if len(X) > sample_size:

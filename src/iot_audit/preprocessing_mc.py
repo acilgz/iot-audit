@@ -47,6 +47,19 @@ def load_and_prepare_multiclass(
     classes, y = np.unique(y_raw, return_inverse=True)
     class_map = {int(i): cls for i, cls in enumerate(classes)}
 
+    # Drop potential target-like columns that may leak label
+    leak_cols = []
+    for c in [target_col,
+              'type', 'Type', 'TYPE',
+              'label', 'Label', 'LABEL',
+              'target', 'Target', 'TARGET'
+              ]:
+        if c in df.columns and c != target_col:
+            leak_cols.append(c)
+    if leak_cols:
+        df = df.drop(columns=leak_cols)
+        print(f"[preprocessing-mc] dropped potential leakage columns: {leak_cols}")
+
     # Drop target + known huge-cardinality text cols
     X = df.drop(columns=[target_col])
     drop_cols = [c for c in EXCLUDE_COLUMNS if c in X.columns]

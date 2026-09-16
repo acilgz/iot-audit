@@ -102,11 +102,24 @@ def per_class_table(models_dir: str, model_names: List[str]) -> pd.DataFrame:
             merged = pd.merge(merged, df, on="class", how="outer")
     return merged if merged is not None else pd.DataFrame()
 
-def benchmark_inference(models_dir: str, csv_path: str, model_names: List[str], y_col: str = "type", sample_size: int = 10000, random_state: int = 42, num_runs: int = 5) -> pd.DataFrame:
+def benchmark_inference(base_outdir: str, csv_path: str, model_names: List[str], sample_size: int = 10000, random_state: int = 42) -> pd.DataFrame:
     df = pd.read_csv(csv_path, engine="pyarrow")
-    if y_col not in df.columns:
-        raise ValueError(f"CSV must contain '{y_col}' column")
-    X = df.drop(columns=[y_col])
+    X = df.copy()
+
+    leak_cols = []
+    for c in [
+        "type", "Type", "TYPE",
+        "label", "Label", "LABEL",
+        "target", "Target", "TARGET",
+    ]:
+        if c in X.columns:
+            leak_cols.append(c)
+
+    if leak_cols:
+        X = X.drop(columns=leak_cols)
+        print(f"[benchmark_inference] dropped potential leakage columns: {leak_cols}")
+
+    # sample
     if len(X) > sample_size:
         Xs = X.sample(n=sample_size, random_state=random_state)
     else:
@@ -334,7 +347,7 @@ def main():
                 _savefig(os.path.join(summary_dir, f"per_class_f1_{name}.png"))
 
     if args.benchmark:
-        bdf = benchmark_inference(args.models_dir, base_outdir, args.csv, args.models, y_col="type", sample_size=args.sample_size, num_runs=args.num_runs)
+        bdf = benchmark_inference(args.models_dir, base_outdir, args.csv, args.models, sample_size=args.sample_size, num_runs=args.num_runs)
         
         for run_id in range(1, args.num_runs + 1):
             run_data = bdf[bdf["run_id"] == run_id]

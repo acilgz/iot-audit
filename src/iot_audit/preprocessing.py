@@ -45,7 +45,11 @@ def load_and_prepare_data(
 
     # Drop potential target-like columns that may leak label
     leak_cols = []
-    for c in [target_col, 'type', 'Type', 'TARGET', 'Label', 'label']:
+    for c in [target_col,
+              'type', 'Type', 'TYPE',
+              'label', 'Label', 'LABEL',
+              'target', 'Target', 'TARGET'
+              ]:
         if c in df.columns and c != target_col:
             leak_cols.append(c)
     if leak_cols:
