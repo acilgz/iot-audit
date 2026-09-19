@@ -67,15 +67,19 @@ def load_and_prepare_multiclass(
     if drop_cols:
         X = X.drop(columns=drop_cols)
 
-    # Identify numeric and categorical columns
-    num_cols = X.select_dtypes(include=[np.number]).columns.tolist()
-    cat_cols = [c for c in CATEGORICAL_SAFE if c in X.columns]
+    X_train_df, X_test_df, y_train, y_test = train_test_split(
+        X, y, test_size=test_size, random_state=random_state, stratify=y
+    )
 
-    # add low-cardinality leftover object columns
-    for c in X.select_dtypes(exclude=[np.number]).columns:
+    # Identify numeric and categorical columns from the training split only
+    num_cols = X_train_df.select_dtypes(include=[np.number]).columns.tolist()
+    cat_cols = [c for c in CATEGORICAL_SAFE if c in X_train_df.columns]
+
+    # add low-cardinality leftover object columns using training data only
+    for c in X_train_df.select_dtypes(exclude=[np.number]).columns:
         if c in cat_cols or c in EXCLUDE_COLUMNS:
             continue
-        if X[c].nunique(dropna=False) <= 40:
+        if X_train_df[c].nunique(dropna=False) <= 40:
             cat_cols.append(c)
 
     numeric_transformer = Pipeline(steps=[
@@ -94,9 +98,8 @@ def load_and_prepare_multiclass(
         remainder="drop"
     )
 
-    X_train_df, X_test_df, y_train, y_test = train_test_split(
-        X, y, test_size=test_size, random_state=random_state, stratify=y
-    )
+    preprocessor.numeric_features_ = list(num_cols)
+    preprocessor.categorical_features_ = list(cat_cols)
 
     print(f"[preprocessing-mc] fit on {X_train_df.shape[0]} rows, {X_train_df.shape[1]} cols...")
     X_train = preprocessor.fit_transform(X_train_df)
