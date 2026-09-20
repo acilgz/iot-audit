@@ -24,7 +24,7 @@ def _make_dataset():
         "label": [0, 1, 0] * 10,
 
         # multiclass
-        "type": ["benign", "scan", "dos"] * 10,
+        "type": ["normal", "scan", "dos"] * 10,
 
         # aliases
         "Label": [1] * n,

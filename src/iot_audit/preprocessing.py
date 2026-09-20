@@ -80,13 +80,17 @@ def load_and_prepare_data(
     y = _normalize_label(df[target_col])
     X = df.drop(columns=[target_col])
 
-    num_cols = X.select_dtypes(include=[np.number]).columns.tolist()
-    cat_cols = [c for c in CATEGORICAL_SAFE if c in X.columns]
+    X_train_df, X_test_df, y_train, y_test = train_test_split(
+        X, y, test_size=test_size, random_state=random_state, stratify=y
+    )
 
-    for c in X.select_dtypes(exclude=[np.number]).columns:
+    num_cols = X_train_df.select_dtypes(include=[np.number]).columns.tolist()
+    cat_cols = [c for c in CATEGORICAL_SAFE if c in X_train_df.columns]
+
+    for c in X_train_df.select_dtypes(exclude=[np.number]).columns:
         if c in cat_cols or c in EXCLUDE_COLUMNS or c == target_col:
             continue
-        if X[c].nunique(dropna=False) <= 40:
+        if X_train_df[c].nunique(dropna=False) <= 40:
             cat_cols.append(c)
 
     numeric_transformer = Pipeline(steps=[
@@ -107,9 +111,8 @@ def load_and_prepare_data(
         remainder="drop"
     )
 
-    X_train_df, X_test_df, y_train, y_test = train_test_split(
-        X, y, test_size=test_size, random_state=random_state, stratify=y
-    )
+    preprocessor.numeric_features_ = list(num_cols)
+    preprocessor.categorical_features_ = list(cat_cols)
 
     print(f"[preprocessing] fit on {X_train_df.shape[0]} rows, {X_train_df.shape[1]} cols...")
     X_train = preprocessor.fit_transform(X_train_df)
