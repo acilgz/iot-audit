@@ -103,11 +103,10 @@ src_ip,src_port,dst_ip,dst_port,proto,service,duration,src_bytes,dst_bytes,conn_
 # 1) Create Python 3.12.14 venv
 # sudo apt update && sudo apt install -y curl # Debian
 curl -LsSf https://astral.sh/uv/install.sh | sh
-source $HOME/.local/bin/env
+source "$HOME/.local/bin/env"
 uv venv --python 3.12.14 --python-preference only-managed .venv
 
-source .venv/bin/activate  # Linux/Mac
-# . .venv/Scripts/activate  # Windows PowerShell
+source ".venv/bin/activate"  # Linux/Mac
 
 # 2) Install deps
 uv pip install -U pip
@@ -116,36 +115,14 @@ uv pip install -r requirements.txt
 # 3) Put data
 # data/train_test_network.csv
 
-# 4) EDA
-python scripts/analyze_dataset.py --csv data/train_test_network.csv --outdir train
-python scripts/visualize_dataset.py --csv data/train_test_network.csv --outdir train/figures
+# 4) Train once per run
+bash train.sh 001
 
-# 5) Binary training
-python scripts/prepare_preprocessor.py
-python scripts/train_rf.py    --csv data/train_test_network.csv --outdir train
-python scripts/train_lgbm.py  --csv data/train_test_network.csv --outdir train
-python scripts/train_xgb.py   --csv data/train_test_network.csv --outdir train
-python scripts/train_logreg.py --csv data/train_test_network.csv --outdir train
-python scripts/train_mlp.py   --csv data/train_test_network.csv --outdir train
-python scripts/quantize_model.py --input_dir train/models/mlp --csv data/train_test_network.csv
+# 5) Benchmark once per machine
+bash benchmark.sh 001 apple_m5
 
-# 6) Binary comparison
-python scripts/compare_models.py --outdir benchmark/sys1/binary --models-dir train --models rf lgbm xgb logreg mlp mlp_int8 --benchmark --sample_size 10000
-
-# 7) Multiclass training
-python scripts/prepare_preprocessor_mc.py
-python scripts/train_mc_rf.py    --csv data/train_test_network.csv --outdir train_mc
-python scripts/train_mc_lgbm.py  --csv data/train_test_network.csv --outdir train_mc
-python scripts/train_mc_xgb.py   --csv data/train_test_network.csv --outdir train_mc
-python scripts/train_mc_logreg.py --csv data/train_test_network.csv --outdir train_mc
-python scripts/train_mc_mlp.py   --csv data/train_test_network.csv --outdir train_mc
-python scripts/quantize_model_mc.py --input_dir train_mc/models/mlp_mc --csv data/train_test_network.csv
-
-# 8) Multiclass comparison
-python scripts/compare_models_mc.py --outdir benchmark/sys1/multiclass --models-dir train_mc --models rf_mc lgbm_mc xgb_mc logreg_mc mlp_mc mlp_mc_int8 --benchmark --sample_size 10000
-
-# 9) Mann-Whitney lgbm/xgb
-python scripts/run_mann-whitney.py --benchmark benchmark --aarch64 bcm2712,apple_m1,apple_m5 --x64 corei7_3770,corei5_7200U,ryzen7_7700
+# 6) Mann-Whitney lgbm/xgb
+python scripts/run_mann-whitney.py --benchmark benchmark/001 --aarch64 bcm2712,apple_m1,apple_m5 --x64 corei7_3770,corei5_7200U,ryzen7_7700
 ```
 
 ## Artifact layout
