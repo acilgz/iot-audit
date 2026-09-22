@@ -29,3 +29,21 @@ Thumbs.db
 .idea/
 
 !benchmark/**
+
+*.pkl
+*.joblib
+*.keras
+*.h5
+*.hdf5
+*.tflite
+*.onnx
+*.pt
+*.pth
+*.pb
+*.safetensors
+*.weights.*
+_saved_model_tmp/
+
+runs/
+.pytest_cache/
+pytest-of-root/
