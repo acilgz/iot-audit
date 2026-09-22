@@ -1,0 +1,16 @@
+{
+  "files": {
+    "model.keras": "5d62d1d83b7125e88497a4c5353da0042fa5df90bfd242e56598a20ed35b9e0d",
+    "preprocessor.pkl": "25f70a4f466526e7eaf0ecc28ecc95679505aa2470ba4d968eba2563235fe1a0",
+    "preprocessor_meta.json": "11db3fd04717b652c040971c5b2b6f6dbb4596932385443d781cf013d2d3c758",
+    "scaler.pkl": "3e32685cf9703953ba7c35d75b4b748e78963e4e3ba96af0d478702008946094",
+    "metrics.json": "6026cfff2caf090d55673357654a8746fa580df4e3644b64a05a4674e4741064"
+  },
+  "command": [
+    "scripts/train_mc_mlp.py",
+    "--csv",
+    "data/train_test_network.csv",
+    "--outdir",
+    "runs/001/multiclass"
+  ]
+}

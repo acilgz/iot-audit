@@ -1,0 +1,161 @@
+[quantize-mc] runs/001/multiclass/models/mlp_mc -> runs/001/multiclass/models/mlp_mc_int8
+Saved artifact at 'runs/001/multiclass/models/mlp_mc_int8/_saved_model_tmp'. The following endpoints are available:
+
+* Endpoint 'serve'
+  args_0 (POSITIONAL_ONLY): TensorSpec(shape=(None, 121), dtype=tf.float32, name='input_layer')
+Output Type:
+  TensorSpec(shape=(None, 10), dtype=tf.float32, name=None)
+Captures:
+  5430506704: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5430507088: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5430507472: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5430508816: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5438849872: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5438850640: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5438851408: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5438850832: TensorSpec(shape=(), dtype=tf.resource, name=None)
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1790110220.494484 9638465 tf_tfl_flatbuffer_helpers.cc:390] Ignored output_format.
+W0000 00:00:1790110220.494821 9638465 tf_tfl_flatbuffer_helpers.cc:393] Ignored drop_control_dependency.
+2026-09-22 22:50:20.495446: I tensorflow/cc/saved_model/reader.cc:83] Reading SavedModel from: runs/001/multiclass/models/mlp_mc_int8/_saved_model_tmp
+2026-09-22 22:50:20.495661: I tensorflow/cc/saved_model/reader.cc:51] Reading meta graph with tags { serve }
+2026-09-22 22:50:20.495666: I tensorflow/cc/saved_model/reader.cc:146] Reading SavedModel debug info (if present) from: runs/001/multiclass/models/mlp_mc_int8/_saved_model_tmp
+2026-09-22 22:50:20.498392: I tensorflow/compiler/mlir/mlir_graph_optimization_pass.cc:388] MLIR V1 optimization pass is not enabled
+2026-09-22 22:50:20.498661: I tensorflow/cc/saved_model/loader.cc:234] Restoring SavedModel bundle.
+2026-09-22 22:50:20.511587: I tensorflow/cc/saved_model/loader.cc:218] Running initialization op on SavedModel bundle at path: runs/001/multiclass/models/mlp_mc_int8/_saved_model_tmp
+2026-09-22 22:50:20.514167: I tensorflow/cc/saved_model/loader.cc:317] SavedModel load for tags { serve }; Status: success: OK. Took 18722 microseconds.
+2026-09-22 22:50:20.532367: I tensorflow/compiler/mlir/tensorflow/utils/dump_mlir_util.cc:268] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+fully_quantize: 0, inference_type: 6, input_inference_type: INT8, output_inference_type: INT8
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+[quantize-mc] int8 model saved to runs/001/multiclass/models/mlp_mc_int8/model.tflite (29.3 KB)
+[quantize-mc] metrics (int8): {
+  "accuracy": 0.488000189533038,
+  "macro_f1": 0.31760227839244226,
+  "weighted_f1": 0.3767281456294942,
+  "confusion_matrix": [
+    [
+      23,
+      0,
+      0,
+      0,
+      0,
+      6,
+      0,
+      3,
+      3968,
+      0
+    ],
+    [
+      0,
+      3637,
+      26,
+      4,
+      0,
+      326,
+      0,
+      0,
+      7,
+      0
+    ],
+    [
+      0,
+      31,
+      3470,
+      0,
+      3,
+      491,
+      0,
+      0,
+      5,
+      0
+    ],
+    [
+      0,
+      118,
+      79,
+      104,
+      0,
+      3520,
+      0,
+      17,
+      162,
+      0
+    ],
+    [
+      0,
+      3,
+      122,
+      0,
+      12,
+      69,
+      0,
+      1,
+      2,
+      0
+    ],
+    [
+      0,
+      4,
+      29,
+      0,
+      26,
+      9936,
+      0,
+      1,
+      4,
+      0
+    ],
+    [
+      0,
+      2,
+      34,
+      0,
+      0,
+      2793,
+      210,
+      0,
+      961,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      15,
+      3669,
+      0,
+      316,
+      0,
+      0
+    ],
+    [
+      0,
+      64,
+      47,
+      0,
+      0,
+      1006,
+      0,
+      0,
+      2883,
+      0
+    ],
+    [
+      1,
+      524,
+      109,
+      6,
+      0,
+      1860,
+      0,
+      1321,
+      172,
+      7
+    ]
+  ],
+  "roc_auc_micro": 0.8080267651639501,
+  "roc_auc_macro": 0.8081842994814922,
+  "pr_auc_micro": 0.49517088353595096,
+  "pr_auc_macro": 0.4811388899579298
+}

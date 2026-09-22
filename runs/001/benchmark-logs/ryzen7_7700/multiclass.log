@@ -1,0 +1,67 @@
+2026-09-22 23:30:59.563438: I tensorflow/core/util/port.cc:113] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2026-09-22 23:30:59.563922: I external/local_tsl/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2026-09-22 23:30:59.565612: I external/local_tsl/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2026-09-22 23:30:59.569297: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:479] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+2026-09-22 23:30:59.575683: E external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:10575] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+2026-09-22 23:30:59.575697: E external/local_xla/xla/stream_executor/cuda/cuda_blas.cc:1442] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2026-09-22 23:30:59.580716: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2026-09-22 23:31:00.030600: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+Summary saved to benchmark/001/ryzen7_7700/multiclass/summary/summary_models_mc.csv
+         model  accuracy  ...  preproc_size_mb  total_size_mb
+0        rf_mc  0.988818  ...            0.008        273.605
+1      lgbm_mc  0.989457  ...            0.008         31.172
+2       xgb_mc  0.989410  ...            0.008         13.617
+3    logreg_mc  0.826435  ...            0.009          0.022
+4       mlp_mc  0.951930  ...            0.008          0.343
+5  mlp_mc_int8  0.488000  ...            0.008          0.037
+
+[6 rows x 11 columns]
+Per-class report merged saved to benchmark/001/ryzen7_7700/multiclass/summary/per_class_report_merged.csv
+[benchmark_inference] dropped potential leakage columns: ['type', 'label']
+Run 1 saved to benchmark/001/ryzen7_7700/multiclass/inference_benchmark_mc_1.csv
+Run 2 saved to benchmark/001/ryzen7_7700/multiclass/inference_benchmark_mc_2.csv
+Run 3 saved to benchmark/001/ryzen7_7700/multiclass/inference_benchmark_mc_3.csv
+Run 4 saved to benchmark/001/ryzen7_7700/multiclass/inference_benchmark_mc_4.csv
+Run 5 saved to benchmark/001/ryzen7_7700/multiclass/inference_benchmark_mc_5.csv
+All benchmark data saved to benchmark/001/ryzen7_7700/multiclass/inference_benchmark_mc.csv
+          model  transform_ms_per_1k  ... run_id    device_id
+0         rf_mc              2.49545  ...      1  ryzen7_7700
+1         rf_mc             2.306249  ...      2  ryzen7_7700
+2         rf_mc             2.513122  ...      3  ryzen7_7700
+3         rf_mc             2.540187  ...      4  ryzen7_7700
+4         rf_mc             2.580842  ...      5  ryzen7_7700
+5         rf_mc  2.487170 ± 0.094931  ...    avg  ryzen7_7700
+6       lgbm_mc             2.225663  ...      1  ryzen7_7700
+7       lgbm_mc             2.274199  ...      2  ryzen7_7700
+8       lgbm_mc             2.311597  ...      3  ryzen7_7700
+9       lgbm_mc              2.33685  ...      4  ryzen7_7700
+10      lgbm_mc             2.241685  ...      5  ryzen7_7700
+11      lgbm_mc  2.277999 ± 0.041628  ...    avg  ryzen7_7700
+12       xgb_mc              2.42261  ...      1  ryzen7_7700
+13       xgb_mc             2.233592  ...      2  ryzen7_7700
+14       xgb_mc             2.239881  ...      3  ryzen7_7700
+15       xgb_mc             2.252541  ...      4  ryzen7_7700
+16       xgb_mc             2.246117  ...      5  ryzen7_7700
+17       xgb_mc  2.278948 ± 0.072107  ...    avg  ryzen7_7700
+18    logreg_mc             3.579836  ...      1  ryzen7_7700
+19    logreg_mc             3.571085  ...      2  ryzen7_7700
+20    logreg_mc             3.720567  ...      3  ryzen7_7700
+21    logreg_mc             3.575309  ...      4  ryzen7_7700
+22    logreg_mc             3.593565  ...      5  ryzen7_7700
+23    logreg_mc  3.608073 ± 0.056753  ...    avg  ryzen7_7700
+24       mlp_mc             2.326965  ...      1  ryzen7_7700
+25       mlp_mc             2.388008  ...      2  ryzen7_7700
+26       mlp_mc             2.382797  ...      3  ryzen7_7700
+27       mlp_mc             2.352351  ...      4  ryzen7_7700
+28       mlp_mc             2.380898  ...      5  ryzen7_7700
+29       mlp_mc  2.366204 ± 0.023230  ...    avg  ryzen7_7700
+30  mlp_mc_int8             2.467778  ...      1  ryzen7_7700
+31  mlp_mc_int8             2.380043  ...      2  ryzen7_7700
+32  mlp_mc_int8             2.377233  ...      3  ryzen7_7700
+33  mlp_mc_int8             2.390365  ...      4  ryzen7_7700
+34  mlp_mc_int8             2.377569  ...      5  ryzen7_7700
+35  mlp_mc_int8  2.398598 ± 0.034919  ...    avg  ryzen7_7700
+
+[36 rows x 7 columns]

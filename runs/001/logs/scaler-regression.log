@@ -1,0 +1,44 @@
+/Users/user/iot-audit/.venv/lib/python3.12/site-packages/sklearn/utils/validation.py:2827: UserWarning: X does not have valid feature names, but LogisticRegression was fitted with feature names
+  warnings.warn(
+/Users/user/iot-audit/.venv/lib/python3.12/site-packages/sklearn/utils/validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names
+  warnings.warn(
+/Users/user/iot-audit/.venv/lib/python3.12/site-packages/sklearn/utils/validation.py:2827: UserWarning: X does not have valid feature names, but LGBMClassifier was fitted with feature names
+  warnings.warn(
+/Users/user/iot-audit/.venv/lib/python3.12/site-packages/sklearn/utils/validation.py:2827: UserWarning: X does not have valid feature names, but LogisticRegression was fitted with feature names
+  warnings.warn(
+/Users/user/iot-audit/.venv/lib/python3.12/site-packages/sklearn/utils/validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names
+  warnings.warn(
+/Users/user/iot-audit/.venv/lib/python3.12/site-packages/sklearn/utils/validation.py:2827: UserWarning: X does not have valid feature names, but LGBMClassifier was fitted with feature names
+  warnings.warn(
+PASS [logreg] scaling matches map
+PASS [logreg] scaler fit on train only
+PASS [logreg] no target-derived cols
+PASS [logreg] same pipeline at inference
+PASS [rf] scaling matches map
+PASS [rf] scaler fit on train only
+PASS [rf] no target-derived cols
+PASS [rf] same pipeline at inference
+PASS [xgb] scaling matches map
+PASS [xgb] scaler fit on train only
+PASS [xgb] no target-derived cols
+PASS [xgb] same pipeline at inference
+PASS [lgbm] scaling matches map
+PASS [lgbm] scaler fit on train only
+PASS [lgbm] no target-derived cols
+PASS [lgbm] same pipeline at inference
+PASS [logreg_mc] scaling matches map
+PASS [logreg_mc] scaler fit on train only
+PASS [logreg_mc] no target-derived cols
+PASS [logreg_mc] same pipeline at inference
+PASS [rf_mc] scaling matches map
+PASS [rf_mc] scaler fit on train only
+PASS [rf_mc] no target-derived cols
+PASS [rf_mc] same pipeline at inference
+PASS [xgb_mc] scaling matches map
+PASS [xgb_mc] scaler fit on train only
+PASS [xgb_mc] no target-derived cols
+PASS [xgb_mc] same pipeline at inference
+PASS [lgbm_mc] scaling matches map
+PASS [lgbm_mc] scaler fit on train only
+PASS [lgbm_mc] no target-derived cols
+PASS [lgbm_mc] same pipeline at inference

@@ -1,0 +1,53 @@
+[quantize] runs/001/binary/models/mlp -> runs/001/binary/models/mlp_int8
+Saved artifact at 'runs/001/binary/models/mlp_int8/_saved_model_tmp'. The following endpoints are available:
+
+* Endpoint 'serve'
+  args_0 (POSITIONAL_ONLY): TensorSpec(shape=(None, 120), dtype=tf.float32, name='input_layer')
+Output Type:
+  TensorSpec(shape=(None, 1), dtype=tf.float32, name=None)
+Captures:
+  5383877840: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5383878224: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5383878608: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5383879952: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5392221008: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5392221776: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5392222544: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5392221968: TensorSpec(shape=(), dtype=tf.resource, name=None)
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1790110050.689396 9631392 tf_tfl_flatbuffer_helpers.cc:390] Ignored output_format.
+W0000 00:00:1790110050.689601 9631392 tf_tfl_flatbuffer_helpers.cc:393] Ignored drop_control_dependency.
+2026-09-22 22:47:30.690110: I tensorflow/cc/saved_model/reader.cc:83] Reading SavedModel from: runs/001/binary/models/mlp_int8/_saved_model_tmp
+2026-09-22 22:47:30.690309: I tensorflow/cc/saved_model/reader.cc:51] Reading meta graph with tags { serve }
+2026-09-22 22:47:30.690313: I tensorflow/cc/saved_model/reader.cc:146] Reading SavedModel debug info (if present) from: runs/001/binary/models/mlp_int8/_saved_model_tmp
+2026-09-22 22:47:30.692787: I tensorflow/compiler/mlir/mlir_graph_optimization_pass.cc:388] MLIR V1 optimization pass is not enabled
+2026-09-22 22:47:30.693046: I tensorflow/cc/saved_model/loader.cc:234] Restoring SavedModel bundle.
+2026-09-22 22:47:30.705024: I tensorflow/cc/saved_model/loader.cc:218] Running initialization op on SavedModel bundle at path: runs/001/binary/models/mlp_int8/_saved_model_tmp
+2026-09-22 22:47:30.707683: I tensorflow/cc/saved_model/loader.cc:317] SavedModel load for tags { serve }; Status: success: OK. Took 17573 microseconds.
+2026-09-22 22:47:30.724558: I tensorflow/compiler/mlir/tensorflow/utils/dump_mlir_util.cc:268] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+fully_quantize: 0, inference_type: 6, input_inference_type: INT8, output_inference_type: INT8
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+/Users/user/iot-audit/scripts/quantize_model.py:33: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  p1[i] = (out_q.astype(np.float32) - out_zero) * out_scale
+[quantize] int8 model saved to runs/001/binary/models/mlp_int8/model.tflite (28.8 KB)
+[quantize] metrics (int8): {
+  "accuracy": 0.9707645288919424,
+  "precision_pos": 0.9804560260586319,
+  "recall_pos": 0.9812474774131454,
+  "f1_pos": 0.9808515920799454,
+  "precision_neg": 0.9394425506316423,
+  "recall_neg": 0.937,
+  "f1_neg": 0.9382196855912687,
+  "confusion_matrix": [
+    [
+      9370,
+      630
+    ],
+    [
+      604,
+      31605
+    ]
+  ],
+  "roc_auc": 0.9866912695209413,
+  "pr_auc": 0.9949656252555437
+}

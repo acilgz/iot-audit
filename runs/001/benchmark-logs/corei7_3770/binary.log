@@ -1,0 +1,63 @@
+2026-09-22 23:27:14.965613: I external/local_tsl/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2026-09-22 23:27:15.127880: I external/local_tsl/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2026-09-22 23:27:15.327189: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:479] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+2026-09-22 23:27:15.502760: E external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:10575] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+2026-09-22 23:27:15.503992: E external/local_xla/xla/stream_executor/cuda/cuda_blas.cc:1442] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2026-09-22 23:27:19.318978: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+Summary saved to benchmark/001/corei7_3770/binary/summary/summary_models.csv
+      model  accuracy    f1_pos  ...  model_size_mb  preproc_size_mb  total_size_mb
+0        rf  0.998815  0.999224  ...         23.853            0.009         23.861
+1      lgbm  0.999266  0.999519  ...          2.749            0.009          2.758
+2       xgb  0.998886  0.999270  ...          0.943            0.009          0.952
+3    logreg  0.957521  0.972159  ...          0.004            0.009          0.014
+4       mlp  0.994432  0.996355  ...          0.330            0.009          0.338
+5  mlp_int8  0.970765  0.980852  ...          0.028            0.009          0.037
+
+[6 rows x 11 columns]
+[benchmark_inference] dropped potential leakage columns: ['type', 'label']
+Run 1 saved to benchmark/001/corei7_3770/binary/inference_benchmark_1.csv
+Run 2 saved to benchmark/001/corei7_3770/binary/inference_benchmark_2.csv
+Run 3 saved to benchmark/001/corei7_3770/binary/inference_benchmark_3.csv
+Run 4 saved to benchmark/001/corei7_3770/binary/inference_benchmark_4.csv
+Run 5 saved to benchmark/001/corei7_3770/binary/inference_benchmark_5.csv
+All benchmark data saved to benchmark/001/corei7_3770/binary/inference_benchmark.csv
+       model  transform_ms_per_1k  ... run_id    device_id
+0         rf             5.342821  ...      1  corei7_3770
+1         rf             5.070822  ...      2  corei7_3770
+2         rf             6.774624  ...      3  corei7_3770
+3         rf             5.264996  ...      4  corei7_3770
+4         rf             5.516555  ...      5  corei7_3770
+5         rf  5.593964 ± 0.607440  ...    avg  corei7_3770
+6       lgbm             4.841001  ...      1  corei7_3770
+7       lgbm             4.877053  ...      2  corei7_3770
+8       lgbm             4.840858  ...      3  corei7_3770
+9       lgbm             4.848699  ...      4  corei7_3770
+10      lgbm             4.849695  ...      5  corei7_3770
+11      lgbm  4.851461 ± 0.013323  ...    avg  corei7_3770
+12       xgb             4.954921  ...      1  corei7_3770
+13       xgb             4.917466  ...      2  corei7_3770
+14       xgb             4.909092  ...      3  corei7_3770
+15       xgb             4.872607  ...      4  corei7_3770
+16       xgb              4.90383  ...      5  corei7_3770
+17       xgb  4.911583 ± 0.026451  ...    avg  corei7_3770
+18    logreg             9.070926  ...      1  corei7_3770
+19    logreg             9.071052  ...      2  corei7_3770
+20    logreg             9.287383  ...      3  corei7_3770
+21    logreg              9.07139  ...      4  corei7_3770
+22    logreg             9.075992  ...      5  corei7_3770
+23    logreg  9.115348 ± 0.086038  ...    avg  corei7_3770
+24       mlp             6.148303  ...      1  corei7_3770
+25       mlp             5.669628  ...      2  corei7_3770
+26       mlp             5.635233  ...      3  corei7_3770
+27       mlp             5.809239  ...      4  corei7_3770
+28       mlp             5.537005  ...      5  corei7_3770
+29       mlp  5.759882 ± 0.212915  ...    avg  corei7_3770
+30  mlp_int8             6.103044  ...      1  corei7_3770
+31  mlp_int8             5.812184  ...      2  corei7_3770
+32  mlp_int8             6.361646  ...      3  corei7_3770
+33  mlp_int8             5.790197  ...      4  corei7_3770
+34  mlp_int8             6.119269  ...      5  corei7_3770
+35  mlp_int8  6.037268 ± 0.213532  ...    avg  corei7_3770
+
+[36 rows x 7 columns]

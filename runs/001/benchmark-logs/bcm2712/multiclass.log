@@ -1,0 +1,58 @@
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+Summary saved to benchmark/001/bcm2712/multiclass/summary/summary_models_mc.csv
+         model  accuracy  ...  preproc_size_mb  total_size_mb
+0        rf_mc  0.988818  ...            0.008        273.605
+1      lgbm_mc  0.989457  ...            0.008         31.172
+2       xgb_mc  0.989410  ...            0.008         13.617
+3    logreg_mc  0.826435  ...            0.009          0.022
+4       mlp_mc  0.951930  ...            0.008          0.343
+5  mlp_mc_int8  0.488000  ...            0.008          0.037
+
+[6 rows x 11 columns]
+Per-class report merged saved to benchmark/001/bcm2712/multiclass/summary/per_class_report_merged.csv
+[benchmark_inference] dropped potential leakage columns: ['type', 'label']
+Run 1 saved to benchmark/001/bcm2712/multiclass/inference_benchmark_mc_1.csv
+Run 2 saved to benchmark/001/bcm2712/multiclass/inference_benchmark_mc_2.csv
+Run 3 saved to benchmark/001/bcm2712/multiclass/inference_benchmark_mc_3.csv
+Run 4 saved to benchmark/001/bcm2712/multiclass/inference_benchmark_mc_4.csv
+Run 5 saved to benchmark/001/bcm2712/multiclass/inference_benchmark_mc_5.csv
+All benchmark data saved to benchmark/001/bcm2712/multiclass/inference_benchmark_mc.csv
+          model  transform_ms_per_1k  ... run_id device_id
+0         rf_mc              8.18377  ...      1   bcm2712
+1         rf_mc             8.505617  ...      2   bcm2712
+2         rf_mc             8.579398  ...      3   bcm2712
+3         rf_mc             8.612133  ...      4   bcm2712
+4         rf_mc             8.364272  ...      5   bcm2712
+5         rf_mc  8.449038 ± 0.157701  ...    avg   bcm2712
+6       lgbm_mc             8.175738  ...      1   bcm2712
+7       lgbm_mc             7.741027  ...      2   bcm2712
+8       lgbm_mc             7.852919  ...      3   bcm2712
+9       lgbm_mc             7.758979  ...      4   bcm2712
+10      lgbm_mc             7.737251  ...      5   bcm2712
+11      lgbm_mc  7.853183 ± 0.166695  ...    avg   bcm2712
+12       xgb_mc              7.86271  ...      1   bcm2712
+13       xgb_mc             7.804894  ...      2   bcm2712
+14       xgb_mc             7.810501  ...      3   bcm2712
+15       xgb_mc             7.842757  ...      4   bcm2712
+16       xgb_mc               7.9266  ...      5   bcm2712
+17       xgb_mc  7.849492 ± 0.043989  ...    avg   bcm2712
+18    logreg_mc             8.042279  ...      1   bcm2712
+19    logreg_mc             7.991218  ...      2   bcm2712
+20    logreg_mc             8.230963  ...      3   bcm2712
+21    logreg_mc             8.026294  ...      4   bcm2712
+22    logreg_mc             8.019827  ...      5   bcm2712
+23    logreg_mc  8.062116 ± 0.086024  ...    avg   bcm2712
+24       mlp_mc             9.193224  ...      1   bcm2712
+25       mlp_mc             8.814442  ...      2   bcm2712
+26       mlp_mc             8.973107  ...      3   bcm2712
+27       mlp_mc             8.946218  ...      4   bcm2712
+28       mlp_mc              8.86476  ...      5   bcm2712
+29       mlp_mc  8.958350 ± 0.130383  ...    avg   bcm2712
+30  mlp_mc_int8             9.411311  ...      1   bcm2712
+31  mlp_mc_int8              9.41377  ...      2   bcm2712
+32  mlp_mc_int8             9.360622  ...      3   bcm2712
+33  mlp_mc_int8              9.29977  ...      4   bcm2712
+34  mlp_mc_int8             9.252216  ...      5   bcm2712
+35  mlp_mc_int8  9.347538 ± 0.063234  ...    avg   bcm2712
+
+[36 rows x 7 columns]

@@ -1,0 +1,65 @@
+2026-09-22 23:35:14.197845: I external/local_tsl/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2026-09-22 23:35:14.394202: I external/local_tsl/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2026-09-22 23:35:14.614127: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:479] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+2026-09-22 23:35:14.801763: E external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:10575] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+2026-09-22 23:35:14.802855: E external/local_xla/xla/stream_executor/cuda/cuda_blas.cc:1442] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2026-09-22 23:35:15.093129: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2026-09-22 23:35:16.545298: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+Summary saved to benchmark/001/corei5_7200U/binary/summary/summary_models.csv
+      model  accuracy    f1_pos  ...  model_size_mb  preproc_size_mb  total_size_mb
+0        rf  0.998815  0.999224  ...         23.853            0.009         23.861
+1      lgbm  0.999266  0.999519  ...          2.749            0.009          2.758
+2       xgb  0.998886  0.999270  ...          0.943            0.009          0.952
+3    logreg  0.957521  0.972159  ...          0.004            0.009          0.014
+4       mlp  0.994432  0.996355  ...          0.330            0.009          0.338
+5  mlp_int8  0.970765  0.980852  ...          0.028            0.009          0.037
+
+[6 rows x 11 columns]
+[benchmark_inference] dropped potential leakage columns: ['type', 'label']
+Run 1 saved to benchmark/001/corei5_7200U/binary/inference_benchmark_1.csv
+Run 2 saved to benchmark/001/corei5_7200U/binary/inference_benchmark_2.csv
+Run 3 saved to benchmark/001/corei5_7200U/binary/inference_benchmark_3.csv
+Run 4 saved to benchmark/001/corei5_7200U/binary/inference_benchmark_4.csv
+Run 5 saved to benchmark/001/corei5_7200U/binary/inference_benchmark_5.csv
+All benchmark data saved to benchmark/001/corei5_7200U/binary/inference_benchmark.csv
+       model   transform_ms_per_1k  ... run_id     device_id
+0         rf              6.401858  ...      1  corei5_7200U
+1         rf              5.910135  ...      2  corei5_7200U
+2         rf              6.113247  ...      3  corei5_7200U
+3         rf              8.104783  ...      4  corei5_7200U
+4         rf              6.411987  ...      5  corei5_7200U
+5         rf   6.588402 ± 0.781172  ...    avg  corei5_7200U
+6       lgbm              6.087996  ...      1  corei5_7200U
+7       lgbm              5.948577  ...      2  corei5_7200U
+8       lgbm              5.935632  ...      3  corei5_7200U
+9       lgbm              5.998752  ...      4  corei5_7200U
+10      lgbm              5.942833  ...      5  corei5_7200U
+11      lgbm   5.982758 ± 0.057121  ...    avg  corei5_7200U
+12       xgb              6.047486  ...      1  corei5_7200U
+13       xgb              6.290714  ...      2  corei5_7200U
+14       xgb              6.026448  ...      3  corei5_7200U
+15       xgb              6.019399  ...      4  corei5_7200U
+16       xgb              6.044814  ...      5  corei5_7200U
+17       xgb   6.085772 ± 0.103024  ...    avg  corei5_7200U
+18    logreg              12.68466  ...      1  corei5_7200U
+19    logreg             12.172757  ...      2  corei5_7200U
+20    logreg             12.149228  ...      3  corei5_7200U
+21    logreg             12.204617  ...      4  corei5_7200U
+22    logreg             12.184467  ...      5  corei5_7200U
+23    logreg  12.279146 ± 0.203547  ...    avg  corei5_7200U
+24       mlp              6.956257  ...      1  corei5_7200U
+25       mlp              6.756891  ...      2  corei5_7200U
+26       mlp              6.862054  ...      3  corei5_7200U
+27       mlp              6.766439  ...      4  corei5_7200U
+28       mlp              7.053659  ...      5  corei5_7200U
+29       mlp   6.879060 ± 0.113439  ...    avg  corei5_7200U
+30  mlp_int8              7.605741  ...      1  corei5_7200U
+31  mlp_int8              7.572602  ...      2  corei5_7200U
+32  mlp_int8                7.6171  ...      3  corei5_7200U
+33  mlp_int8              7.585693  ...      4  corei5_7200U
+34  mlp_int8              7.585368  ...      5  corei5_7200U
+35  mlp_int8   7.593301 ± 0.015940  ...    avg  corei5_7200U
+
+[36 rows x 7 columns]

@@ -1,0 +1,57 @@
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+Summary saved to benchmark/001/apple_m1/binary/summary/summary_models.csv
+      model  accuracy    f1_pos  ...  model_size_mb  preproc_size_mb  total_size_mb
+0        rf  0.998815  0.999224  ...         23.853            0.009         23.861
+1      lgbm  0.999266  0.999519  ...          2.749            0.009          2.758
+2       xgb  0.998886  0.999270  ...          0.943            0.009          0.952
+3    logreg  0.957521  0.972159  ...          0.004            0.009          0.014
+4       mlp  0.994432  0.996355  ...          0.330            0.009          0.338
+5  mlp_int8  0.970765  0.980852  ...          0.028            0.009          0.037
+
+[6 rows x 11 columns]
+[benchmark_inference] dropped potential leakage columns: ['type', 'label']
+Run 1 saved to benchmark/001/apple_m1/binary/inference_benchmark_1.csv
+Run 2 saved to benchmark/001/apple_m1/binary/inference_benchmark_2.csv
+Run 3 saved to benchmark/001/apple_m1/binary/inference_benchmark_3.csv
+Run 4 saved to benchmark/001/apple_m1/binary/inference_benchmark_4.csv
+Run 5 saved to benchmark/001/apple_m1/binary/inference_benchmark_5.csv
+All benchmark data saved to benchmark/001/apple_m1/binary/inference_benchmark.csv
+       model  transform_ms_per_1k  ... run_id device_id
+0         rf             2.961217  ...      1  apple_m1
+1         rf             2.459371  ...      2  apple_m1
+2         rf             2.431704  ...      3  apple_m1
+3         rf             2.434237  ...      4  apple_m1
+4         rf             2.420433  ...      5  apple_m1
+5         rf  2.541393 ± 0.210297  ...    avg  apple_m1
+6       lgbm             2.456046  ...      1  apple_m1
+7       lgbm             2.500188  ...      2  apple_m1
+8       lgbm             2.400154  ...      3  apple_m1
+9       lgbm             2.385567  ...      4  apple_m1
+10      lgbm             2.371458  ...      5  apple_m1
+11      lgbm  2.422683 ± 0.048227  ...    avg  apple_m1
+12       xgb             2.447662  ...      1  apple_m1
+13       xgb             2.363496  ...      2  apple_m1
+14       xgb             2.400471  ...      3  apple_m1
+15       xgb             2.389796  ...      4  apple_m1
+16       xgb             2.395771  ...      5  apple_m1
+17       xgb  2.399439 ± 0.027294  ...    avg  apple_m1
+18    logreg             2.559192  ...      1  apple_m1
+19    logreg              2.54315  ...      2  apple_m1
+20    logreg             2.620029  ...      3  apple_m1
+21    logreg             2.541562  ...      4  apple_m1
+22    logreg             2.531492  ...      5  apple_m1
+23    logreg  2.559085 ± 0.031738  ...    avg  apple_m1
+24       mlp             2.685721  ...      1  apple_m1
+25       mlp             2.605963  ...      2  apple_m1
+26       mlp             2.600029  ...      3  apple_m1
+27       mlp              2.60895  ...      4  apple_m1
+28       mlp             2.599867  ...      5  apple_m1
+29       mlp  2.620106 ± 0.032992  ...    avg  apple_m1
+30  mlp_int8              3.02425  ...      1  apple_m1
+31  mlp_int8             2.853221  ...      2  apple_m1
+32  mlp_int8             2.665133  ...      3  apple_m1
+33  mlp_int8             2.666379  ...      4  apple_m1
+34  mlp_int8             2.672283  ...      5  apple_m1
+35  mlp_int8  2.776253 ± 0.143287  ...    avg  apple_m1
+
+[36 rows x 7 columns]
