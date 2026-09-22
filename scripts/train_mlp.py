@@ -3,12 +3,13 @@ from __future__ import annotations
 import os, sys, json, time, shutil
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 from iot_audit.metrics import evaluate_model
-from data_loading import load_binary_split
+from data_loading import model_paths, record_model, load_binary_split
 import numpy as np
 import joblib
 import argparse
 import tensorflow as tf
 from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
 
 class KerasSklearnWrapper:
     def __init__(self, keras_model):
@@ -57,13 +58,12 @@ def main():
     ap.add_argument("--batch_size", type=int, default=256)
     ap.add_argument("--calib_samples", type=int, default=1000)
     args = ap.parse_args()
-    preproc_path = os.path.join(args.outdir, "preprocessor", "preprocessor.pkl")
-    meta_path = os.path.join(os.path.dirname(preproc_path), "preprocessor_meta.json")
-
+    tf.keras.utils.set_random_seed(42)
     model_name = "mlp"
+    preproc_path, meta_path = model_paths(args.outdir, model_name)
 
     X_train, X_test, y_train, y_test, feature_names, preproc = load_binary_split(
-        args.csv, preproc_path, meta_path
+        args.csv, preproc_path, meta_path, model_name=model_name, for_training=True
     )
     y_train = y_train.astype(int)
     y_test = y_test.astype(int)
@@ -89,9 +89,12 @@ def main():
 
     print(f"[mlp_int8] training ({X_train.shape[0]} samples, {X_train.shape[1]} features)...")
     t0 = time.time()
+    X_fit, X_val, y_fit, y_val = train_test_split(
+        X_train, y_train, test_size=0.2, random_state=42, stratify=y_train
+    )
     model.fit(
-        X_train, y_train,
-        validation_data=(X_test, y_test),
+        X_fit, y_fit,
+        validation_data=(X_val, y_val),
         epochs=args.n_count,
         batch_size=args.batch_size,
         callbacks=[tf.keras.callbacks.EarlyStopping(monitor="val_auc", mode="max", patience=8, restore_best_weights=True)],
@@ -114,8 +117,7 @@ def main():
     with open(os.path.join(model_dir, "metrics.json"), "w", encoding="utf-8") as f:
         json.dump(metrics, f, indent=2)
     print(f"[{model_name}] metrics (float):", json.dumps(metrics, indent=2))
-
-
+    record_model(model_dir)
 
 if __name__ == "__main__":
     main()

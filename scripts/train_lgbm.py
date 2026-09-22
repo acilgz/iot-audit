@@ -2,7 +2,7 @@ from __future__ import annotations
 import os, sys, json, time
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 from iot_audit.metrics import evaluate_model
-from data_loading import load_binary_split
+from data_loading import model_paths, record_model, load_binary_split
 import lightgbm as lgb
 import joblib
 import argparse
@@ -15,13 +15,11 @@ def main():
     ap.add_argument("--n_estimators", type=int, default=400)
     ap.add_argument("--learning_rate", type=float, default=0.05)
     args = ap.parse_args()
-    preproc_path = os.path.join(args.outdir, "preprocessor", "preprocessor.pkl")
-    meta_path = os.path.join(os.path.dirname(preproc_path), "preprocessor_meta.json")
-
     model_name = "lgbm"
+    preproc_path, meta_path = model_paths(args.outdir, model_name)
 
     X_train, X_test, y_train, y_test, feature_names, preproc = load_binary_split(
-        args.csv, preproc_path, meta_path
+        args.csv, preproc_path, meta_path, model_name=model_name, for_training=True
     )
 
     model = lgb.LGBMClassifier(
@@ -52,7 +50,6 @@ def main():
     model_dir = os.path.join(args.outdir, "models", model_name)
     os.makedirs(model_dir, exist_ok=True)
     joblib.dump(model, os.path.join(model_dir, "model.pkl"))
-    #joblib.dump(preproc, os.path.join(model_dir, "preprocessor.pkl"))
 
     metrics = evaluate_model(
         y_test, y_pred, y_proba, feature_names, model,
@@ -61,6 +58,7 @@ def main():
     with open(os.path.join(model_dir, "metrics.json"), "w", encoding="utf-8") as f:
         json.dump(metrics, f, indent=2)
     print("[lgbm] metrics:", json.dumps(metrics, indent=2))
+    record_model(model_dir)
 
 if __name__ == "__main__":
     main()

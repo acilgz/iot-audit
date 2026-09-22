@@ -6,8 +6,7 @@ import pandas as pd
 import numpy as np
 import joblib
 import matplotlib.pyplot as plt
-import ai_edge_litert.interpreter as tflm
-import keras
+from data_loading import _read_csv, load_preprocessor, validate_model, validate_metrics, record_benchmark
 
 def _ensure_dir(path: str):
     os.makedirs(path, exist_ok=True)
@@ -23,6 +22,7 @@ def read_metrics(model_dir: str) -> Dict[str, Any]:
         return {}
     with open(metrics_path, "r", encoding="utf-8") as f:
         m = json.load(f)
+    validate_metrics(m)
     # add FP/FN
     try:
         cm = m.get("confusion_matrix", [[0,0],[0,0]])
@@ -40,17 +40,15 @@ def file_size_mb(path: str) -> float:
 
 def scan_models(base_outdir: str, model_names: List[str]) -> pd.DataFrame:
     rows = []
-    global_preproc = os.path.join(base_outdir, "preprocessor", "preprocessor.pkl")
 
     for name in model_names:
         mdir = os.path.join(base_outdir, "models", name)
         if not os.path.isdir(mdir):
-            continue
+            raise FileNotFoundError(f"Missing model directory: {mdir}")
+        validate_model(mdir)
         m = read_metrics(mdir)
         
         preproc_pkl = os.path.join(mdir, "preprocessor.pkl")
-        if not os.path.exists(preproc_pkl):
-            preproc_pkl = global_preproc
             
         model_pkl = os.path.join(mdir, "model.pkl")
         model_keras = os.path.join(mdir, "model.keras")
@@ -210,8 +208,10 @@ def _save_mean_latency_ratio(bdf: pd.DataFrame, out_path: str, lgbm_name: str, x
 
 
 def benchmark_inference(models_dir: str, csv_path: str, model_names: List[str], sample_size: int = 10000, random_state: int = 42, num_runs: int = 5) -> pd.DataFrame:
+    if sample_size <= 0 or num_runs <= 0:
+        raise ValueError("sample_size and num_runs must be positive")
     # Load raw CSV once
-    df = pd.read_csv(csv_path, engine="pyarrow")
+    df = _read_csv(csv_path)
     X = df.copy()
 
     leak_cols = [
@@ -229,19 +229,14 @@ def benchmark_inference(models_dir: str, csv_path: str, model_names: List[str], 
     if len(Xs) == 0:
         raise ValueError("No samples available")
 
-    preproc_pkl = os.path.join(models_dir, "preprocessor", "preprocessor.pkl")
-    meta_path = os.path.join(models_dir, "preprocessor", "preprocessor_meta.json")
-    if not os.path.exists(preproc_pkl):
-        raise FileNotFoundError(f"Preprocessor not found: {preproc_pkl}")
-
-    feature_names = None
-    if os.path.exists(meta_path):
-        with open(meta_path, "r", encoding="utf-8") as f:
-            feature_names = json.load(f).get("feature_names")
-
     results = []
     for name in model_names:
         mdir = os.path.join(models_dir, "models", name)
+        validate_model(mdir)
+        preproc_pkl = os.path.join(mdir, "preprocessor.pkl")
+        meta_path = os.path.join(mdir, "preprocessor_meta.json")
+        _, meta = load_preprocessor(preproc_pkl, meta_path, name, 'binary')
+        feature_names = meta['feature_names']
         model_pkl = os.path.join(mdir, "model.pkl")
         tflite_path = os.path.join(mdir, "model.tflite")
         keras_path = os.path.join(mdir, "model.keras")
@@ -253,6 +248,7 @@ def benchmark_inference(models_dir: str, csv_path: str, model_names: List[str], 
                 preproc = joblib.load(preproc_pkl)
                 scaler = joblib.load(scaler_path) if os.path.exists(scaler_path) else None
 
+                import ai_edge_litert.interpreter as tflm
                 interpreter = tflm.Interpreter(model_path=tflite_path)
                 interpreter.allocate_tensors()
 
@@ -296,8 +292,7 @@ def benchmark_inference(models_dir: str, csv_path: str, model_names: List[str], 
                         "run_id": run + 1,
                     })
             except Exception as e:
-                print(f"Error running TFLite model {name}: {e}")
-                continue
+                raise RuntimeError(f"Benchmark failed for {name}") from e
 
             results.extend(run_results)
             _append_average_result(results, run_results, name, len(Xs))
@@ -306,6 +301,8 @@ def benchmark_inference(models_dir: str, csv_path: str, model_names: List[str], 
             try:
                 model = joblib.load(model_pkl)
                 preproc = joblib.load(preproc_pkl)
+                X_warm = pd.DataFrame(preproc.transform(Xs), columns=feature_names)
+                _ = getattr(model, "predict_proba", model.predict)(X_warm)
                 run_results = []
 
                 for run in range(num_runs):
@@ -327,14 +324,14 @@ def benchmark_inference(models_dir: str, csv_path: str, model_names: List[str], 
                         "run_id": run + 1,
                     })
             except Exception as e:
-                print(f"Error running model {name}: {e}")
-                continue
+                raise RuntimeError(f"Benchmark failed for {name}") from e
 
             results.extend(run_results)
             _append_average_result(results, run_results, name, len(Xs))
 
         elif os.path.exists(keras_path):
             try:
+                import keras
                 model = keras.models.load_model(keras_path)
                 preproc = joblib.load(preproc_pkl)
                 scaler = joblib.load(scaler_path) if os.path.exists(scaler_path) else None
@@ -364,13 +361,12 @@ def benchmark_inference(models_dir: str, csv_path: str, model_names: List[str], 
                         "run_id": run + 1,
                     })
             except Exception as e:
-                print(f"Error running Keras model {name}: {e}")
-                continue
+                raise RuntimeError(f"Benchmark failed for {name}") from e
 
             results.extend(run_results)
             _append_average_result(results, run_results, name, len(Xs))
         else:
-            print(f"Warning: no supported model found for {name} in {mdir}")
+            raise FileNotFoundError(f"No supported model found for {name} in {mdir}")
 
     return pd.DataFrame(results)
 
@@ -379,12 +375,17 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--outdir", default="reports")
     ap.add_argument("--models-dir", default="train")
-    ap.add_argument("--models", nargs="*", default=["rf","lgbm","xgb","logreg","mlp","mlp_int8"])
+    ap.add_argument("--models", nargs="+", default=["rf","lgbm","xgb","logreg","mlp","mlp_int8"])
     ap.add_argument("--csv", default="data/train_test_network.csv")
     ap.add_argument("--benchmark", action="store_true", help="Run inference speed benchmark on sample of the CSV")
     ap.add_argument("--sample_size", type=int, default=10000)
     ap.add_argument("--num_runs", type=int, default=5, help="Number of runs to execute for benchmarking (default: 5)")
+    ap.add_argument("--device-id", help="Identifier for the physical benchmark device")
     args = ap.parse_args()
+    if args.benchmark and not args.device_id:
+        ap.error("--device-id is required with --benchmark")
+    if args.benchmark and os.path.isdir(args.outdir) and os.listdir(args.outdir):
+        ap.error("Benchmark output directory must be empty")
 
     base_outdir = args.outdir
     summary_dir = os.path.join(base_outdir, "summary")
@@ -412,6 +413,7 @@ def main():
 
     if args.benchmark:
         bdf = benchmark_inference(args.models_dir, args.csv, args.models, sample_size=args.sample_size, num_runs=args.num_runs)
+        bdf["device_id"] = args.device_id
         
         for run_id in range(1, args.num_runs + 1):
             run_data = bdf[bdf["run_id"] == run_id]
@@ -424,6 +426,7 @@ def main():
 
         final_filename = os.path.join(base_outdir, "inference_benchmark.csv")
         bdf.to_csv(final_filename, index=False)
+        record_benchmark(args, final_filename)
         print(f"All benchmark data saved to {final_filename}")
         
         print(bdf)

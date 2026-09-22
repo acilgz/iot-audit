@@ -23,7 +23,7 @@ EXCLUDE_COLUMNS = [
 ]
 
 # model -> preprocessing: StandardScaler only for scale-sensitive models
-SCALE = {"model": True, "mc_model": True, "logreg": True, "logreg_mc": True, "rf": False, "rf_mc": False, "xgb": False, "xgb_mc": False, "lgbm": False, "lgbm_mc": False}
+SCALE = {"mlp": False, "mlp_mc": False, "model": True, "mc_model": True, "logreg": True, "logreg_mc": True, "rf": False, "rf_mc": False, "xgb": False, "xgb_mc": False, "lgbm": False, "lgbm_mc": False}
 
 def _read_csv(csv_path: str) -> pd.DataFrame:
     try:

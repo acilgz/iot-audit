@@ -1,16 +1,24 @@
-import math, sys, joblib, pandas as pd
+import argparse, math, sys, joblib, pandas as pd
+from data_loading import load_preprocessor, validate_model
 from sklearn.preprocessing import StandardScaler
 
 
 def main():
-    df = pd.read_csv("data/train_test_network.csv")
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--csv", default="data/train_test_network.csv")
+    ap.add_argument("--binary-dir", default="train")
+    ap.add_argument("--multiclass-dir", default="train_mc")
+    args = ap.parse_args()
+    df = pd.read_csv(args.csv)
     n_train = len(df) - math.ceil(0.2 * len(df))  # same split as train_test_split(test_size=0.2)
     failed = False
 
-    for base, names in [("reports", ["logreg", "rf", "xgb", "lgbm"]),
-                        ("reports_mc", ["logreg_mc", "rf_mc", "xgb_mc", "lgbm_mc"])]:
+    for base, names in [(args.binary_dir, ["logreg", "rf", "xgb", "lgbm"]),
+                        (args.multiclass_dir, ["logreg_mc", "rf_mc", "xgb_mc", "lgbm_mc"])]:
         for name in names:
-            p = joblib.load(f"{base}/models/{name}/preprocessor.pkl")
+            directory = f"{base}/models/{name}"
+            validate_model(directory)
+            p, meta = load_preprocessor(f"{directory}/preprocessor.pkl", f"{directory}/preprocessor_meta.json", name)
             m = joblib.load(f"{base}/models/{name}/model.pkl")
             scaler = p.named_transformers_["num"].named_steps["scaler"]
             cols = [c for n, _, cs in p.transformers_ if n != "remainder" for c in cs]

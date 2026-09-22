@@ -2,7 +2,7 @@ from __future__ import annotations
 import os, sys, json, shutil
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 from iot_audit.metrics_mc import evaluate_model_multiclass
-from data_loading import load_multiclass_split
+from data_loading import record_model, validate_model, load_multiclass_split
 import numpy as np
 import joblib
 import argparse
@@ -50,6 +50,9 @@ def main():
     models_root = os.path.dirname(input_dir)
     outdir = os.path.dirname(models_root)
     output_dir = os.path.join(models_root, f"{model_name}_int8")
+    if os.path.exists(output_dir) and os.listdir(output_dir):
+        raise FileExistsError(f"{output_dir} is not empty")
+    validate_model(input_dir)
     os.makedirs(output_dir, exist_ok=True)
 
     print(f"[quantize-mc] {input_dir} -> {output_dir}")
@@ -64,10 +67,10 @@ def main():
     model = tf.keras.models.load_model(model_float_path)
     scaler = joblib.load(scaler_path)
 
-    preproc_path = os.path.join(outdir, "preprocessor_mc", "preprocessor.pkl")
+    preproc_path = os.path.join(input_dir, "preprocessor.pkl")
     meta_path = os.path.join(os.path.dirname(preproc_path), "preprocessor_meta.json")
     X_train, X_test, y_train, y_test, feature_names, preproc, class_map = load_multiclass_split(
-        args.csv, preproc_path, meta_path
+        args.csv, preproc_path, meta_path, model_name=model_name
     )
 
     X_train = scaler.transform(X_train).astype(np.float32)
@@ -100,7 +103,8 @@ def main():
         f.write(tflite_model)
     print(f"[quantize-mc] int8 model saved to {tflite_path} ({os.path.getsize(tflite_path)/1024:.1f} KB)")
 
-    joblib.dump(preproc, os.path.join(output_dir, "preprocessor.pkl"))
+    shutil.copy2(preproc_path, os.path.join(output_dir, "preprocessor.pkl"))
+    shutil.copy2(meta_path, os.path.join(output_dir, "preprocessor_meta.json"))
     joblib.dump(scaler, os.path.join(output_dir, "scaler.pkl"))
 
     wrapped = TFLiteInt8MulticlassWrapper(tflite_model)
@@ -114,6 +118,7 @@ def main():
         json.dump(metrics, f, indent=2)
     print("[quantize-mc] metrics (int8):", json.dumps(metrics, indent=2))
 
+    record_model(output_dir)
 
 if __name__ == "__main__":
     main()
