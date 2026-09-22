@@ -17,7 +17,10 @@ The system performs:
 - exploratory data analysis and visualization;
 - supervised training using modern ensemble models;
 - quantitative comparison across accuracy, F1, ROC/PR AUC, and inference latency;
-- per-class analysis for model explainability and reliability auditing.
+- per-class analysis for model explainability and reliability auditing;
+- int8 quantization;
+- multi-run benchmarking across multiple platforms;
+- Mann-Whitney testing.
 
 ---
 
@@ -44,8 +47,13 @@ scripts/
 ├── train_.py # Model training (RF, LGBM, XGB, LogReg)
 ├── compare_models.py # Binary comparison
 ├── train_mc_.py # Multiclass variants
-└── compare_models_mc.py # Multiclass comparison and benchmarks
+├── compare_models_mc.py # Multiclass comparison and benchmarks
+├── quantize_model.py # Binary float-to-int8 model quantization script
+├── quantize_model_mc.py # Multiclass float-to-int8 model quantization script
+└── run_mann-whitney.py # Mann-Whitney testing on lgbm/xgb latency ratio
 reports*/ # Generated metrics, plots, and summaries
+train*/ # Trained models
+benchmark/ # Generated platform-specific benchmark data and charts
 ```
 
 Each model is isolated under its own folder, ensuring reproducibility and traceability.
@@ -54,24 +62,29 @@ Each model is isolated under its own folder, ensuring reproducibility and tracea
 
 ## 📊 Benchmark Summary (snapshot)
 
-| Model     | Accuracy | Macro-F1 | ROC-AUC Micro | Total Size (MB) | Inference (ms/1k) |
-|------------|-----------|-----------|---------------|-----------------|-------------------|
-| **LGBM-MC** | 0.9903    | 0.9694    | 0.99994       | 29.3            | 45.39             |
-| RF-MC      | 0.9897    | 0.9681    | 0.99989       | 46.2            | 31.10             |
-| XGB-MC     | 0.9889    | 0.9665    | 0.99988       | 40.8            | 52.23             |
-| LogReg-MC  | 0.8122    | 0.7830    | 0.9213        | 0.019           | 5.44          |
+|Model   |Accuracy          |F1-Pos            |F1-Neg            |ROC-AUC           |PR-AUC            |FP  |FN  |Model Size MB|Preproc Size MB|Total Size MB|total_ms_per_1k avg Apple M1|
+|--------|------------------|------------------|------------------|------------------|------------------|----|----|-------------|---------------|-------------|----------------------------|
+|rf      |0.9988154185126394|0.9992239639919293|0.9974984990994596|0.9999939846005775|0.9999981112934438|31  |19  |23.853       |0.009          |23.861       |10.978537 ± 1.907783        |
+|lgbm    |0.9992655594778365|0.9995187008026829|0.9984506971862662|0.9999795398801576|0.9999944628319596|11  |20  |2.749        |0.009          |2.758        |13.940153 ± 1.425839        |
+|xgb     |0.9988864934018811|0.9992704015895931|0.9976498824941247|0.999977653761371 |0.9999936833597574|24  |23  |0.943        |0.009          |0.952        |6.114435 ± 0.224525         |
+|logreg  |0.8769693667227368|0.9183606093477338|0.7504445191984238|0.9158887981620045|0.961069955424764 |2192|3001|0.004        |0.009          |0.013        |5.794473 ± 0.326560         |
+|mlp     |0.9945035418986472|0.9964034353393483|0.9883487344314986|0.9993536278679872|0.99979374717221  |160 |72  |0.33         |0.009          |0.338        |4.313912 ± 1.748964         |
+|mlp_int8|0.9709303703001729|0.9809516416983621|0.938659201119832 |0.9847192741159304|0.9945232333861591|612 |615 |0.028        |0.009          |0.037        |4.978423 ± 0.057768         |
+
+Full benchmark results: https://github.com/acilgz/iot-audit/tree/main/benchmark
 
 > All models were trained on the same dataset (`train_test_network.csv`, ~211k flows, 44 columns).  
 > Metrics: stratified 80/20 split, consistent seed = 42.
+> total_ms_per_1k: lower is better.
 
 ---
 
 ## Highlights
-- Clean project layout: `src/`, `scripts/`, `reports*/` (artifacts), `figures/`.
+- Clean project layout: `src/`, `scripts/`, `reports*/` (artifacts), `models`, `benchmark/`.
 - Reproducible preprocessing (imputation + one‑hot).
-- Models: RandomForest, LightGBM, XGBoost, Logistic Regression (binary & multiclass).
-- Metrics: accuracy, F1, ROC‑AUC/PR‑AUC, confusion matrix, per‑class report.
-- Comparison scripts (quality, size, latency); artifacts per model in isolated folders.
+- Models: RandomForest, LightGBM, XGBoost, Logistic Regression, MLP (binary & multiclass).
+- Metrics: accuracy, F1, ROC‑AUC/PR‑AUC, confusion matrix, per‑class report, lgbm/xgb latency ratio.
+- Comparison scripts (quality, size, latency, Mann-Whitney); artifacts per model in isolated folders.
 - Ready for GitHub CI: lint + basic import smoke.
 
 ## Dataset
@@ -87,46 +100,59 @@ src_ip,src_port,dst_ip,dst_port,proto,service,duration,src_bytes,dst_bytes,conn_
 ## Quickstart
 
 ```bash
-# 1) Create env
-python -m venv .venv
-. .venv/Scripts/activate  # Windows PowerShell
-# source .venv/bin/activate  # Linux/Mac
+# 1) Create Python 3.12.14 venv
+# sudo apt update && sudo apt install -y curl # Debian
+curl -LsSf https://astral.sh/uv/install.sh | sh
+source $HOME/.local/bin/env
+uv venv --python 3.12.14 --python-preference only-managed .venv
+
+source .venv/bin/activate  # Linux/Mac
+# . .venv/Scripts/activate  # Windows PowerShell
 
 # 2) Install deps
-pip install -U pip
-pip install -r requirements.txt
+uv pip install -U pip
+uv pip install -r requirements.txt
 
 # 3) Put data
 # data/train_test_network.csv
 
 # 4) EDA
-python scripts/analyze_dataset.py --csv data/train_test_network.csv --outdir reports
-python scripts/visualize_dataset.py --csv data/train_test_network.csv --outdir reports/figures
+python scripts/analyze_dataset.py --csv data/train_test_network.csv --outdir train
+python scripts/visualize_dataset.py --csv data/train_test_network.csv --outdir train/figures
 
 # 5) Binary training
-python scripts/train_rf.py    --csv data/train_test_network.csv --outdir reports
-python scripts/train_lgbm.py  --csv data/train_test_network.csv --outdir reports
-python scripts/train_xgb.py   --csv data/train_test_network.csv --outdir reports
-python scripts/train_logreg.py --csv data/train_test_network.csv --outdir reports
+python scripts/prepare_preprocessor.py
+python scripts/train_rf.py    --csv data/train_test_network.csv --outdir train
+python scripts/train_lgbm.py  --csv data/train_test_network.csv --outdir train
+python scripts/train_xgb.py   --csv data/train_test_network.csv --outdir train
+python scripts/train_logreg.py --csv data/train_test_network.csv --outdir train
+python scripts/train_mlp.py   --csv data/train_test_network.csv --outdir train
+python scripts/quantize_model.py --input_dir train/models/mlp --csv data/train_test_network.csv
 
 # 6) Binary comparison
-python scripts/compare_models.py --outdir reports --models rf lgbm xgb logreg --benchmark --sample_size 10000
+python scripts/compare_models.py --outdir benchmark/sys1/binary --models-dir train --models rf lgbm xgb logreg mlp mlp_int8 --benchmark --sample_size 10000
 
 # 7) Multiclass training
-python scripts/train_mc_rf.py    --csv data/train_test_network.csv --outdir reports_mc
-python scripts/train_mc_lgbm.py  --csv data/train_test_network.csv --outdir reports_mc
-python scripts/train_mc_xgb.py   --csv data/train_test_network.csv --outdir reports_mc
-python scripts/train_mc_logreg.py --csv data/train_test_network.csv --outdir reports_mc
+python scripts/prepare_preprocessor_mc.py
+python scripts/train_mc_rf.py    --csv data/train_test_network.csv --outdir train_mc
+python scripts/train_mc_lgbm.py  --csv data/train_test_network.csv --outdir train_mc
+python scripts/train_mc_xgb.py   --csv data/train_test_network.csv --outdir train_mc
+python scripts/train_mc_logreg.py --csv data/train_test_network.csv --outdir train_mc
+python scripts/train_mc_mlp.py   --csv data/train_test_network.csv --outdir train_mc
+python scripts/quantize_model_mc.py --input_dir train_mc/models/mlp_mc --csv data/train_test_network.csv
 
 # 8) Multiclass comparison
-python scripts/compare_models_mc.py --outdir reports_mc --models rf_mc lgbm_mc xgb_mc logreg_mc --benchmark --sample_size 10000
+python scripts/compare_models_mc.py --outdir benchmark/sys1/multiclass --models-dir train_mc --models rf_mc lgbm_mc xgb_mc logreg_mc mlp_mc mlp_mc_int8 --benchmark --sample_size 10000
+
+# 9) Mann-Whitney lgbm/xgb
+python scripts/run_mann-whitney.py --benchmark benchmark --aarch64 bcm2712,apple_m1,apple_m5 --x64 corei7_3770,corei5_7200U,ryzen7_7700
 ```
 
 ## Artifact layout
 
 ```
-reports/
-  models/
+  train/
+  models/          # Moved model artifacts here (instead of inside reports/)
     rf|lgbm|xgb|logreg/
       model.pkl
       preprocessor.pkl
@@ -134,18 +160,41 @@ reports/
       leakage_report.json
       feature_importances.csv
   figures/
-    rf|lgbm|xgb|logreg/
+    rf|lgbm|xgb|logreg|mlp/
       roc_curve.png, pr_curve.png, confusion_matrix.png, feature_importances_top30.png
+  summary/
+    charts/        # New subfolder for all generated charts and plots
+      accuracy.png
+      f1_pos.png
+      roc_auc.png
+      fp.png
+      fn.png
+      latency_total_ms_per_1k.png
+    summary_models.csv
+    inference_benchmark*.csv
+    lgbm_xgb_ratios_raw.csv
 
-reports_mc/
-  models/
+  train_mc/
+  models/          # Moved model artifacts here (instead of inside reports_mc/)
     <model>_mc/
       model.pkl, preprocessor.pkl, metrics.json, per_class_report.csv, label_map.json, feature_importances.csv
   figures/
     <model>_mc/
       confusion_matrix.png, pr_micro.png, pr_<k>_<class>.png, feature_importances_top30.png
   summary/
-    summary_models_mc.csv, per_class_report_merged.csv, accuracy.png, macro_f1.png, ...
+    charts/        # New subfolder for all generated charts and plots
+      accuracy.png
+      macro_f1.png
+      weighted_f1.png
+      roc_auc_micro.png
+      roc_auc_macro.png
+      pr_auc_micro.png
+      pr_auc_macro.png
+      total_size_mb.png
+      per_class_f1_*.png
+    summary_models_mc.csv
+    per_class_report_merged.csv
+    inference_benchmark_mc*.csv
 ```
 
 ## Reproducibility & Notes

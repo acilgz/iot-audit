@@ -1,0 +1,2 @@
+subtask,u_statistic,p_value,statistically_significant_0_05,rank_biserial_correlation,n_aarch64_samples,n_x64_samples,aarch64_mean_ratio,aarch64_std_ratio,aarch64_median_ratio,x64_mean_ratio,x64_std_ratio,x64_median_ratio,aarch64_systems,x64_systems
+binary,225.0,1.6959106954125473e-06,True,1.0,15,15,2.0646693644496135,0.2641491895809256,2.1261520956309834,1.3348126880290465,0.15675948752616606,1.3014476497598937,"bcm2712,apple_m1,apple_m5","corei7_3770,corei5_7200U,ryzen7_7700"
