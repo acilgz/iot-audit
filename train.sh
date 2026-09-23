@@ -7,6 +7,12 @@ if [[ $# -ne 1 || -z "${1:-}" ]]; then
 fi
 
 RUN_DIR="runs/$1"
+
+if [[ -e "$RUN_DIR" ]]; then
+    echo "Error: Run $1 already exists."
+    exit 1
+fi
+
 CSV="data/train_test_network.csv"
 
 mkdir -p "$RUN_DIR/logs"
@@ -87,3 +93,6 @@ run_logged "$RUN_DIR/logs/visualize-dataset.log" \
 python scripts/visualize_dataset.py \
     --csv "$CSV" \
     --outdir "$RUN_DIR/eda/figures"
+
+touch "$RUN_DIR/TRAINING_DONE"
+echo "Training completed successfully."

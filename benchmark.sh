@@ -7,6 +7,12 @@ if [[ $# -ne 2 || -z "${1:-}" || -z "${2:-}" ]]; then
 fi
 
 RUN_DIR="runs/$1"
+
+if [[ ! -f "$RUN_DIR/TRAINING_DONE" ]]; then
+    echo "Error: Run train.sh first."
+    exit 1
+fi
+
 CSV="data/train_test_network.csv"
 
 DEVICE_ID="$2"
@@ -48,3 +54,5 @@ python scripts/compare_models_mc.py \
     --sample_size 10000 \
     --num_runs 5 \
     2>&1 | tee "$LOG_DIR/multiclass.log"
+
+echo "Benchmarks completed successfully."
