@@ -52,8 +52,8 @@ scripts/
 ├── quantize_model_mc.py # Multiclass float-to-int8 model quantization script
 └── run_mann-whitney.py # Mann-Whitney testing on lgbm/xgb latency ratio
 reports*/ # Generated metrics, plots, and summaries
-train*/ # Trained models
 benchmark/ # Generated platform-specific benchmark data and charts
+runs/*/ # Trained models and logs per run
 ```
 
 Each model is isolated under its own folder, ensuring reproducibility and traceability.
@@ -123,6 +123,9 @@ bash benchmark.sh 001 apple_m5
 
 # 6) Mann-Whitney lgbm/xgb
 python scripts/run_mann-whitney.py --benchmark benchmark/001 --aarch64 bcm2712,apple_m1,apple_m5 --x64 corei7_3770,corei5_7200U,ryzen7_7700
+
+# 7) Plot platform comparison bars
+python scripts/benchmark_bars.py --input-dir benchmark/001 --output-dir benchmark/001/charts
 ```
 
 ## Artifact layout
