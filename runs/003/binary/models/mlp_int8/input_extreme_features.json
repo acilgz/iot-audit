@@ -1,0 +1,102 @@
+[
+  {
+    "index": 74,
+    "feature": "weird_name_above_hole_data_without_any_acks",
+    "max_abs_scaled_value": 410.8929443359375
+  },
+  {
+    "index": 111,
+    "feature": "http_trans_depth_4",
+    "max_abs_scaled_value": 410.8929443359375
+  },
+  {
+    "index": 58,
+    "feature": "ssl_version_TLSv10",
+    "max_abs_scaled_value": 410.8929443359375
+  },
+  {
+    "index": 108,
+    "feature": "http_trans_depth_10",
+    "max_abs_scaled_value": 410.8929443359375
+  },
+  {
+    "index": 98,
+    "feature": "ssl_cipher_TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA",
+    "max_abs_scaled_value": 410.8929443359375
+  },
+  {
+    "index": 96,
+    "feature": "ssl_cipher_TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+    "max_abs_scaled_value": 410.8929443359375
+  },
+  {
+    "index": 114,
+    "feature": "http_trans_depth_8",
+    "max_abs_scaled_value": 410.8929443359375
+  },
+  {
+    "index": 14,
+    "feature": "http_response_body_len",
+    "max_abs_scaled_value": 395.1483154296875
+  },
+  {
+    "index": 8,
+    "feature": "dst_pkts",
+    "max_abs_scaled_value": 371.35150146484375
+  },
+  {
+    "index": 5,
+    "feature": "missed_bytes",
+    "max_abs_scaled_value": 318.8000183105469
+  },
+  {
+    "index": 113,
+    "feature": "http_trans_depth_6",
+    "max_abs_scaled_value": 290.5443115234375
+  },
+  {
+    "index": 112,
+    "feature": "http_trans_depth_5",
+    "max_abs_scaled_value": 290.5443115234375
+  },
+  {
+    "index": 110,
+    "feature": "http_trans_depth_3",
+    "max_abs_scaled_value": 290.5443115234375
+  },
+  {
+    "index": 115,
+    "feature": "http_trans_depth_9",
+    "max_abs_scaled_value": 290.5443115234375
+  },
+  {
+    "index": 70,
+    "feature": "http_status_code_403",
+    "max_abs_scaled_value": 290.5443115234375
+  },
+  {
+    "index": 79,
+    "feature": "weird_name_dnp3_corrupt_header_checksum",
+    "max_abs_scaled_value": 290.5443115234375
+  },
+  {
+    "index": 80,
+    "feature": "weird_name_inappropriate_FIN",
+    "max_abs_scaled_value": 290.5443115234375
+  },
+  {
+    "index": 7,
+    "feature": "src_ip_bytes",
+    "max_abs_scaled_value": 277.91839599609375
+  },
+  {
+    "index": 6,
+    "feature": "src_pkts",
+    "max_abs_scaled_value": 265.99462890625
+  },
+  {
+    "index": 81,
+    "feature": "weird_name_possible_split_routing",
+    "max_abs_scaled_value": 237.2277374267578
+  }
+]

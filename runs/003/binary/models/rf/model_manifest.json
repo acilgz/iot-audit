@@ -1,0 +1,15 @@
+{
+  "files": {
+    "model.pkl": "57b9d762e0b12749c79fc79f8b551694939fe5bd83991e8d9e6a411a5a54d202",
+    "preprocessor.pkl": "09b5dcb2ffb0f4d91b1ab31e9a547a6b8198f8b3a6937cd08bef0bf3ae800316",
+    "preprocessor_meta.json": "b41a9bdae3becb10971b35b4ffe013b75e5570cb0d5f61d03c952f7ff5813994",
+    "metrics.json": "5d8638109bb6ea30048b3f55a4039fdf0a36889c7494e4bf4e1fd05f2e5fc20c"
+  },
+  "command": [
+    "scripts/train_rf.py",
+    "--csv",
+    "data/train_test_network.csv",
+    "--outdir",
+    "runs/003/binary"
+  ]
+}

@@ -1,0 +1,20 @@
+[preprocessing-mc] dropped potential leakage columns: ['label']
+[preprocessing-mc] fit on 168834 rows, 34 cols...
+[preprocessing-mc] transformed test: 42209 rows
+[prepare] rf_mc: runs/003/multiclass/models/rf_mc/preprocessor.pkl
+[preprocessing-mc] dropped potential leakage columns: ['label']
+[preprocessing-mc] fit on 168834 rows, 34 cols...
+[preprocessing-mc] transformed test: 42209 rows
+[prepare] lgbm_mc: runs/003/multiclass/models/lgbm_mc/preprocessor.pkl
+[preprocessing-mc] dropped potential leakage columns: ['label']
+[preprocessing-mc] fit on 168834 rows, 34 cols...
+[preprocessing-mc] transformed test: 42209 rows
+[prepare] xgb_mc: runs/003/multiclass/models/xgb_mc/preprocessor.pkl
+[preprocessing-mc] dropped potential leakage columns: ['label']
+[preprocessing-mc] fit on 168834 rows, 34 cols...
+[preprocessing-mc] transformed test: 42209 rows
+[prepare] logreg_mc: runs/003/multiclass/models/logreg_mc/preprocessor.pkl
+[preprocessing-mc] dropped potential leakage columns: ['label']
+[preprocessing-mc] fit on 168834 rows, 34 cols...
+[preprocessing-mc] transformed test: 42209 rows
+[prepare] mlp_mc: runs/003/multiclass/models/mlp_mc/preprocessor.pkl

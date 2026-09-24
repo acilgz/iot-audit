@@ -1,0 +1,82 @@
+[quantize] runs/003/binary/models/mlp -> runs/003/binary/models/mlp_int8
+[quantize] TRAIN
+min -26.449121
+max 410.89294
+mean -1.9568605e-09
+std 0.99999875
+[quantize] percentiles [-2.64491215e+01 -1.92449617e+00 -7.90698975e-02 -1.77205075e-02
+ -3.44181573e-03  2.30135870e+00  4.10892944e+02]
+
+Top 20 features by absolute scaled value:
+74 weird_name_above_hole_data_without_any_acks 410.89294
+111 http_trans_depth_4 410.89294
+58 ssl_version_TLSv10 410.89294
+108 http_trans_depth_10 410.89294
+98 ssl_cipher_TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA 410.89294
+96 ssl_cipher_TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 410.89294
+114 http_trans_depth_8 410.89294
+14 http_response_body_len 395.14832
+8 dst_pkts 371.3515
+5 missed_bytes 318.80002
+113 http_trans_depth_6 290.5443
+112 http_trans_depth_5 290.5443
+110 http_trans_depth_3 290.5443
+115 http_trans_depth_9 290.5443
+70 http_status_code_403 290.5443
+79 weird_name_dnp3_corrupt_header_checksum 290.5443
+80 weird_name_inappropriate_FIN 290.5443
+7 src_ip_bytes 277.9184
+6 src_pkts 265.99463
+81 weird_name_possible_split_routing 237.22774
+Saved artifact at 'runs/003/binary/models/mlp_int8/_saved_model_tmp'. The following endpoints are available:
+
+* Endpoint 'serve'
+  args_0 (POSITIONAL_ONLY): TensorSpec(shape=(None, 120), dtype=tf.float32, name='input_layer')
+Output Type:
+  TensorSpec(shape=(None, 1), dtype=tf.float32, name=None)
+Captures:
+  5302465744: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5302466128: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5302466512: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5302467856: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5310776144: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5310776912: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5310777680: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5310777104: TensorSpec(shape=(), dtype=tf.resource, name=None)
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1790199361.831839 10265425 tf_tfl_flatbuffer_helpers.cc:390] Ignored output_format.
+W0000 00:00:1790199361.831990 10265425 tf_tfl_flatbuffer_helpers.cc:393] Ignored drop_control_dependency.
+2026-09-23 23:36:01.832537: I tensorflow/cc/saved_model/reader.cc:83] Reading SavedModel from: runs/003/binary/models/mlp_int8/_saved_model_tmp
+2026-09-23 23:36:01.832752: I tensorflow/cc/saved_model/reader.cc:51] Reading meta graph with tags { serve }
+2026-09-23 23:36:01.832756: I tensorflow/cc/saved_model/reader.cc:146] Reading SavedModel debug info (if present) from: runs/003/binary/models/mlp_int8/_saved_model_tmp
+2026-09-23 23:36:01.834944: I tensorflow/compiler/mlir/mlir_graph_optimization_pass.cc:388] MLIR V1 optimization pass is not enabled
+2026-09-23 23:36:01.835214: I tensorflow/cc/saved_model/loader.cc:234] Restoring SavedModel bundle.
+2026-09-23 23:36:01.846212: I tensorflow/cc/saved_model/loader.cc:218] Running initialization op on SavedModel bundle at path: runs/003/binary/models/mlp_int8/_saved_model_tmp
+2026-09-23 23:36:01.848970: I tensorflow/cc/saved_model/loader.cc:317] SavedModel load for tags { serve }; Status: success: OK. Took 16434 microseconds.
+2026-09-23 23:36:01.863192: I tensorflow/compiler/mlir/tensorflow/utils/dump_mlir_util.cc:268] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+fully_quantize: 0, inference_type: 6, input_inference_type: INT8, output_inference_type: INT8
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+/Users/user/iot-audit/scripts/quantize_model.py:33: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  p1[i] = (out_q.astype(np.float32) - out_zero) * out_scale
+[quantize] int8 model saved to runs/003/binary/models/mlp_int8/model.tflite (28.8 KB)
+[quantize] metrics (int8): {
+  "accuracy": 0.9707645288919424,
+  "precision_pos": 0.9804560260586319,
+  "recall_pos": 0.9812474774131454,
+  "f1_pos": 0.9808515920799454,
+  "precision_neg": 0.9394425506316423,
+  "recall_neg": 0.937,
+  "f1_neg": 0.9382196855912687,
+  "confusion_matrix": [
+    [
+      9370,
+      630
+    ],
+    [
+      604,
+      31605
+    ]
+  ],
+  "roc_auc": 0.9866912695209413,
+  "pr_auc": 0.9949656252555437
+}

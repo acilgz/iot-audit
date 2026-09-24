@@ -1,0 +1,135 @@
+/Users/user/iot-audit/.venv/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:1457: FutureWarning: 'n_jobs' has no effect since 1.8 and will be removed in 1.10. You provided 'n_jobs=-1', please leave it unspecified.
+  warnings.warn(msg, category=FutureWarning)
+[logreg-mc] training (168834 samples, 121 features, classes=10)...
+[logreg-mc] done in 31.76s
+[logreg-mc] metrics: {
+  "accuracy": 0.8264351204719372,
+  "macro_f1": 0.7687222064095215,
+  "weighted_f1": 0.8331776091945351,
+  "confusion_matrix": [
+    [
+      3994,
+      0,
+      0,
+      0,
+      3,
+      0,
+      3,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      3615,
+      4,
+      16,
+      47,
+      52,
+      134,
+      20,
+      18,
+      94
+    ],
+    [
+      0,
+      29,
+      3650,
+      0,
+      284,
+      9,
+      0,
+      2,
+      22,
+      4
+    ],
+    [
+      0,
+      95,
+      5,
+      2840,
+      142,
+      3,
+      764,
+      9,
+      13,
+      129
+    ],
+    [
+      0,
+      1,
+      1,
+      2,
+      196,
+      7,
+      2,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      4,
+      2,
+      5,
+      212,
+      8398,
+      3,
+      1367,
+      8,
+      1
+    ],
+    [
+      926,
+      1,
+      0,
+      707,
+      51,
+      0,
+      2257,
+      0,
+      27,
+      31
+    ],
+    [
+      0,
+      2,
+      0,
+      0,
+      27,
+      1,
+      0,
+      3611,
+      185,
+      174
+    ],
+    [
+      725,
+      59,
+      10,
+      1,
+      41,
+      0,
+      0,
+      52,
+      2991,
+      121
+    ],
+    [
+      0,
+      116,
+      12,
+      93,
+      222,
+      4,
+      35,
+      38,
+      149,
+      3331
+    ]
+  ],
+  "roc_auc_micro": 0.987473679029894,
+  "roc_auc_macro": 0.9843776861507246,
+  "pr_auc_micro": 0.9145943651416575,
+  "pr_auc_macro": 0.8273970558186404
+}
