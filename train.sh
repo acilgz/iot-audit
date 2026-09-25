@@ -109,5 +109,25 @@ python scripts/visualize_dataset.py \
     --csv "$CSV" \
     --outdir "$RUN_DIR/eda/figures"
 
+run_logged "$RUN_DIR/logs/int8-runtime-diagnostics.log" \
+    python scripts/benchmark_int8_runtime.py \
+    --run-dir "$RUN_DIR" \
+    --csv "$CSV" \
+    --n-samples 10000 \
+    --batch-sizes 1 10000 \
+    --repeats 3
+
+run_logged "$RUN_DIR/logs/duplicate-audit.log" \
+    python scripts/audit_split_duplicates.py \
+    --run-dir "$RUN_DIR" \
+    --csv "$CSV" \
+    --output "$RUN_DIR/audit/duplicate-audit.json"
+
+run_logged "$RUN_DIR/logs/input-group-diagnostics.log" \
+    python scripts/diagnose_input_groups.py \
+    --run-dir "$RUN_DIR" \
+    --csv "$CSV" \
+    --output "$RUN_DIR/audit/input-groups.json"
+
 touch "$RUN_DIR/TRAINING_DONE"
 echo "Training completed successfully."
