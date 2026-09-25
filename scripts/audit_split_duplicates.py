@@ -57,14 +57,30 @@ def conflicting_groups(codes, target):
     return {'groups_with_multiple_target_values': int(len(conflict_ids)),
             'rows_in_conflicting_groups': int(np.isin(codes, conflict_ids).sum())}
 
-def git_record():
-    result = {'commit': None, 'status_porcelain': None}
+def git_record(run_dir):
+    result = {
+        'commit': None,
+        'status_porcelain': None,
+        'status_excludes_run_dir': str(run_dir),
+    }
     try:
         repo = Path(__file__).resolve().parent.parent
-        for key, arguments in [('commit', ['rev-parse', 'HEAD']),
-                               ('status_porcelain', ['status', '--porcelain=v1', '--untracked-files=all'])]:
-            result[key] = subprocess.run(['git', '-C', str(repo), *arguments],
-                                        check=True, capture_output=True, text=True).stdout.strip()
+        result['commit'] = subprocess.run(
+            ['git', '-C', str(repo), 'rev-parse', 'HEAD'],
+            check=True, capture_output=True, text=True,
+        ).stdout.strip()
+        run_path = Path(run_dir)
+        if not run_path.is_absolute():
+            run_path = Path.cwd() / run_path
+        run_path_text = run_path.resolve().relative_to(repo.resolve()).as_posix()
+        status_args = [
+            'status', '--porcelain=v1', '--untracked-files=all', '--', '.',
+            f':(exclude){run_path_text}', f':(exclude){run_path_text}/**',
+        ]
+        result['status_porcelain'] = subprocess.run(
+            ['git', '-C', str(repo), *status_args],
+            check=True, capture_output=True, text=True,
+        ).stdout.strip()
     except (OSError, subprocess.CalledProcessError) as exc:
         result['unavailable_reason'] = str(exc)
     return result
@@ -92,7 +108,7 @@ def main():
         'tasks': {},
         'provenance': {'started_at_utc': started, 'command_argv': [sys.executable, *sys.argv],
                        'cwd': str(Path.cwd()), 'run_dir': str(args.run_dir.resolve()),
-                       'git': git_record(), 'platform': platform.platform(),
+                       'git': git_record(args.run_dir), 'platform': platform.platform(),
                        'python': platform.python_version(), 'pandas': pd.__version__,
                        'numpy': np.__version__, 'script_sha256': sha256(Path(__file__))},
     }

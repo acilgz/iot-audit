@@ -15,9 +15,18 @@ fi
 RUN_DIR="runs/$RUN_ID"
 
 if [[ -e "$RUN_DIR" ]]; then
-    echo "Error: Run $1 already exists."
+    echo "ERROR: Run $1 already exists."
     exit 1
 fi
+
+if [[ -n "$(git status --porcelain=v1 --untracked-files=all)" ]]; then
+    echo "ERROR: Dirty git working tree. Commit or stash your changes." >&2
+    git status --short >&2
+    exit 1
+fi
+
+SOURCE_COMMIT="$(git rev-parse HEAD)"
+SOURCE_STATUS="$(git status --porcelain=v1 --untracked-files=all)"
 
 CSV="data/train_test_network.csv"
 
@@ -29,8 +38,8 @@ run_logged() {
     "$@" 2>&1 | tee "$log_path"
 }
 
-git rev-parse HEAD > "$RUN_DIR/commit.txt"
-git status --short > "$RUN_DIR/git-status.txt"
+printf '%s\n' "$SOURCE_COMMIT" > "$RUN_DIR/commit.txt"
+printf '%s\n' "$SOURCE_STATUS" > "$RUN_DIR/git-status.txt"
 python --version > "$RUN_DIR/python-version.txt"
 python -m pip freeze > "$RUN_DIR/environment.txt"
 

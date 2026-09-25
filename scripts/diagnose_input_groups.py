@@ -170,7 +170,7 @@ def main():
         'provenance': {
             'started_at_utc': started, 'completed_at_utc': datetime.now(timezone.utc).isoformat(),
             'command_argv': [sys.executable, *sys.argv], 'cwd': str(Path.cwd()),
-            'git': git_provenance(Path(__file__).resolve().parent.parent),
+            'git': git_provenance(Path(__file__).resolve().parent.parent, args.run_dir),
             'platform': platform.platform(), 'python': platform.python_version(),
             'tensorflow': tf.__version__, 'numpy': np.__version__, 'files': files,
             'script': file_record(Path(__file__)),

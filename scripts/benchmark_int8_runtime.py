@@ -35,8 +35,13 @@ def file_record(path):
     return {"path": str(path), "size_bytes": path.stat().st_size,
             "sha256": digest.hexdigest()}
 
-def git_provenance(repo_dir):
-    result = {"commit": None, "dirty": None, "status_porcelain": None}
+def git_provenance(repo_dir, run_dir=None):
+    result = {
+        "commit": None,
+        "dirty": None,
+        "status_porcelain": None,
+        "status_excludes_run_dir": str(run_dir) if run_dir is not None else None,
+    }
     try:
         def git(*arguments):
             return subprocess.run(
@@ -44,7 +49,16 @@ def git_provenance(repo_dir):
                 capture_output=True, text=True,
             ).stdout
         result["commit"] = git("rev-parse", "HEAD").strip()
-        result["status_porcelain"] = git("status", "--porcelain=v1", "--untracked-files=all")
+        status_args = ["status", "--porcelain=v1", "--untracked-files=all", "--", "."]
+        if run_dir is not None:
+            run_path = Path(run_dir)
+            if not run_path.is_absolute():
+                run_path = Path.cwd() / run_path
+            run_path_text = run_path.resolve().relative_to(Path(repo_dir).resolve()).as_posix()
+            status_args.extend(
+                [f":(exclude){run_path_text}", f":(exclude){run_path_text}/**"]
+            )
+        result["status_porcelain"] = git(*status_args)
         result["dirty"] = bool(result["status_porcelain"])
     except (OSError, subprocess.CalledProcessError) as exc:
         result["unavailable_reason"] = str(exc)
@@ -78,7 +92,7 @@ def collect_provenance(args, keras_dir, int8_dir):
         "run_dir": str(args.run_dir.resolve()),
         "parameters": {"n_samples": args.n_samples, "batch_sizes": args.batch_sizes,
                        "repeats": args.repeats},
-        "diagnostic_git": git_provenance(script.parent.parent),
+        "diagnostic_git": git_provenance(script.parent.parent, args.run_dir),
         "platform": {**platform.uname()._asdict(), "description": platform.platform()},
         "python_executable": sys.executable,
         "files": {name: file_record(path) for name, path in files.items()},
