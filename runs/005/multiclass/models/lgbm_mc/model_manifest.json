@@ -1,0 +1,15 @@
+{
+  "files": {
+    "model.pkl": "fef48d109a2cafe989ef40d9f7567a7fd3d0b3e08b24820e86fec13c3a4269ad",
+    "preprocessor.pkl": "3da43ac1dee8a7ed0a9bee403d3de03a22a978178835b4fb5e6938691bccb697",
+    "preprocessor_meta.json": "d49e9665916059cc6e54a2d2d8f0287229225d3135c623a374e21ad11353d630",
+    "metrics.json": "71f88e8f4eb41ffc3b90e9373f571dafb73c2d4007e4a745829d9f6de7d424c2"
+  },
+  "command": [
+    "scripts/train_mc_lgbm.py",
+    "--csv",
+    "data/train_test_network.csv",
+    "--outdir",
+    "runs/005/multiclass"
+  ]
+}

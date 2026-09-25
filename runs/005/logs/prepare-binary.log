@@ -1,0 +1,20 @@
+[preprocessing] dropped potential leakage columns: ['type']
+[preprocessing] fit on 135067 internal-training rows, 42 cols...
+[preprocessing] transformed test: 42209 rows
+[prepare] rf: runs/005/binary/models/rf/preprocessor.pkl
+[preprocessing] dropped potential leakage columns: ['type']
+[preprocessing] fit on 135067 internal-training rows, 42 cols...
+[preprocessing] transformed test: 42209 rows
+[prepare] lgbm: runs/005/binary/models/lgbm/preprocessor.pkl
+[preprocessing] dropped potential leakage columns: ['type']
+[preprocessing] fit on 135067 internal-training rows, 42 cols...
+[preprocessing] transformed test: 42209 rows
+[prepare] xgb: runs/005/binary/models/xgb/preprocessor.pkl
+[preprocessing] dropped potential leakage columns: ['type']
+[preprocessing] fit on 135067 internal-training rows, 42 cols...
+[preprocessing] transformed test: 42209 rows
+[prepare] logreg: runs/005/binary/models/logreg/preprocessor.pkl
+[preprocessing] dropped potential leakage columns: ['type']
+[preprocessing] fit on 135067 internal-training rows, 42 cols...
+[preprocessing] transformed test: 42209 rows
+[prepare] mlp: runs/005/binary/models/mlp/preprocessor.pkl

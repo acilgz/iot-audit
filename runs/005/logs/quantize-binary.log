@@ -1,0 +1,82 @@
+[quantize] runs/005/binary/models/mlp -> runs/005/binary/models/mlp_int8
+[quantize] TRAIN
+min -2.0011153
+max 335.894
+mean 0.16101697
+std 0.5202726
+[quantize] internal-training percentiles [-2.00111532e+00 -2.07590595e-01  0.00000000e+00  0.00000000e+00
+  0.00000000e+00  1.00000000e+00  3.35894012e+02]
+
+Top 20 features by absolute scaled value:
+8 dst_pkts 335.894
+5 missed_bytes 293.85773
+7 src_ip_bytes 277.39084
+6 src_pkts 265.87634
+9 dst_ip_bytes 247.85837
+13 http_request_body_len 213.35005
+3 src_bytes 206.70589
+2 duration 157.15201
+14 http_response_body_len 104.03803
+4 dst_bytes 87.08306
+15 http_status_code 46.379803
+10 dns_qclass 11.831675
+11 dns_qtype 10.528194
+12 dns_rcode 8.116927
+1 dst_port 6.0682745
+0 src_port 2.0011153
+47 dns_qtype_28 1.0
+38 conn_state_SF 1.0
+39 conn_state_SH 1.0
+40 conn_state_SHR 1.0
+Saved artifact at 'runs/005/binary/models/mlp_int8/_saved_model_tmp'. The following endpoints are available:
+
+* Endpoint 'serve'
+  args_0 (POSITIONAL_ONLY): TensorSpec(shape=(None, 118), dtype=tf.float32, name='input_layer')
+Output Type:
+  TensorSpec(shape=(None, 1), dtype=tf.float32, name=None)
+Captures:
+  5266682896: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5266683280: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5266683664: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5266685008: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5284414096: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5284414864: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5284415632: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5284415056: TensorSpec(shape=(), dtype=tf.resource, name=None)
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1790347780.125130 11247624 tf_tfl_flatbuffer_helpers.cc:390] Ignored output_format.
+W0000 00:00:1790347780.125464 11247624 tf_tfl_flatbuffer_helpers.cc:393] Ignored drop_control_dependency.
+2026-09-25 16:49:40.125991: I tensorflow/cc/saved_model/reader.cc:83] Reading SavedModel from: runs/005/binary/models/mlp_int8/_saved_model_tmp
+2026-09-25 16:49:40.126181: I tensorflow/cc/saved_model/reader.cc:51] Reading meta graph with tags { serve }
+2026-09-25 16:49:40.126186: I tensorflow/cc/saved_model/reader.cc:146] Reading SavedModel debug info (if present) from: runs/005/binary/models/mlp_int8/_saved_model_tmp
+2026-09-25 16:49:40.128738: I tensorflow/compiler/mlir/mlir_graph_optimization_pass.cc:388] MLIR V1 optimization pass is not enabled
+2026-09-25 16:49:40.128997: I tensorflow/cc/saved_model/loader.cc:234] Restoring SavedModel bundle.
+2026-09-25 16:49:40.141227: I tensorflow/cc/saved_model/loader.cc:218] Running initialization op on SavedModel bundle at path: runs/005/binary/models/mlp_int8/_saved_model_tmp
+2026-09-25 16:49:40.143964: I tensorflow/cc/saved_model/loader.cc:317] SavedModel load for tags { serve }; Status: success: OK. Took 17973 microseconds.
+2026-09-25 16:49:40.159240: I tensorflow/compiler/mlir/tensorflow/utils/dump_mlir_util.cc:268] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+fully_quantize: 0, inference_type: 6, input_inference_type: INT8, output_inference_type: INT8
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+/Users/user/iot-audit/scripts/quantize_model.py:33: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  p1[i] = (out_q.astype(np.float32) - out_zero) * out_scale
+[quantize] int8 model saved to runs/005/binary/models/mlp_int8/model.tflite (28.6 KB)
+[quantize] metrics (int8): {
+  "accuracy": 0.987159136677012,
+  "precision_pos": 0.995276674278207,
+  "recall_pos": 0.987860535875066,
+  "f1_pos": 0.9915547383838699,
+  "precision_neg": 0.96181640625,
+  "recall_neg": 0.9849,
+  "f1_neg": 0.9732213438735178,
+  "confusion_matrix": [
+    [
+      9849,
+      151
+    ],
+    [
+      391,
+      31818
+    ]
+  ],
+  "roc_auc": 0.9986506737247353,
+  "pr_auc": 0.9993011089882712
+}

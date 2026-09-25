@@ -1,0 +1,102 @@
+[
+  {
+    "index": 8,
+    "feature": "dst_pkts",
+    "max_abs_scaled_value": 335.8940124511719
+  },
+  {
+    "index": 5,
+    "feature": "missed_bytes",
+    "max_abs_scaled_value": 293.85772705078125
+  },
+  {
+    "index": 7,
+    "feature": "src_ip_bytes",
+    "max_abs_scaled_value": 277.3908386230469
+  },
+  {
+    "index": 6,
+    "feature": "src_pkts",
+    "max_abs_scaled_value": 265.8763427734375
+  },
+  {
+    "index": 9,
+    "feature": "dst_ip_bytes",
+    "max_abs_scaled_value": 247.85836791992188
+  },
+  {
+    "index": 13,
+    "feature": "http_request_body_len",
+    "max_abs_scaled_value": 213.3500518798828
+  },
+  {
+    "index": 3,
+    "feature": "src_bytes",
+    "max_abs_scaled_value": 206.7058868408203
+  },
+  {
+    "index": 2,
+    "feature": "duration",
+    "max_abs_scaled_value": 157.15200805664062
+  },
+  {
+    "index": 14,
+    "feature": "http_response_body_len",
+    "max_abs_scaled_value": 104.03803253173828
+  },
+  {
+    "index": 4,
+    "feature": "dst_bytes",
+    "max_abs_scaled_value": 87.08306121826172
+  },
+  {
+    "index": 15,
+    "feature": "http_status_code",
+    "max_abs_scaled_value": 46.37980270385742
+  },
+  {
+    "index": 10,
+    "feature": "dns_qclass",
+    "max_abs_scaled_value": 11.831674575805664
+  },
+  {
+    "index": 11,
+    "feature": "dns_qtype",
+    "max_abs_scaled_value": 10.528194427490234
+  },
+  {
+    "index": 12,
+    "feature": "dns_rcode",
+    "max_abs_scaled_value": 8.116927146911621
+  },
+  {
+    "index": 1,
+    "feature": "dst_port",
+    "max_abs_scaled_value": 6.06827449798584
+  },
+  {
+    "index": 0,
+    "feature": "src_port",
+    "max_abs_scaled_value": 2.001115322113037
+  },
+  {
+    "index": 47,
+    "feature": "dns_qtype_28",
+    "max_abs_scaled_value": 1.0
+  },
+  {
+    "index": 38,
+    "feature": "conn_state_SF",
+    "max_abs_scaled_value": 1.0
+  },
+  {
+    "index": 39,
+    "feature": "conn_state_SH",
+    "max_abs_scaled_value": 1.0
+  },
+  {
+    "index": 40,
+    "feature": "conn_state_SHR",
+    "max_abs_scaled_value": 1.0
+  }
+]

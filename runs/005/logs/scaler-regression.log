@@ -1,0 +1,64 @@
+/Users/user/iot-audit/.venv/lib/python3.12/site-packages/sklearn/utils/validation.py:2827: UserWarning: X does not have valid feature names, but LogisticRegression was fitted with feature names
+  warnings.warn(
+/Users/user/iot-audit/.venv/lib/python3.12/site-packages/sklearn/utils/validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names
+  warnings.warn(
+/Users/user/iot-audit/.venv/lib/python3.12/site-packages/sklearn/utils/validation.py:2827: UserWarning: X does not have valid feature names, but LGBMClassifier was fitted with feature names
+  warnings.warn(
+/Users/user/iot-audit/.venv/lib/python3.12/site-packages/sklearn/utils/validation.py:2827: UserWarning: X does not have valid feature names, but LogisticRegression was fitted with feature names
+  warnings.warn(
+/Users/user/iot-audit/.venv/lib/python3.12/site-packages/sklearn/utils/validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names
+  warnings.warn(
+/Users/user/iot-audit/.venv/lib/python3.12/site-packages/sklearn/utils/validation.py:2827: UserWarning: X does not have valid feature names, but LGBMClassifier was fitted with feature names
+  warnings.warn(
+INFO [logreg] expected fit rows=135067, scaler n_samples_seen_=135067.0
+PASS [logreg] dataset matches preprocessing hash
+PASS [logreg] saved fit/validation/test indices are disjoint partitions
+PASS [logreg] scaling matches map
+PASS [logreg] scaler sample count matches recorded fit
+PASS [logreg] imputer statistics match recorded fit
+PASS [logreg] scaler mean_ matches recorded fit
+PASS [logreg] scaler var_ matches recorded fit
+PASS [logreg] scaler scale_ matches recorded fit
+PASS [logreg] no target-derived cols
+PASS [logreg] same pipeline at inference
+PASS [rf] dataset matches preprocessing hash
+PASS [rf] saved fit/validation/test indices are disjoint partitions
+PASS [rf] scaling matches map
+PASS [rf] no target-derived cols
+PASS [rf] same pipeline at inference
+PASS [xgb] dataset matches preprocessing hash
+PASS [xgb] saved fit/validation/test indices are disjoint partitions
+PASS [xgb] scaling matches map
+PASS [xgb] no target-derived cols
+PASS [xgb] same pipeline at inference
+PASS [lgbm] dataset matches preprocessing hash
+PASS [lgbm] saved fit/validation/test indices are disjoint partitions
+PASS [lgbm] scaling matches map
+PASS [lgbm] no target-derived cols
+PASS [lgbm] same pipeline at inference
+INFO [logreg_mc] expected fit rows=135067, scaler n_samples_seen_=135067.0
+PASS [logreg_mc] dataset matches preprocessing hash
+PASS [logreg_mc] saved fit/validation/test indices are disjoint partitions
+PASS [logreg_mc] scaling matches map
+PASS [logreg_mc] scaler sample count matches recorded fit
+PASS [logreg_mc] imputer statistics match recorded fit
+PASS [logreg_mc] scaler mean_ matches recorded fit
+PASS [logreg_mc] scaler var_ matches recorded fit
+PASS [logreg_mc] scaler scale_ matches recorded fit
+PASS [logreg_mc] no target-derived cols
+PASS [logreg_mc] same pipeline at inference
+PASS [rf_mc] dataset matches preprocessing hash
+PASS [rf_mc] saved fit/validation/test indices are disjoint partitions
+PASS [rf_mc] scaling matches map
+PASS [rf_mc] no target-derived cols
+PASS [rf_mc] same pipeline at inference
+PASS [xgb_mc] dataset matches preprocessing hash
+PASS [xgb_mc] saved fit/validation/test indices are disjoint partitions
+PASS [xgb_mc] scaling matches map
+PASS [xgb_mc] no target-derived cols
+PASS [xgb_mc] same pipeline at inference
+PASS [lgbm_mc] dataset matches preprocessing hash
+PASS [lgbm_mc] saved fit/validation/test indices are disjoint partitions
+PASS [lgbm_mc] scaling matches map
+PASS [lgbm_mc] no target-derived cols
+PASS [lgbm_mc] same pipeline at inference

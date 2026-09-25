@@ -1,0 +1,20 @@
+{
+  "files": {
+    "model.tflite": "8516df9fb6fef964a04297f0467bb4fbc40b2dcb93846a0348d9f54c22efafe9",
+    "input_extreme_features.json": "8cfb99547c0bf46cfd7b477f488709d885d19e405c49cc4684894a3df2dc4724",
+    "calibration_statistics.json": "322f0c49b34bfee239dab02e766964ae256b10f0ee5017bd2061011d65b89a14",
+    "preprocessor.pkl": "3a41a3c3c2e2011bc3a3f689cc73caff29eaaeb2c6959e1cf6ba15f9d9cd323b",
+    "preprocessor_meta.json": "d85e0c11ab5ca0857d91f44463d6eb43dc31910d79dd5f095b8e115b79b504b6",
+    "scaler.pkl": "372de0e73629fa444252fc26afe4dd8669ad50adfe57d7aa5f330fc5599543fa",
+    "metrics.json": "cebda6ef58c140e1a0f3fe9ef1b821e3d043a4839b4820cd630563afd032e61c"
+  },
+  "command": [
+    "scripts/quantize_model.py",
+    "--input_dir",
+    "runs/005/binary/models/mlp",
+    "--csv",
+    "data/train_test_network.csv",
+    "--calib_samples",
+    "1000"
+  ]
+}

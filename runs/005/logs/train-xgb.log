@@ -1,0 +1,32 @@
+[xgb] training (168834 samples, 118 features)...
+[0]	validation_0-auc:0.99259	validation_0-logloss:0.50050	validation_1-auc:0.99237	validation_1-logloss:0.50051
+[50]	validation_0-auc:0.99971	validation_0-logloss:0.03671	validation_1-auc:0.99985	validation_1-logloss:0.03668
+[100]	validation_0-auc:0.99995	validation_0-logloss:0.00854	validation_1-auc:0.99997	validation_1-logloss:0.00865
+[150]	validation_0-auc:0.99998	validation_0-logloss:0.00529	validation_1-auc:0.99997	validation_1-logloss:0.00563
+[200]	validation_0-auc:0.99999	validation_0-logloss:0.00397	validation_1-auc:0.99998	validation_1-logloss:0.00452
+[250]	validation_0-auc:0.99999	validation_0-logloss:0.00312	validation_1-auc:0.99998	validation_1-logloss:0.00392
+[300]	validation_0-auc:1.00000	validation_0-logloss:0.00263	validation_1-auc:0.99998	validation_1-logloss:0.00363
+[350]	validation_0-auc:1.00000	validation_0-logloss:0.00222	validation_1-auc:0.99998	validation_1-logloss:0.00340
+[399]	validation_0-auc:1.00000	validation_0-logloss:0.00197	validation_1-auc:0.99998	validation_1-logloss:0.00330
+[xgb] done in 6.44s
+[xgb] metrics: {
+  "accuracy": 0.9988864934018811,
+  "precision_pos": 0.9992548897857808,
+  "recall_pos": 0.9992859138750039,
+  "f1_pos": 0.9992704015895931,
+  "precision_neg": 0.9976997699769977,
+  "recall_neg": 0.9976,
+  "f1_neg": 0.9976498824941247,
+  "confusion_matrix": [
+    [
+      9976,
+      24
+    ],
+    [
+      23,
+      32186
+    ]
+  ],
+  "roc_auc": 0.9999786131205564,
+  "pr_auc": 0.999993949121814
+}

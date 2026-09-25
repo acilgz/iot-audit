@@ -1,0 +1,15 @@
+{
+  "files": {
+    "model.pkl": "a9621af8b34338789a930b025421e2dae3fa9819301df6e82788027152dab092",
+    "preprocessor.pkl": "3da43ac1dee8a7ed0a9bee403d3de03a22a978178835b4fb5e6938691bccb697",
+    "preprocessor_meta.json": "47ac31b4ae5b76e984a244990c79d80faab30070ad83bd3b95c07ba3e2163235",
+    "metrics.json": "6e96217ea504a2dd9de931332bad7946a8ef95a18f325aba984de62ad7fc31c8"
+  },
+  "command": [
+    "scripts/train_mc_xgb.py",
+    "--csv",
+    "data/train_test_network.csv",
+    "--outdir",
+    "runs/005/multiclass"
+  ]
+}
