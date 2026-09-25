@@ -5,6 +5,7 @@ import re
 from pathlib import Path
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+from matplotlib.container import BarContainer
 import numpy as np
 import pandas as pd
 
@@ -109,8 +110,10 @@ def plot_task_metric(
     else:
         pivot_mean.plot(kind="bar", width=0.8, ax=ax)
 
+    bar_containers = [c for c in ax.containers if isinstance(c, BarContainer)]
+
     if style == "overlay":
-        for container_idx, container in enumerate(ax.containers):
+        for container_idx, container in enumerate(bar_containers):
             for bar_idx, bar in enumerate(container):
                 m = pivot_mean.iloc[bar_idx, container_idx]
                 s = pivot_std.iloc[bar_idx, container_idx]
@@ -134,7 +137,7 @@ def plot_task_metric(
                     )
                     ax.add_patch(rect)
 
-    for container_idx, container in enumerate(ax.containers):
+    for container_idx, container in enumerate(bar_containers):
         for bar_idx, bar in enumerate(container):
             m = pivot_mean.iloc[bar_idx, container_idx]
             s = pivot_std.iloc[bar_idx, container_idx]
