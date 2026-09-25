@@ -1,0 +1,39 @@
+[lgbm] training (168834 samples, 118 features)...
+[LightGBM] [Info] Number of positive: 128834, number of negative: 40000
+[LightGBM] [Info] Auto-choosing row-wise multi-threading, the overhead of testing was 0.010205 seconds.
+You can set `force_row_wise=true` to remove the overhead.
+And if memory is not enough, you can set `force_col_wise=true`.
+[LightGBM] [Info] Total Bins 2512
+[LightGBM] [Info] Number of data points in the train set: 168834, number of used features: 92
+[LightGBM] [Info] [binary:BoostFromScore]: pavg=0.500000 -> initscore=-0.000000
+[LightGBM] [Info] Start training from score -0.000000
+[50]	training's auc: 0.999968	training's binary_logloss: 0.0462978	valid_1's auc: 0.999958	valid_1's binary_logloss: 0.0467178
+[100]	training's auc: 0.999996	training's binary_logloss: 0.00613212	valid_1's auc: 0.999988	valid_1's binary_logloss: 0.00718205
+[150]	training's auc: 0.999999	training's binary_logloss: 0.0017358	valid_1's auc: 0.999991	valid_1's binary_logloss: 0.00302033
+[200]	training's auc: 1	training's binary_logloss: 0.000832191	valid_1's auc: 0.99999	valid_1's binary_logloss: 0.00250728
+[250]	training's auc: 1	training's binary_logloss: 0.000486222	valid_1's auc: 0.999988	valid_1's binary_logloss: 0.00239967
+[300]	training's auc: 1	training's binary_logloss: 0.000293027	valid_1's auc: 0.999986	valid_1's binary_logloss: 0.00243752
+[350]	training's auc: 1	training's binary_logloss: 0.000199273	valid_1's auc: 0.999983	valid_1's binary_logloss: 0.00257293
+[400]	training's auc: 1	training's binary_logloss: 0.000145887	valid_1's auc: 0.99998	valid_1's binary_logloss: 0.00267516
+[lgbm] done in 5.58s
+[lgbm] metrics: {
+  "accuracy": 0.9992655594778365,
+  "precision_pos": 0.9996583850931677,
+  "recall_pos": 0.9993790555434816,
+  "f1_pos": 0.9995187008026829,
+  "precision_neg": 0.9980017983814566,
+  "recall_neg": 0.9989,
+  "f1_neg": 0.9984506971862662,
+  "confusion_matrix": [
+    [
+      9989,
+      11
+    ],
+    [
+      20,
+      32189
+    ]
+  ],
+  "roc_auc": 0.9999795398801576,
+  "pr_auc": 0.9999944628319596
+}

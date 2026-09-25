@@ -1,0 +1,6 @@
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+keras_fp32: accuracy=94.9100%
+keras_qdq: accuracy=66.7300%
+keras_restore_numeric: accuracy=92.2000%
+keras_restore_onehot: accuracy=69.2600%
+runs/007/audit/input-groups.json

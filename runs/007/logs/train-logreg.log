@@ -1,0 +1,25 @@
+/Users/user/iot-audit/.venv/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:1457: FutureWarning: 'n_jobs' has no effect since 1.8 and will be removed in 1.10. You provided 'n_jobs=-1', please leave it unspecified.
+  warnings.warn(msg, category=FutureWarning)
+[logreg] training (168834 samples, 118 features)...
+[logreg] done in 1.28s
+[logreg] metrics: {
+  "accuracy": 0.9573313748252742,
+  "precision_pos": 0.9723499440785386,
+  "recall_pos": 0.9717159800055885,
+  "f1_pos": 0.9720328586735407,
+  "precision_neg": 0.9090909090909091,
+  "recall_neg": 0.911,
+  "f1_neg": 0.9100444533240097,
+  "confusion_matrix": [
+    [
+      9110,
+      890
+    ],
+    [
+      911,
+      31298
+    ]
+  ],
+  "roc_auc": 0.9928099847868609,
+  "pr_auc": 0.9978777833616768
+}

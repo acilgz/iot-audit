@@ -1,0 +1,3 @@
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+runs/007/int8_diagnostics/runtime_batch_comparison.json

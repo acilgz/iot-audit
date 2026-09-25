@@ -1,0 +1,1695 @@
+{
+  "definition": "Exact equality of parsed values on the listed columns",
+  "scope": "Read-only audit of existing splits",
+  "limitation": "Selected raw inputs are measured before imputation/OHE",
+  "dataset": {
+    "path": "/Users/user/iot-audit/data/train_test_network.csv",
+    "sha256": "26ddc513552de36de6428b2e578efaed2b57504c716dfba847cc0109a64e1974",
+    "rows": 211043,
+    "columns": 44
+  },
+  "tasks": {
+    "binary": {
+      "model_feature_contract": "mlp",
+      "target_column": "label",
+      "metadata": {
+        "path": "/Users/user/iot-audit/runs/007/binary/models/mlp/preprocessor_meta.json",
+        "sha256": "fa3d6ce9a35c38f81f86455aeb3f49c810a95a542a15e74822ada81cd177f1e9",
+        "training_commit_as_recorded": "cb7943890becc51af5a1f10901922a90d6920427"
+      },
+      "split_sizes": {
+        "train": 168834,
+        "test": 42209,
+        "fit": 135067,
+        "validation": 33767
+      },
+      "projections": {
+        "full_rows_including_targets": {
+          "columns": [
+            "src_ip",
+            "src_port",
+            "dst_ip",
+            "dst_port",
+            "proto",
+            "service",
+            "duration",
+            "src_bytes",
+            "dst_bytes",
+            "conn_state",
+            "missed_bytes",
+            "src_pkts",
+            "src_ip_bytes",
+            "dst_pkts",
+            "dst_ip_bytes",
+            "dns_query",
+            "dns_qclass",
+            "dns_qtype",
+            "dns_rcode",
+            "dns_AA",
+            "dns_RD",
+            "dns_RA",
+            "dns_rejected",
+            "ssl_version",
+            "ssl_cipher",
+            "ssl_resumed",
+            "ssl_established",
+            "ssl_subject",
+            "ssl_issuer",
+            "http_trans_depth",
+            "http_method",
+            "http_uri",
+            "http_version",
+            "http_request_body_len",
+            "http_response_body_len",
+            "http_status_code",
+            "http_user_agent",
+            "http_orig_mime_types",
+            "http_resp_mime_types",
+            "weird_name",
+            "weird_addl",
+            "weird_notice",
+            "label",
+            "type"
+          ],
+          "global": {
+            "rows": 211043,
+            "distinct_groups": 190474,
+            "duplicate_groups": 7170,
+            "rows_in_duplicate_groups": 27739,
+            "duplicate_rows_beyond_first": 20569
+          },
+          "within_partitions": {
+            "train": {
+              "rows": 168834,
+              "distinct_groups": 153607,
+              "duplicate_groups": 5205,
+              "rows_in_duplicate_groups": 20432,
+              "duplicate_rows_beyond_first": 15227
+            },
+            "test": {
+              "rows": 42209,
+              "distinct_groups": 39698,
+              "duplicate_groups": 663,
+              "rows_in_duplicate_groups": 3174,
+              "duplicate_rows_beyond_first": 2511
+            },
+            "fit": {
+              "rows": 135067,
+              "distinct_groups": 123720,
+              "duplicate_groups": 3757,
+              "rows_in_duplicate_groups": 15104,
+              "duplicate_rows_beyond_first": 11347
+            },
+            "validation": {
+              "rows": 33767,
+              "distinct_groups": 31897,
+              "duplicate_groups": 454,
+              "rows_in_duplicate_groups": 2324,
+              "duplicate_rows_beyond_first": 1870
+            }
+          },
+          "target_conflicts": {
+            "groups_with_multiple_target_values": 0,
+            "rows_in_conflicting_groups": 0
+          },
+          "cross_partitions": {
+            "train_vs_test": {
+              "shared_distinct_groups": 2831,
+              "left_rows": 168834,
+              "right_rows": 42209,
+              "left_rows_with_right_match": 12607,
+              "right_rows_with_left_match": 5099,
+              "right_fraction_with_left_match": 0.12080362008102537,
+              "right_overlap_by_class": [
+                {
+                  "target_value": "0",
+                  "right_rows": 10000,
+                  "right_rows_with_left_match": 1631,
+                  "fraction": 0.1631
+                },
+                {
+                  "target_value": "1",
+                  "right_rows": 32209,
+                  "right_rows_with_left_match": 3468,
+                  "fraction": 0.10767176876028439
+                }
+              ]
+            },
+            "fit_vs_validation": {
+              "shared_distinct_groups": 2010,
+              "left_rows": 135067,
+              "right_rows": 33767,
+              "left_rows_with_right_match": 9326,
+              "right_rows_with_left_match": 3720,
+              "right_fraction_with_left_match": 0.11016673083187728,
+              "right_overlap_by_class": [
+                {
+                  "target_value": "0",
+                  "right_rows": 8000,
+                  "right_rows_with_left_match": 1234,
+                  "fraction": 0.15425
+                },
+                {
+                  "target_value": "1",
+                  "right_rows": 25767,
+                  "right_rows_with_left_match": 2486,
+                  "fraction": 0.09647999379050724
+                }
+              ]
+            },
+            "fit_vs_test": {
+              "shared_distinct_groups": 2456,
+              "left_rows": 135067,
+              "right_rows": 42209,
+              "left_rows_with_right_match": 10156,
+              "right_rows_with_left_match": 4689,
+              "right_fraction_with_left_match": 0.11109005188466915,
+              "right_overlap_by_class": [
+                {
+                  "target_value": "0",
+                  "right_rows": 10000,
+                  "right_rows_with_left_match": 1626,
+                  "fraction": 0.1626
+                },
+                {
+                  "target_value": "1",
+                  "right_rows": 32209,
+                  "right_rows_with_left_match": 3063,
+                  "fraction": 0.09509764351578752
+                }
+              ]
+            },
+            "validation_vs_test": {
+              "shared_distinct_groups": 867,
+              "left_rows": 33767,
+              "right_rows": 42209,
+              "left_rows_with_right_match": 2451,
+              "right_rows_with_left_match": 2865,
+              "right_fraction_with_left_match": 0.06787651922575753,
+              "right_overlap_by_class": [
+                {
+                  "target_value": "0",
+                  "right_rows": 10000,
+                  "right_rows_with_left_match": 1565,
+                  "fraction": 0.1565
+                },
+                {
+                  "target_value": "1",
+                  "right_rows": 32209,
+                  "right_rows_with_left_match": 1300,
+                  "fraction": 0.04036138967369369
+                }
+              ]
+            }
+          }
+        },
+        "raw_predictors_without_targets": {
+          "columns": [
+            "src_ip",
+            "src_port",
+            "dst_ip",
+            "dst_port",
+            "proto",
+            "service",
+            "duration",
+            "src_bytes",
+            "dst_bytes",
+            "conn_state",
+            "missed_bytes",
+            "src_pkts",
+            "src_ip_bytes",
+            "dst_pkts",
+            "dst_ip_bytes",
+            "dns_query",
+            "dns_qclass",
+            "dns_qtype",
+            "dns_rcode",
+            "dns_AA",
+            "dns_RD",
+            "dns_RA",
+            "dns_rejected",
+            "ssl_version",
+            "ssl_cipher",
+            "ssl_resumed",
+            "ssl_established",
+            "ssl_subject",
+            "ssl_issuer",
+            "http_trans_depth",
+            "http_method",
+            "http_uri",
+            "http_version",
+            "http_request_body_len",
+            "http_response_body_len",
+            "http_status_code",
+            "http_user_agent",
+            "http_orig_mime_types",
+            "http_resp_mime_types",
+            "weird_name",
+            "weird_addl",
+            "weird_notice"
+          ],
+          "global": {
+            "rows": 211043,
+            "distinct_groups": 190474,
+            "duplicate_groups": 7170,
+            "rows_in_duplicate_groups": 27739,
+            "duplicate_rows_beyond_first": 20569
+          },
+          "within_partitions": {
+            "train": {
+              "rows": 168834,
+              "distinct_groups": 153607,
+              "duplicate_groups": 5205,
+              "rows_in_duplicate_groups": 20432,
+              "duplicate_rows_beyond_first": 15227
+            },
+            "test": {
+              "rows": 42209,
+              "distinct_groups": 39698,
+              "duplicate_groups": 663,
+              "rows_in_duplicate_groups": 3174,
+              "duplicate_rows_beyond_first": 2511
+            },
+            "fit": {
+              "rows": 135067,
+              "distinct_groups": 123720,
+              "duplicate_groups": 3757,
+              "rows_in_duplicate_groups": 15104,
+              "duplicate_rows_beyond_first": 11347
+            },
+            "validation": {
+              "rows": 33767,
+              "distinct_groups": 31897,
+              "duplicate_groups": 454,
+              "rows_in_duplicate_groups": 2324,
+              "duplicate_rows_beyond_first": 1870
+            }
+          },
+          "target_conflicts": {
+            "groups_with_multiple_target_values": 0,
+            "rows_in_conflicting_groups": 0
+          },
+          "cross_partitions": {
+            "train_vs_test": {
+              "shared_distinct_groups": 2831,
+              "left_rows": 168834,
+              "right_rows": 42209,
+              "left_rows_with_right_match": 12607,
+              "right_rows_with_left_match": 5099,
+              "right_fraction_with_left_match": 0.12080362008102537,
+              "right_overlap_by_class": [
+                {
+                  "target_value": "0",
+                  "right_rows": 10000,
+                  "right_rows_with_left_match": 1631,
+                  "fraction": 0.1631
+                },
+                {
+                  "target_value": "1",
+                  "right_rows": 32209,
+                  "right_rows_with_left_match": 3468,
+                  "fraction": 0.10767176876028439
+                }
+              ]
+            },
+            "fit_vs_validation": {
+              "shared_distinct_groups": 2010,
+              "left_rows": 135067,
+              "right_rows": 33767,
+              "left_rows_with_right_match": 9326,
+              "right_rows_with_left_match": 3720,
+              "right_fraction_with_left_match": 0.11016673083187728,
+              "right_overlap_by_class": [
+                {
+                  "target_value": "0",
+                  "right_rows": 8000,
+                  "right_rows_with_left_match": 1234,
+                  "fraction": 0.15425
+                },
+                {
+                  "target_value": "1",
+                  "right_rows": 25767,
+                  "right_rows_with_left_match": 2486,
+                  "fraction": 0.09647999379050724
+                }
+              ]
+            },
+            "fit_vs_test": {
+              "shared_distinct_groups": 2456,
+              "left_rows": 135067,
+              "right_rows": 42209,
+              "left_rows_with_right_match": 10156,
+              "right_rows_with_left_match": 4689,
+              "right_fraction_with_left_match": 0.11109005188466915,
+              "right_overlap_by_class": [
+                {
+                  "target_value": "0",
+                  "right_rows": 10000,
+                  "right_rows_with_left_match": 1626,
+                  "fraction": 0.1626
+                },
+                {
+                  "target_value": "1",
+                  "right_rows": 32209,
+                  "right_rows_with_left_match": 3063,
+                  "fraction": 0.09509764351578752
+                }
+              ]
+            },
+            "validation_vs_test": {
+              "shared_distinct_groups": 867,
+              "left_rows": 33767,
+              "right_rows": 42209,
+              "left_rows_with_right_match": 2451,
+              "right_rows_with_left_match": 2865,
+              "right_fraction_with_left_match": 0.06787651922575753,
+              "right_overlap_by_class": [
+                {
+                  "target_value": "0",
+                  "right_rows": 10000,
+                  "right_rows_with_left_match": 1565,
+                  "fraction": 0.1565
+                },
+                {
+                  "target_value": "1",
+                  "right_rows": 32209,
+                  "right_rows_with_left_match": 1300,
+                  "fraction": 0.04036138967369369
+                }
+              ]
+            }
+          }
+        },
+        "selected_raw_model_inputs": {
+          "columns": [
+            "src_port",
+            "dst_port",
+            "duration",
+            "src_bytes",
+            "dst_bytes",
+            "missed_bytes",
+            "src_pkts",
+            "src_ip_bytes",
+            "dst_pkts",
+            "dst_ip_bytes",
+            "dns_qclass",
+            "dns_qtype",
+            "dns_rcode",
+            "http_request_body_len",
+            "http_response_body_len",
+            "http_status_code",
+            "proto",
+            "service",
+            "conn_state",
+            "ssl_version",
+            "http_method",
+            "weird_name",
+            "dns_AA",
+            "dns_RD",
+            "dns_RA",
+            "dns_rejected",
+            "ssl_cipher",
+            "ssl_resumed",
+            "ssl_established",
+            "http_trans_depth",
+            "http_version",
+            "weird_notice"
+          ],
+          "global": {
+            "rows": 211043,
+            "distinct_groups": 183549,
+            "duplicate_groups": 9879,
+            "rows_in_duplicate_groups": 37373,
+            "duplicate_rows_beyond_first": 27494
+          },
+          "within_partitions": {
+            "train": {
+              "rows": 168834,
+              "distinct_groups": 148509,
+              "duplicate_groups": 7480,
+              "rows_in_duplicate_groups": 27805,
+              "duplicate_rows_beyond_first": 20325
+            },
+            "test": {
+              "rows": 42209,
+              "distinct_groups": 39151,
+              "duplicate_groups": 1078,
+              "rows_in_duplicate_groups": 4136,
+              "duplicate_rows_beyond_first": 3058
+            },
+            "fit": {
+              "rows": 135067,
+              "distinct_groups": 120034,
+              "duplicate_groups": 5621,
+              "rows_in_duplicate_groups": 20654,
+              "duplicate_rows_beyond_first": 15033
+            },
+            "validation": {
+              "rows": 33767,
+              "distinct_groups": 31542,
+              "duplicate_groups": 711,
+              "rows_in_duplicate_groups": 2936,
+              "duplicate_rows_beyond_first": 2225
+            }
+          },
+          "target_conflicts": {
+            "groups_with_multiple_target_values": 0,
+            "rows_in_conflicting_groups": 0
+          },
+          "cross_partitions": {
+            "train_vs_test": {
+              "shared_distinct_groups": 4111,
+              "left_rows": 168834,
+              "right_rows": 42209,
+              "left_rows_with_right_match": 16389,
+              "right_rows_with_left_match": 6869,
+              "right_fraction_with_left_match": 0.16273780473358762,
+              "right_overlap_by_class": [
+                {
+                  "target_value": "0",
+                  "right_rows": 10000,
+                  "right_rows_with_left_match": 1649,
+                  "fraction": 0.1649
+                },
+                {
+                  "target_value": "1",
+                  "right_rows": 32209,
+                  "right_rows_with_left_match": 5220,
+                  "fraction": 0.16206650315129312
+                }
+              ]
+            },
+            "fit_vs_validation": {
+              "shared_distinct_groups": 3067,
+              "left_rows": 135067,
+              "right_rows": 33767,
+              "left_rows_with_right_match": 11896,
+              "right_rows_with_left_match": 5091,
+              "right_fraction_with_left_match": 0.1507685017916901,
+              "right_overlap_by_class": [
+                {
+                  "target_value": "0",
+                  "right_rows": 8000,
+                  "right_rows_with_left_match": 1251,
+                  "fraction": 0.156375
+                },
+                {
+                  "target_value": "1",
+                  "right_rows": 25767,
+                  "right_rows_with_left_match": 3840,
+                  "fraction": 0.14902782628943997
+                }
+              ]
+            },
+            "fit_vs_test": {
+              "shared_distinct_groups": 3630,
+              "left_rows": 135067,
+              "right_rows": 42209,
+              "left_rows_with_right_match": 13188,
+              "right_rows_with_left_match": 6331,
+              "right_fraction_with_left_match": 0.14999170792958846,
+              "right_overlap_by_class": [
+                {
+                  "target_value": "0",
+                  "right_rows": 10000,
+                  "right_rows_with_left_match": 1643,
+                  "fraction": 0.1643
+                },
+                {
+                  "target_value": "1",
+                  "right_rows": 32209,
+                  "right_rows_with_left_match": 4688,
+                  "fraction": 0.14554938060790462
+                }
+              ]
+            },
+            "validation_vs_test": {
+              "shared_distinct_groups": 1426,
+              "left_rows": 33767,
+              "right_rows": 42209,
+              "left_rows_with_right_match": 3201,
+              "right_rows_with_left_match": 3683,
+              "right_fraction_with_left_match": 0.08725627235897557,
+              "right_overlap_by_class": [
+                {
+                  "target_value": "0",
+                  "right_rows": 10000,
+                  "right_rows_with_left_match": 1604,
+                  "fraction": 0.1604
+                },
+                {
+                  "target_value": "1",
+                  "right_rows": 32209,
+                  "right_rows_with_left_match": 2079,
+                  "fraction": 0.06454717625508398
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "multiclass": {
+      "model_feature_contract": "mlp_mc",
+      "target_column": "type",
+      "metadata": {
+        "path": "/Users/user/iot-audit/runs/007/multiclass/models/mlp_mc/preprocessor_meta.json",
+        "sha256": "14042df0f21c083bc5235a018c6449a0419f547bc89ce8a09e784c6ae6701459",
+        "training_commit_as_recorded": "cb7943890becc51af5a1f10901922a90d6920427"
+      },
+      "split_sizes": {
+        "train": 168834,
+        "test": 42209,
+        "fit": 135067,
+        "validation": 33767
+      },
+      "projections": {
+        "full_rows_including_targets": {
+          "columns": [
+            "src_ip",
+            "src_port",
+            "dst_ip",
+            "dst_port",
+            "proto",
+            "service",
+            "duration",
+            "src_bytes",
+            "dst_bytes",
+            "conn_state",
+            "missed_bytes",
+            "src_pkts",
+            "src_ip_bytes",
+            "dst_pkts",
+            "dst_ip_bytes",
+            "dns_query",
+            "dns_qclass",
+            "dns_qtype",
+            "dns_rcode",
+            "dns_AA",
+            "dns_RD",
+            "dns_RA",
+            "dns_rejected",
+            "ssl_version",
+            "ssl_cipher",
+            "ssl_resumed",
+            "ssl_established",
+            "ssl_subject",
+            "ssl_issuer",
+            "http_trans_depth",
+            "http_method",
+            "http_uri",
+            "http_version",
+            "http_request_body_len",
+            "http_response_body_len",
+            "http_status_code",
+            "http_user_agent",
+            "http_orig_mime_types",
+            "http_resp_mime_types",
+            "weird_name",
+            "weird_addl",
+            "weird_notice",
+            "label",
+            "type"
+          ],
+          "global": {
+            "rows": 211043,
+            "distinct_groups": 190474,
+            "duplicate_groups": 7170,
+            "rows_in_duplicate_groups": 27739,
+            "duplicate_rows_beyond_first": 20569
+          },
+          "within_partitions": {
+            "train": {
+              "rows": 168834,
+              "distinct_groups": 153653,
+              "duplicate_groups": 5219,
+              "rows_in_duplicate_groups": 20400,
+              "duplicate_rows_beyond_first": 15181
+            },
+            "test": {
+              "rows": 42209,
+              "distinct_groups": 39666,
+              "duplicate_groups": 668,
+              "rows_in_duplicate_groups": 3211,
+              "duplicate_rows_beyond_first": 2543
+            },
+            "fit": {
+              "rows": 135067,
+              "distinct_groups": 123897,
+              "duplicate_groups": 3699,
+              "rows_in_duplicate_groups": 14869,
+              "duplicate_rows_beyond_first": 11170
+            },
+            "validation": {
+              "rows": 33767,
+              "distinct_groups": 31831,
+              "duplicate_groups": 459,
+              "rows_in_duplicate_groups": 2395,
+              "duplicate_rows_beyond_first": 1936
+            }
+          },
+          "target_conflicts": {
+            "groups_with_multiple_target_values": 0,
+            "rows_in_conflicting_groups": 0
+          },
+          "cross_partitions": {
+            "train_vs_test": {
+              "shared_distinct_groups": 2845,
+              "left_rows": 168834,
+              "right_rows": 42209,
+              "left_rows_with_right_match": 12566,
+              "right_rows_with_left_match": 5156,
+              "right_fraction_with_left_match": 0.12215404297661636,
+              "right_overlap_by_class": [
+                {
+                  "target_value": "backdoor",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 435,
+                  "fraction": 0.10875
+                },
+                {
+                  "target_value": "ddos",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 2,
+                  "fraction": 0.0005
+                },
+                {
+                  "target_value": "dos",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 317,
+                  "fraction": 0.07925
+                },
+                {
+                  "target_value": "injection",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 10,
+                  "fraction": 0.0025
+                },
+                {
+                  "target_value": "mitm",
+                  "right_rows": 209,
+                  "right_rows_with_left_match": 1,
+                  "fraction": 0.004784688995215311
+                },
+                {
+                  "target_value": "normal",
+                  "right_rows": 10000,
+                  "right_rows_with_left_match": 1636,
+                  "fraction": 0.1636
+                },
+                {
+                  "target_value": "password",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 43,
+                  "fraction": 0.01075
+                },
+                {
+                  "target_value": "ransomware",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 1263,
+                  "fraction": 0.31575
+                },
+                {
+                  "target_value": "scanning",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 0,
+                  "fraction": 0.0
+                },
+                {
+                  "target_value": "xss",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 1449,
+                  "fraction": 0.36225
+                }
+              ]
+            },
+            "fit_vs_validation": {
+              "shared_distinct_groups": 2075,
+              "left_rows": 135067,
+              "right_rows": 33767,
+              "left_rows_with_right_match": 9373,
+              "right_rows_with_left_match": 3845,
+              "right_fraction_with_left_match": 0.11386856990552907,
+              "right_overlap_by_class": [
+                {
+                  "target_value": "backdoor",
+                  "right_rows": 3200,
+                  "right_rows_with_left_match": 260,
+                  "fraction": 0.08125
+                },
+                {
+                  "target_value": "ddos",
+                  "right_rows": 3200,
+                  "right_rows_with_left_match": 1,
+                  "fraction": 0.0003125
+                },
+                {
+                  "target_value": "dos",
+                  "right_rows": 3200,
+                  "right_rows_with_left_match": 209,
+                  "fraction": 0.0653125
+                },
+                {
+                  "target_value": "injection",
+                  "right_rows": 3200,
+                  "right_rows_with_left_match": 7,
+                  "fraction": 0.0021875
+                },
+                {
+                  "target_value": "mitm",
+                  "right_rows": 167,
+                  "right_rows_with_left_match": 1,
+                  "fraction": 0.005988023952095809
+                },
+                {
+                  "target_value": "normal",
+                  "right_rows": 8000,
+                  "right_rows_with_left_match": 1338,
+                  "fraction": 0.16725
+                },
+                {
+                  "target_value": "password",
+                  "right_rows": 3200,
+                  "right_rows_with_left_match": 31,
+                  "fraction": 0.0096875
+                },
+                {
+                  "target_value": "ransomware",
+                  "right_rows": 3200,
+                  "right_rows_with_left_match": 975,
+                  "fraction": 0.3046875
+                },
+                {
+                  "target_value": "scanning",
+                  "right_rows": 3200,
+                  "right_rows_with_left_match": 0,
+                  "fraction": 0.0
+                },
+                {
+                  "target_value": "xss",
+                  "right_rows": 3200,
+                  "right_rows_with_left_match": 1023,
+                  "fraction": 0.3196875
+                }
+              ]
+            },
+            "fit_vs_test": {
+              "shared_distinct_groups": 2478,
+              "left_rows": 135067,
+              "right_rows": 42209,
+              "left_rows_with_right_match": 10041,
+              "right_rows_with_left_match": 4745,
+              "right_fraction_with_left_match": 0.11241678315051293,
+              "right_overlap_by_class": [
+                {
+                  "target_value": "backdoor",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 360,
+                  "fraction": 0.09
+                },
+                {
+                  "target_value": "ddos",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 2,
+                  "fraction": 0.0005
+                },
+                {
+                  "target_value": "dos",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 255,
+                  "fraction": 0.06375
+                },
+                {
+                  "target_value": "injection",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 10,
+                  "fraction": 0.0025
+                },
+                {
+                  "target_value": "mitm",
+                  "right_rows": 209,
+                  "right_rows_with_left_match": 1,
+                  "fraction": 0.004784688995215311
+                },
+                {
+                  "target_value": "normal",
+                  "right_rows": 10000,
+                  "right_rows_with_left_match": 1627,
+                  "fraction": 0.1627
+                },
+                {
+                  "target_value": "password",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 39,
+                  "fraction": 0.00975
+                },
+                {
+                  "target_value": "ransomware",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 1184,
+                  "fraction": 0.296
+                },
+                {
+                  "target_value": "scanning",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 0,
+                  "fraction": 0.0
+                },
+                {
+                  "target_value": "xss",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 1267,
+                  "fraction": 0.31675
+                }
+              ]
+            },
+            "validation_vs_test": {
+              "shared_distinct_groups": 897,
+              "left_rows": 33767,
+              "right_rows": 42209,
+              "left_rows_with_right_match": 2525,
+              "right_rows_with_left_match": 2969,
+              "right_fraction_with_left_match": 0.07034044871946742,
+              "right_overlap_by_class": [
+                {
+                  "target_value": "backdoor",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 85,
+                  "fraction": 0.02125
+                },
+                {
+                  "target_value": "ddos",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 0,
+                  "fraction": 0.0
+                },
+                {
+                  "target_value": "dos",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 62,
+                  "fraction": 0.0155
+                },
+                {
+                  "target_value": "injection",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 3,
+                  "fraction": 0.00075
+                },
+                {
+                  "target_value": "mitm",
+                  "right_rows": 209,
+                  "right_rows_with_left_match": 0,
+                  "fraction": 0.0
+                },
+                {
+                  "target_value": "normal",
+                  "right_rows": 10000,
+                  "right_rows_with_left_match": 1598,
+                  "fraction": 0.1598
+                },
+                {
+                  "target_value": "password",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 16,
+                  "fraction": 0.004
+                },
+                {
+                  "target_value": "ransomware",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 787,
+                  "fraction": 0.19675
+                },
+                {
+                  "target_value": "scanning",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 0,
+                  "fraction": 0.0
+                },
+                {
+                  "target_value": "xss",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 418,
+                  "fraction": 0.1045
+                }
+              ]
+            }
+          }
+        },
+        "raw_predictors_without_targets": {
+          "columns": [
+            "src_ip",
+            "src_port",
+            "dst_ip",
+            "dst_port",
+            "proto",
+            "service",
+            "duration",
+            "src_bytes",
+            "dst_bytes",
+            "conn_state",
+            "missed_bytes",
+            "src_pkts",
+            "src_ip_bytes",
+            "dst_pkts",
+            "dst_ip_bytes",
+            "dns_query",
+            "dns_qclass",
+            "dns_qtype",
+            "dns_rcode",
+            "dns_AA",
+            "dns_RD",
+            "dns_RA",
+            "dns_rejected",
+            "ssl_version",
+            "ssl_cipher",
+            "ssl_resumed",
+            "ssl_established",
+            "ssl_subject",
+            "ssl_issuer",
+            "http_trans_depth",
+            "http_method",
+            "http_uri",
+            "http_version",
+            "http_request_body_len",
+            "http_response_body_len",
+            "http_status_code",
+            "http_user_agent",
+            "http_orig_mime_types",
+            "http_resp_mime_types",
+            "weird_name",
+            "weird_addl",
+            "weird_notice"
+          ],
+          "global": {
+            "rows": 211043,
+            "distinct_groups": 190474,
+            "duplicate_groups": 7170,
+            "rows_in_duplicate_groups": 27739,
+            "duplicate_rows_beyond_first": 20569
+          },
+          "within_partitions": {
+            "train": {
+              "rows": 168834,
+              "distinct_groups": 153653,
+              "duplicate_groups": 5219,
+              "rows_in_duplicate_groups": 20400,
+              "duplicate_rows_beyond_first": 15181
+            },
+            "test": {
+              "rows": 42209,
+              "distinct_groups": 39666,
+              "duplicate_groups": 668,
+              "rows_in_duplicate_groups": 3211,
+              "duplicate_rows_beyond_first": 2543
+            },
+            "fit": {
+              "rows": 135067,
+              "distinct_groups": 123897,
+              "duplicate_groups": 3699,
+              "rows_in_duplicate_groups": 14869,
+              "duplicate_rows_beyond_first": 11170
+            },
+            "validation": {
+              "rows": 33767,
+              "distinct_groups": 31831,
+              "duplicate_groups": 459,
+              "rows_in_duplicate_groups": 2395,
+              "duplicate_rows_beyond_first": 1936
+            }
+          },
+          "target_conflicts": {
+            "groups_with_multiple_target_values": 0,
+            "rows_in_conflicting_groups": 0
+          },
+          "cross_partitions": {
+            "train_vs_test": {
+              "shared_distinct_groups": 2845,
+              "left_rows": 168834,
+              "right_rows": 42209,
+              "left_rows_with_right_match": 12566,
+              "right_rows_with_left_match": 5156,
+              "right_fraction_with_left_match": 0.12215404297661636,
+              "right_overlap_by_class": [
+                {
+                  "target_value": "backdoor",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 435,
+                  "fraction": 0.10875
+                },
+                {
+                  "target_value": "ddos",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 2,
+                  "fraction": 0.0005
+                },
+                {
+                  "target_value": "dos",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 317,
+                  "fraction": 0.07925
+                },
+                {
+                  "target_value": "injection",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 10,
+                  "fraction": 0.0025
+                },
+                {
+                  "target_value": "mitm",
+                  "right_rows": 209,
+                  "right_rows_with_left_match": 1,
+                  "fraction": 0.004784688995215311
+                },
+                {
+                  "target_value": "normal",
+                  "right_rows": 10000,
+                  "right_rows_with_left_match": 1636,
+                  "fraction": 0.1636
+                },
+                {
+                  "target_value": "password",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 43,
+                  "fraction": 0.01075
+                },
+                {
+                  "target_value": "ransomware",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 1263,
+                  "fraction": 0.31575
+                },
+                {
+                  "target_value": "scanning",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 0,
+                  "fraction": 0.0
+                },
+                {
+                  "target_value": "xss",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 1449,
+                  "fraction": 0.36225
+                }
+              ]
+            },
+            "fit_vs_validation": {
+              "shared_distinct_groups": 2075,
+              "left_rows": 135067,
+              "right_rows": 33767,
+              "left_rows_with_right_match": 9373,
+              "right_rows_with_left_match": 3845,
+              "right_fraction_with_left_match": 0.11386856990552907,
+              "right_overlap_by_class": [
+                {
+                  "target_value": "backdoor",
+                  "right_rows": 3200,
+                  "right_rows_with_left_match": 260,
+                  "fraction": 0.08125
+                },
+                {
+                  "target_value": "ddos",
+                  "right_rows": 3200,
+                  "right_rows_with_left_match": 1,
+                  "fraction": 0.0003125
+                },
+                {
+                  "target_value": "dos",
+                  "right_rows": 3200,
+                  "right_rows_with_left_match": 209,
+                  "fraction": 0.0653125
+                },
+                {
+                  "target_value": "injection",
+                  "right_rows": 3200,
+                  "right_rows_with_left_match": 7,
+                  "fraction": 0.0021875
+                },
+                {
+                  "target_value": "mitm",
+                  "right_rows": 167,
+                  "right_rows_with_left_match": 1,
+                  "fraction": 0.005988023952095809
+                },
+                {
+                  "target_value": "normal",
+                  "right_rows": 8000,
+                  "right_rows_with_left_match": 1338,
+                  "fraction": 0.16725
+                },
+                {
+                  "target_value": "password",
+                  "right_rows": 3200,
+                  "right_rows_with_left_match": 31,
+                  "fraction": 0.0096875
+                },
+                {
+                  "target_value": "ransomware",
+                  "right_rows": 3200,
+                  "right_rows_with_left_match": 975,
+                  "fraction": 0.3046875
+                },
+                {
+                  "target_value": "scanning",
+                  "right_rows": 3200,
+                  "right_rows_with_left_match": 0,
+                  "fraction": 0.0
+                },
+                {
+                  "target_value": "xss",
+                  "right_rows": 3200,
+                  "right_rows_with_left_match": 1023,
+                  "fraction": 0.3196875
+                }
+              ]
+            },
+            "fit_vs_test": {
+              "shared_distinct_groups": 2478,
+              "left_rows": 135067,
+              "right_rows": 42209,
+              "left_rows_with_right_match": 10041,
+              "right_rows_with_left_match": 4745,
+              "right_fraction_with_left_match": 0.11241678315051293,
+              "right_overlap_by_class": [
+                {
+                  "target_value": "backdoor",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 360,
+                  "fraction": 0.09
+                },
+                {
+                  "target_value": "ddos",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 2,
+                  "fraction": 0.0005
+                },
+                {
+                  "target_value": "dos",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 255,
+                  "fraction": 0.06375
+                },
+                {
+                  "target_value": "injection",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 10,
+                  "fraction": 0.0025
+                },
+                {
+                  "target_value": "mitm",
+                  "right_rows": 209,
+                  "right_rows_with_left_match": 1,
+                  "fraction": 0.004784688995215311
+                },
+                {
+                  "target_value": "normal",
+                  "right_rows": 10000,
+                  "right_rows_with_left_match": 1627,
+                  "fraction": 0.1627
+                },
+                {
+                  "target_value": "password",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 39,
+                  "fraction": 0.00975
+                },
+                {
+                  "target_value": "ransomware",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 1184,
+                  "fraction": 0.296
+                },
+                {
+                  "target_value": "scanning",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 0,
+                  "fraction": 0.0
+                },
+                {
+                  "target_value": "xss",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 1267,
+                  "fraction": 0.31675
+                }
+              ]
+            },
+            "validation_vs_test": {
+              "shared_distinct_groups": 897,
+              "left_rows": 33767,
+              "right_rows": 42209,
+              "left_rows_with_right_match": 2525,
+              "right_rows_with_left_match": 2969,
+              "right_fraction_with_left_match": 0.07034044871946742,
+              "right_overlap_by_class": [
+                {
+                  "target_value": "backdoor",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 85,
+                  "fraction": 0.02125
+                },
+                {
+                  "target_value": "ddos",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 0,
+                  "fraction": 0.0
+                },
+                {
+                  "target_value": "dos",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 62,
+                  "fraction": 0.0155
+                },
+                {
+                  "target_value": "injection",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 3,
+                  "fraction": 0.00075
+                },
+                {
+                  "target_value": "mitm",
+                  "right_rows": 209,
+                  "right_rows_with_left_match": 0,
+                  "fraction": 0.0
+                },
+                {
+                  "target_value": "normal",
+                  "right_rows": 10000,
+                  "right_rows_with_left_match": 1598,
+                  "fraction": 0.1598
+                },
+                {
+                  "target_value": "password",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 16,
+                  "fraction": 0.004
+                },
+                {
+                  "target_value": "ransomware",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 787,
+                  "fraction": 0.19675
+                },
+                {
+                  "target_value": "scanning",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 0,
+                  "fraction": 0.0
+                },
+                {
+                  "target_value": "xss",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 418,
+                  "fraction": 0.1045
+                }
+              ]
+            }
+          }
+        },
+        "selected_raw_model_inputs": {
+          "columns": [
+            "src_port",
+            "dst_port",
+            "duration",
+            "src_bytes",
+            "dst_bytes",
+            "missed_bytes",
+            "src_pkts",
+            "src_ip_bytes",
+            "dst_pkts",
+            "dst_ip_bytes",
+            "dns_qclass",
+            "dns_qtype",
+            "dns_rcode",
+            "http_request_body_len",
+            "http_response_body_len",
+            "http_status_code",
+            "proto",
+            "service",
+            "conn_state",
+            "ssl_version",
+            "http_method",
+            "weird_name",
+            "dns_AA",
+            "dns_RD",
+            "dns_RA",
+            "dns_rejected",
+            "ssl_cipher",
+            "ssl_resumed",
+            "ssl_established",
+            "http_trans_depth",
+            "http_version",
+            "weird_notice"
+          ],
+          "global": {
+            "rows": 211043,
+            "distinct_groups": 183549,
+            "duplicate_groups": 9879,
+            "rows_in_duplicate_groups": 37373,
+            "duplicate_rows_beyond_first": 27494
+          },
+          "within_partitions": {
+            "train": {
+              "rows": 168834,
+              "distinct_groups": 148586,
+              "duplicate_groups": 7449,
+              "rows_in_duplicate_groups": 27697,
+              "duplicate_rows_beyond_first": 20248
+            },
+            "test": {
+              "rows": 42209,
+              "distinct_groups": 39121,
+              "duplicate_groups": 1079,
+              "rows_in_duplicate_groups": 4167,
+              "duplicate_rows_beyond_first": 3088
+            },
+            "fit": {
+              "rows": 135067,
+              "distinct_groups": 120221,
+              "duplicate_groups": 5571,
+              "rows_in_duplicate_groups": 20417,
+              "duplicate_rows_beyond_first": 14846
+            },
+            "validation": {
+              "rows": 33767,
+              "distinct_groups": 31456,
+              "duplicate_groups": 740,
+              "rows_in_duplicate_groups": 3051,
+              "duplicate_rows_beyond_first": 2311
+            }
+          },
+          "target_conflicts": {
+            "groups_with_multiple_target_values": 11,
+            "rows_in_conflicting_groups": 43
+          },
+          "cross_partitions": {
+            "train_vs_test": {
+              "shared_distinct_groups": 4158,
+              "left_rows": 168834,
+              "right_rows": 42209,
+              "left_rows_with_right_match": 16332,
+              "right_rows_with_left_match": 6963,
+              "right_fraction_with_left_match": 0.1649648179298254,
+              "right_overlap_by_class": [
+                {
+                  "target_value": "backdoor",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 435,
+                  "fraction": 0.10875
+                },
+                {
+                  "target_value": "ddos",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 5,
+                  "fraction": 0.00125
+                },
+                {
+                  "target_value": "dos",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 1380,
+                  "fraction": 0.345
+                },
+                {
+                  "target_value": "injection",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 10,
+                  "fraction": 0.0025
+                },
+                {
+                  "target_value": "mitm",
+                  "right_rows": 209,
+                  "right_rows_with_left_match": 2,
+                  "fraction": 0.009569377990430622
+                },
+                {
+                  "target_value": "normal",
+                  "right_rows": 10000,
+                  "right_rows_with_left_match": 1652,
+                  "fraction": 0.1652
+                },
+                {
+                  "target_value": "password",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 49,
+                  "fraction": 0.01225
+                },
+                {
+                  "target_value": "ransomware",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 1396,
+                  "fraction": 0.349
+                },
+                {
+                  "target_value": "scanning",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 440,
+                  "fraction": 0.11
+                },
+                {
+                  "target_value": "xss",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 1594,
+                  "fraction": 0.3985
+                }
+              ]
+            },
+            "fit_vs_validation": {
+              "shared_distinct_groups": 3091,
+              "left_rows": 135067,
+              "right_rows": 33767,
+              "left_rows_with_right_match": 11972,
+              "right_rows_with_left_match": 5189,
+              "right_fraction_with_left_match": 0.15367074362543312,
+              "right_overlap_by_class": [
+                {
+                  "target_value": "backdoor",
+                  "right_rows": 3200,
+                  "right_rows_with_left_match": 260,
+                  "fraction": 0.08125
+                },
+                {
+                  "target_value": "ddos",
+                  "right_rows": 3200,
+                  "right_rows_with_left_match": 3,
+                  "fraction": 0.0009375
+                },
+                {
+                  "target_value": "dos",
+                  "right_rows": 3200,
+                  "right_rows_with_left_match": 1056,
+                  "fraction": 0.33
+                },
+                {
+                  "target_value": "injection",
+                  "right_rows": 3200,
+                  "right_rows_with_left_match": 7,
+                  "fraction": 0.0021875
+                },
+                {
+                  "target_value": "mitm",
+                  "right_rows": 167,
+                  "right_rows_with_left_match": 1,
+                  "fraction": 0.005988023952095809
+                },
+                {
+                  "target_value": "normal",
+                  "right_rows": 8000,
+                  "right_rows_with_left_match": 1351,
+                  "fraction": 0.168875
+                },
+                {
+                  "target_value": "password",
+                  "right_rows": 3200,
+                  "right_rows_with_left_match": 34,
+                  "fraction": 0.010625
+                },
+                {
+                  "target_value": "ransomware",
+                  "right_rows": 3200,
+                  "right_rows_with_left_match": 1067,
+                  "fraction": 0.3334375
+                },
+                {
+                  "target_value": "scanning",
+                  "right_rows": 3200,
+                  "right_rows_with_left_match": 272,
+                  "fraction": 0.085
+                },
+                {
+                  "target_value": "xss",
+                  "right_rows": 3200,
+                  "right_rows_with_left_match": 1138,
+                  "fraction": 0.355625
+                }
+              ]
+            },
+            "fit_vs_test": {
+              "shared_distinct_groups": 3695,
+              "left_rows": 135067,
+              "right_rows": 42209,
+              "left_rows_with_right_match": 13052,
+              "right_rows_with_left_match": 6431,
+              "right_fraction_with_left_match": 0.1523608709043095,
+              "right_overlap_by_class": [
+                {
+                  "target_value": "backdoor",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 360,
+                  "fraction": 0.09
+                },
+                {
+                  "target_value": "ddos",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 5,
+                  "fraction": 0.00125
+                },
+                {
+                  "target_value": "dos",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 1286,
+                  "fraction": 0.3215
+                },
+                {
+                  "target_value": "injection",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 10,
+                  "fraction": 0.0025
+                },
+                {
+                  "target_value": "mitm",
+                  "right_rows": 209,
+                  "right_rows_with_left_match": 2,
+                  "fraction": 0.009569377990430622
+                },
+                {
+                  "target_value": "normal",
+                  "right_rows": 10000,
+                  "right_rows_with_left_match": 1647,
+                  "fraction": 0.1647
+                },
+                {
+                  "target_value": "password",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 43,
+                  "fraction": 0.01075
+                },
+                {
+                  "target_value": "ransomware",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 1287,
+                  "fraction": 0.32175
+                },
+                {
+                  "target_value": "scanning",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 368,
+                  "fraction": 0.092
+                },
+                {
+                  "target_value": "xss",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 1423,
+                  "fraction": 0.35575
+                }
+              ]
+            },
+            "validation_vs_test": {
+              "shared_distinct_groups": 1451,
+              "left_rows": 33767,
+              "right_rows": 42209,
+              "left_rows_with_right_match": 3280,
+              "right_rows_with_left_match": 3771,
+              "right_fraction_with_left_match": 0.08934113577673009,
+              "right_overlap_by_class": [
+                {
+                  "target_value": "backdoor",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 85,
+                  "fraction": 0.02125
+                },
+                {
+                  "target_value": "ddos",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 0,
+                  "fraction": 0.0
+                },
+                {
+                  "target_value": "dos",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 614,
+                  "fraction": 0.1535
+                },
+                {
+                  "target_value": "injection",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 4,
+                  "fraction": 0.001
+                },
+                {
+                  "target_value": "mitm",
+                  "right_rows": 209,
+                  "right_rows_with_left_match": 0,
+                  "fraction": 0.0
+                },
+                {
+                  "target_value": "normal",
+                  "right_rows": 10000,
+                  "right_rows_with_left_match": 1605,
+                  "fraction": 0.1605
+                },
+                {
+                  "target_value": "password",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 18,
+                  "fraction": 0.0045
+                },
+                {
+                  "target_value": "ransomware",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 833,
+                  "fraction": 0.20825
+                },
+                {
+                  "target_value": "scanning",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 86,
+                  "fraction": 0.0215
+                },
+                {
+                  "target_value": "xss",
+                  "right_rows": 4000,
+                  "right_rows_with_left_match": 526,
+                  "fraction": 0.1315
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "provenance": {
+    "started_at_utc": "2026-09-25T22:44:36.611082+00:00",
+    "command_argv": [
+      "/Users/user/iot-audit/.venv/bin/python",
+      "scripts/audit_split_duplicates.py",
+      "--run-dir",
+      "runs/007",
+      "--csv",
+      "data/train_test_network.csv",
+      "--output",
+      "runs/007/audit/duplicate-audit.json"
+    ],
+    "cwd": "/Users/user/iot-audit",
+    "run_dir": "/Users/user/iot-audit/runs/007",
+    "git": {
+      "commit": "cb7943890becc51af5a1f10901922a90d6920427",
+      "status_porcelain": "",
+      "status_excludes_run_dir": "runs/007"
+    },
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "python": "3.12.14",
+    "pandas": "3.0.3",
+    "numpy": "1.26.4",
+    "script_sha256": "4354bef3d365aaeca52e61ad777d533aa48090f43efc7860733af3f818289ffd",
+    "completed_at_utc": "2026-09-25T22:44:37.726506+00:00"
+  }
+}

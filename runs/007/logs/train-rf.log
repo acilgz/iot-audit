@@ -1,0 +1,23 @@
+[rf] training (168834 samples, 118 features)...
+[rf] done in 3.38s
+[rf] metrics: {
+  "accuracy": 0.9988391101423867,
+  "precision_pos": 0.9990379243994786,
+  "recall_pos": 0.9994411499891335,
+  "f1_pos": 0.9992394965156524,
+  "precision_neg": 0.9981976569540403,
+  "recall_neg": 0.9969,
+  "f1_neg": 0.9975484064642017,
+  "confusion_matrix": [
+    [
+      9969,
+      31
+    ],
+    [
+      18,
+      32191
+    ]
+  ],
+  "roc_auc": 0.9999940265143282,
+  "pr_auc": 0.9999981195471391
+}

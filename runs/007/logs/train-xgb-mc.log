@@ -1,0 +1,146 @@
+[xgb-mc] training (168834 samples, 119 features, classes=10)...
+[0]	validation_0-mlogloss:1.93964	validation_1-mlogloss:1.93959
+[50]	validation_0-mlogloss:0.17304	validation_1-mlogloss:0.17631
+[100]	validation_0-mlogloss:0.05075	validation_1-mlogloss:0.05618
+[150]	validation_0-mlogloss:0.03369	validation_1-mlogloss:0.04051
+[200]	validation_0-mlogloss:0.02752	validation_1-mlogloss:0.03565
+[250]	validation_0-mlogloss:0.02393	validation_1-mlogloss:0.03332
+[300]	validation_0-mlogloss:0.02114	validation_1-mlogloss:0.03190
+[350]	validation_0-mlogloss:0.01896	validation_1-mlogloss:0.03101
+[400]	validation_0-mlogloss:0.01732	validation_1-mlogloss:0.03048
+[450]	validation_0-mlogloss:0.01589	validation_1-mlogloss:0.03021
+[500]	validation_0-mlogloss:0.01474	validation_1-mlogloss:0.03003
+[550]	validation_0-mlogloss:0.01370	validation_1-mlogloss:0.03007
+[599]	validation_0-mlogloss:0.01275	validation_1-mlogloss:0.03010
+[xgb-mc] done in 34.64s
+[xgb-mc] metrics: {
+  "accuracy": 0.9893150749840082,
+  "macro_f1": 0.9651442395244452,
+  "weighted_f1": 0.9893789471991906,
+  "confusion_matrix": [
+    [
+      3997,
+      0,
+      0,
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      3927,
+      2,
+      13,
+      0,
+      15,
+      1,
+      0,
+      0,
+      42
+    ],
+    [
+      0,
+      2,
+      3929,
+      0,
+      24,
+      7,
+      4,
+      0,
+      33,
+      1
+    ],
+    [
+      0,
+      30,
+      3,
+      3874,
+      6,
+      1,
+      3,
+      0,
+      16,
+      67
+    ],
+    [
+      0,
+      0,
+      22,
+      8,
+      165,
+      7,
+      5,
+      0,
+      2,
+      0
+    ],
+    [
+      0,
+      4,
+      2,
+      0,
+      5,
+      9983,
+      4,
+      0,
+      2,
+      0
+    ],
+    [
+      0,
+      0,
+      5,
+      0,
+      23,
+      0,
+      3968,
+      0,
+      1,
+      3
+    ],
+    [
+      0,
+      4,
+      0,
+      0,
+      0,
+      0,
+      0,
+      3996,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      22,
+      1,
+      10,
+      2,
+      5,
+      0,
+      3960,
+      0
+    ],
+    [
+      0,
+      7,
+      2,
+      32,
+      0,
+      0,
+      0,
+      0,
+      0,
+      3959
+    ]
+  ],
+  "roc_auc_micro": 0.9999414226807255,
+  "roc_auc_macro": 0.9997876021006036,
+  "pr_auc_micro": 0.999528174606019,
+  "pr_auc_macro": 0.9843969568040526
+}

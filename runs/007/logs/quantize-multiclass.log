@@ -1,0 +1,190 @@
+[quantize-mc] runs/007/multiclass/models/mlp_mc -> runs/007/multiclass/models/mlp_mc_int8
+[quantize-mc] TRAIN
+min -1.9993328
+max 364.3488
+mean 0.1596639
+std 0.5182906
+[quantize-mc] internal-training percentiles [-1.99933279e+00 -2.06601545e-01  0.00000000e+00  0.00000000e+00
+  0.00000000e+00  1.00000000e+00  3.64348785e+02]
+
+Top 20 features by absolute scaled value:
+9 dst_ip_bytes 364.3488
+14 http_response_body_len 353.9083
+8 dst_pkts 295.46576
+5 missed_bytes 291.70297
+7 src_ip_bytes 269.48477
+6 src_pkts 240.83514
+4 dst_bytes 206.84424
+13 http_request_body_len 177.39944
+2 duration 172.61296
+3 src_bytes 87.352486
+15 http_status_code 46.53896
+10 dns_qclass 11.800699
+11 dns_qtype 10.603144
+12 dns_rcode 8.168263
+1 dst_port 6.1113653
+0 src_port 1.9993328
+47 dns_qtype_28 1.0
+38 conn_state_SF 1.0
+39 conn_state_SH 1.0
+40 conn_state_SHR 1.0
+Saved artifact at 'runs/007/multiclass/models/mlp_mc_int8/_saved_model_tmp'. The following endpoints are available:
+
+* Endpoint 'serve'
+  args_0 (POSITIONAL_ONLY): TensorSpec(shape=(None, 119), dtype=tf.float32, name='input_layer')
+Output Type:
+  TensorSpec(shape=(None, 10), dtype=tf.float32, name=None)
+Captures:
+  5274579984: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5274580368: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5274580752: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5274582096: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5292311184: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5292311952: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5292312720: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  5292312144: TensorSpec(shape=(), dtype=tf.resource, name=None)
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1790376253.551871 11737949 tf_tfl_flatbuffer_helpers.cc:390] Ignored output_format.
+W0000 00:00:1790376253.552012 11737949 tf_tfl_flatbuffer_helpers.cc:393] Ignored drop_control_dependency.
+2026-09-26 00:44:13.552575: I tensorflow/cc/saved_model/reader.cc:83] Reading SavedModel from: runs/007/multiclass/models/mlp_mc_int8/_saved_model_tmp
+2026-09-26 00:44:13.552755: I tensorflow/cc/saved_model/reader.cc:51] Reading meta graph with tags { serve }
+2026-09-26 00:44:13.552760: I tensorflow/cc/saved_model/reader.cc:146] Reading SavedModel debug info (if present) from: runs/007/multiclass/models/mlp_mc_int8/_saved_model_tmp
+2026-09-26 00:44:13.555204: I tensorflow/compiler/mlir/mlir_graph_optimization_pass.cc:388] MLIR V1 optimization pass is not enabled
+2026-09-26 00:44:13.555466: I tensorflow/cc/saved_model/loader.cc:234] Restoring SavedModel bundle.
+2026-09-26 00:44:13.567242: I tensorflow/cc/saved_model/loader.cc:218] Running initialization op on SavedModel bundle at path: runs/007/multiclass/models/mlp_mc_int8/_saved_model_tmp
+2026-09-26 00:44:13.569893: I tensorflow/cc/saved_model/loader.cc:317] SavedModel load for tags { serve }; Status: success: OK. Took 17319 microseconds.
+2026-09-26 00:44:13.588548: I tensorflow/compiler/mlir/tensorflow/utils/dump_mlir_util.cc:268] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+fully_quantize: 0, inference_type: 6, input_inference_type: INT8, output_inference_type: INT8
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+[quantize-mc] int8 model saved to runs/007/multiclass/models/mlp_mc_int8/model.tflite (29.0 KB)
+[quantize-mc] metrics (int8): {
+  "accuracy": 0.6678196593143643,
+  "macro_f1": 0.605735684358901,
+  "weighted_f1": 0.6573599791156597,
+  "confusion_matrix": [
+    [
+      2036,
+      0,
+      0,
+      0,
+      3,
+      0,
+      1961,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      3438,
+      33,
+      37,
+      5,
+      49,
+      0,
+      0,
+      0,
+      438
+    ],
+    [
+      0,
+      25,
+      3895,
+      1,
+      18,
+      28,
+      1,
+      0,
+      29,
+      3
+    ],
+    [
+      0,
+      1186,
+      103,
+      2516,
+      2,
+      7,
+      0,
+      0,
+      17,
+      169
+    ],
+    [
+      1,
+      1,
+      89,
+      9,
+      74,
+      26,
+      7,
+      0,
+      0,
+      2
+    ],
+    [
+      0,
+      5,
+      1899,
+      5,
+      14,
+      8047,
+      5,
+      0,
+      4,
+      21
+    ],
+    [
+      0,
+      1232,
+      32,
+      1519,
+      11,
+      5,
+      1078,
+      0,
+      73,
+      50
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      479,
+      0,
+      827,
+      6,
+      2688
+    ],
+    [
+      67,
+      55,
+      20,
+      2,
+      3,
+      3,
+      239,
+      0,
+      2784,
+      827
+    ],
+    [
+      0,
+      162,
+      194,
+      77,
+      0,
+      26,
+      3,
+      0,
+      45,
+      3493
+    ]
+  ],
+  "roc_auc_micro": 0.935890288937598,
+  "roc_auc_macro": 0.9543827737110918,
+  "pr_auc_micro": 0.7099106261776886,
+  "pr_auc_macro": 0.7202431412964777
+}

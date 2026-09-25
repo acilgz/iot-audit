@@ -1,0 +1,15 @@
+{
+  "files": {
+    "model.pkl": "d1d1dedcc4cfabf8e9f60c6e293d6f9efeb63b4e90d1dcb741cbfc62e9bc2718",
+    "preprocessor.pkl": "1905269ab297748a11fbc763c9eefccc607e9320fca81726dfcca6fffef74b1f",
+    "preprocessor_meta.json": "3c6d6e4c181141eba1e9966bd72f05571a4a1eaba0c9d01eafc5e082a801f316",
+    "metrics.json": "3d4faeb61addde46bcb4f18f0dd98aec87ede98f8aa66945b5023596260a76a6"
+  },
+  "command": [
+    "scripts/train_mc_logreg.py",
+    "--csv",
+    "data/train_test_network.csv",
+    "--outdir",
+    "runs/007/multiclass"
+  ]
+}
