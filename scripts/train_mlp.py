@@ -3,13 +3,11 @@ from __future__ import annotations
 import os, sys, json, time, shutil
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 from iot_audit.metrics import evaluate_model
-from data_loading import model_paths, record_model, load_binary_split
+from data_loading import model_paths, record_model, load_binary_split, internal_fit_validation_indices, NumericOnlyScaler
 import numpy as np
 import joblib
 import argparse
 import tensorflow as tf
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
 
 class KerasSklearnWrapper:
     def __init__(self, keras_model):
@@ -65,12 +63,17 @@ def main():
     X_train, X_test, y_train, y_test, feature_names, preproc = load_binary_split(
         args.csv, preproc_path, meta_path, model_name=model_name, for_training=True
     )
+    X_train = np.asarray(X_train, dtype=np.float32)
+    X_test = np.asarray(X_test, dtype=np.float32)
     y_train = y_train.astype(int)
     y_test = y_test.astype(int)
 
-    scaler = StandardScaler()
-    X_train = scaler.fit_transform(X_train).astype(np.float32)
-    X_test = scaler.transform(X_test).astype(np.float32)
+    fit_idx, val_idx = internal_fit_validation_indices(y_train)
+    scaler = NumericOnlyScaler(feature_names, preproc.numeric_features_)
+    scaler.fit(X_train[fit_idx])
+    X_fit = scaler.transform(X_train[fit_idx])
+    X_val = scaler.transform(X_train[val_idx])
+    X_test = scaler.transform(X_test)
 
     model = tf.keras.Sequential([
         tf.keras.Input(shape=(X_train.shape[1],)),
@@ -87,14 +90,11 @@ def main():
         metrics=[tf.keras.metrics.AUC(name="auc"), "accuracy"]
     )
 
-    print(f"[mlp_int8] training ({X_train.shape[0]} samples, {X_train.shape[1]} features)...")
+    print(f"[mlp_int8] training ({len(fit_idx)} fit + {len(val_idx)} validation samples, {X_train.shape[1]} features)...")
     t0 = time.time()
-    X_fit, X_val, y_fit, y_val = train_test_split(
-        X_train, y_train, test_size=0.2, random_state=42, stratify=y_train
-    )
     model.fit(
-        X_fit, y_fit,
-        validation_data=(X_val, y_val),
+        X_fit, y_train[fit_idx],
+        validation_data=(X_val, y_train[val_idx]),
         epochs=args.n_count,
         batch_size=args.batch_size,
         callbacks=[tf.keras.callbacks.EarlyStopping(monitor="val_auc", mode="max", patience=8, restore_best_weights=True)],

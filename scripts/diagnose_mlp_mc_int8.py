@@ -12,7 +12,7 @@ import tensorflow as tf
 from sklearn.metrics import accuracy_score, f1_score, classification_report
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from data_loading import load_multiclass_split
+from data_loading import load_multiclass_split, internal_fit_validation_indices
 
 
 def metrics(name, y_true, probs, class_map):
@@ -23,7 +23,7 @@ def metrics(name, y_true, probs, class_map):
         "accuracy": float(accuracy_score(y_true, pred)),
         "macro_f1": float(f1_score(y_true, pred, average="macro")),
         "recall": {
-            class_map.get(str(k), str(k)): float(v["recall"])
+            class_map.get(int(k), class_map.get(str(k), str(k))): float(v["recall"])
             for k, v in rep.items()
             if str(k).isdigit()
         },
@@ -69,6 +69,8 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--run-dir", required=True)
     p.add_argument("--csv", default="data/train_test_network.csv")
+    p.add_argument("--evaluation-split", choices=("validation", "test"), default="validation")
+    p.add_argument("--retrospective", action="store_true")
     args = p.parse_args()
 
     base = Path(args.run_dir) / "multiclass" / "models"
@@ -83,18 +85,29 @@ def main():
         str(keras_dir / "preprocessor_meta.json"),
         model_name="mlp_mc"
     )
+    X_train, X_test = np.asarray(X_train, dtype=np.float32), np.asarray(X_test, dtype=np.float32)
+
+    if args.evaluation_split == "test":
+        if not args.retrospective:
+            raise SystemExit("ERROR: Pass --retrospective")
+        X_eval_raw, y_eval = X_test, y_test
+    else:
+        _, validation_idx = internal_fit_validation_indices(y_train)
+        X_eval_raw, y_eval = X_train[validation_idx], y_train[validation_idx]
 
     scaler = joblib.load(keras_dir / "scaler.pkl")
-    X_test = scaler.transform(X_test).astype(np.float32)
+    X_eval = scaler.transform(X_eval_raw).astype(np.float32)
 
     keras = tf.keras.models.load_model(keras_dir / "model.keras")
-    keras_probs = keras.predict(X_test, verbose=0)
+    keras_probs = keras.predict(X_eval, verbose=0)
 
-    int8_probs, q = tflite_predict(int8_dir / "model.tflite", X_test)
+    int8_probs, q = tflite_predict(int8_dir / "model.tflite", X_eval)
 
     scale = q["input"]["scale"]
     zero = q["input"]["zero_point"]
-    X_qdq = (np.clip(np.round(X_test / scale + zero), -128, 127) - zero) * scale
+    X_q_int = np.round(X_eval / scale + zero)
+    X_q_clipped = np.clip(X_q_int, -128, 127)
+    X_qdq = (X_q_clipped - zero) * scale
     qdq_probs = keras.predict(X_qdq, verbose=0)
 
     saved_model_dir = out / "saved_model_fp32"
@@ -117,24 +130,29 @@ def main():
 
     fp32_probs, _ = tflite_predict(
         fp32_path,
-        X_test
+        X_eval
     )
 
     data = [
-        metrics("keras_fp32", y_test, keras_probs, class_map),
-        metrics("tflite_fp32", y_test, fp32_probs, class_map),
-        metrics("tflite_int8", y_test, int8_probs, class_map),
-        metrics("keras_qdq", y_test, qdq_probs, class_map),
+        metrics("keras_fp32", y_eval, keras_probs, class_map),
+        metrics("tflite_fp32", y_eval, fp32_probs, class_map),
+        metrics("tflite_int8", y_eval, int8_probs, class_map),
+        metrics("keras_qdq", y_eval, qdq_probs, class_map),
     ]
 
     (out / "metrics.json").write_text(json.dumps(data, indent=2))
     (out / "quantization.json").write_text(json.dumps(q, indent=2))
     (out / "input_statistics.json").write_text(json.dumps({
-        "min": float(X_test.min()),
-        "max": float(X_test.max()),
-        "percentile_99": float(np.percentile(X_test, 99)),
-        "abs_gt_100": int(np.sum(np.abs(X_test) > 100)),
-        "abs_gt_200": int(np.sum(np.abs(X_test) > 200)),
+        "evaluation_split": args.evaluation_split,
+        "retrospective_test_evaluation": bool(args.evaluation_split == "test"),
+        "n_samples": int(len(X_eval)),
+        "min": float(X_eval.min()),
+        "max": float(X_eval.max()),
+        "percentile_99_abs": float(np.percentile(np.abs(X_eval), 99)),
+        "int8_input_clipped_values": int(np.count_nonzero(X_q_int != X_q_clipped)),
+        "int8_input_clipped_fraction": float(np.mean(X_q_int != X_q_clipped)),
+        "int8_saturation_min": int(np.sum(X_q_clipped == -128)),
+        "int8_saturation_max": int(np.sum(X_q_clipped == 127)),
     }, indent=2))
 
 if __name__ == "__main__":

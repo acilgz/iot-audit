@@ -80,17 +80,24 @@ def load_and_prepare_data(
     y = _normalize_label(df[target_col])
     X = df.drop(columns=[target_col])
 
-    X_train_df, X_test_df, y_train, y_test = train_test_split(
-        X, y, test_size=test_size, random_state=random_state, stratify=y
+    train_idx, test_idx = train_test_split(
+        np.arange(len(X)), test_size=test_size, random_state=random_state, stratify=y
     )
+    fit_pos, val_pos = train_test_split(
+        np.arange(len(train_idx)), test_size=0.2, random_state=42,
+        stratify=y.iloc[train_idx],
+    )
+    X_train_df, X_test_df = X.iloc[train_idx], X.iloc[test_idx]
+    X_fit_df = X.iloc[train_idx[fit_pos]]
+    y_train, y_test = y.iloc[train_idx], y.iloc[test_idx]
 
-    num_cols = X_train_df.select_dtypes(include=[np.number]).columns.tolist()
-    cat_cols = [c for c in CATEGORICAL_SAFE if c in X_train_df.columns]
+    num_cols = X_fit_df.select_dtypes(include=[np.number]).columns.tolist()
+    cat_cols = [c for c in CATEGORICAL_SAFE if c in X_fit_df.columns]
 
-    for c in X_train_df.select_dtypes(exclude=[np.number]).columns:
+    for c in X_fit_df.select_dtypes(exclude=[np.number]).columns:
         if c in cat_cols or c in EXCLUDE_COLUMNS or c == target_col:
             continue
-        if X_train_df[c].nunique(dropna=False) <= 40:
+        if X_fit_df[c].nunique(dropna=False) <= 40:
             cat_cols.append(c)
 
     numeric_transformer = Pipeline(steps=[
@@ -114,8 +121,9 @@ def load_and_prepare_data(
     preprocessor.numeric_features_ = list(num_cols)
     preprocessor.categorical_features_ = list(cat_cols)
 
-    print(f"[preprocessing] fit on {X_train_df.shape[0]} rows, {X_train_df.shape[1]} cols...")
-    X_train = preprocessor.fit_transform(X_train_df)
+    print(f"[preprocessing] fit on {X_fit_df.shape[0]} internal-training rows, {X_fit_df.shape[1]} cols...")
+    preprocessor.fit(X_fit_df)
+    X_train = preprocessor.transform(X_train_df)
     X_test = preprocessor.transform(X_test_df)
     print(f"[preprocessing] transformed test: {X_test_df.shape[0]} rows")
 

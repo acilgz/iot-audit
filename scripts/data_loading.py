@@ -19,6 +19,40 @@ from iot_audit.preprocessing_mc import load_and_prepare_multiclass
 
 TARGET_ALIASES = {'label', 'Label', 'LABEL', 'type', 'Type', 'TYPE', 'target', 'Target', 'TARGET'}
 MODEL_FILES = ('model.pkl', 'model.keras', 'model.tflite')
+AUXILIARY_MODEL_FILES = ('input_extreme_features.json', 'calibration_statistics.json')
+INTERNAL_VALIDATION_SIZE = 0.2
+INTERNAL_SPLIT_SEED = 42
+
+
+class NumericOnlyScaler:
+    def __init__(self, feature_names, numeric_features):
+        self.feature_names = list(feature_names)
+        missing = set(numeric_features) - set(self.feature_names)
+        if missing:
+            raise ValueError(f'Numeric features missing from transformed columns: {sorted(missing)}')
+        self.numeric_indices_ = [i for i, name in enumerate(self.feature_names) if name in set(numeric_features)]
+        if not self.numeric_indices_:
+            raise ValueError('No numeric features selected for scaling')
+        self.scaler_ = StandardScaler()
+
+    def fit(self, X):
+        self.scaler_.fit(np.asarray(X)[:, self.numeric_indices_])
+        return self
+
+    def transform(self, X):
+        X = np.asarray(X, dtype=np.float32).copy()
+        X[:, self.numeric_indices_] = self.scaler_.transform(X[:, self.numeric_indices_]).astype(np.float32)
+        return X
+
+    def fit_transform(self, X):
+        return self.fit(X).transform(X)
+
+
+def internal_fit_validation_indices(y):
+    return train_test_split(
+        np.arange(len(y)), test_size=INTERNAL_VALIDATION_SIZE,
+        random_state=INTERNAL_SPLIT_SEED, stratify=y,
+    )
 
 
 def sha256(path):
@@ -47,6 +81,7 @@ def prepare(csv_path, outdir, model_names, mode):
     df = _read_csv(csv_path)
     y = _normalize_label(df['label']).to_numpy() if mode == 'binary' else np.unique(df['type'].astype(str).str.strip(), return_inverse=True)[1]
     train_idx, test_idx = train_test_split(np.arange(len(df)), test_size=.2, random_state=42, stratify=y)
+    fit_pos, val_pos = internal_fit_validation_indices(y[train_idx])
     repo = Path(__file__).resolve().parents[1]
     def git(*args):
         p = subprocess.run(['git', '-C', str(repo), *args], capture_output=True, text=True)
@@ -65,8 +100,20 @@ def prepare(csv_path, outdir, model_names, mode):
             'dataset_sha256': dataset_hash, 'preprocessor_sha256': sha256(pp),
             'feature_names': features, 'numeric_features': preproc.numeric_features_,
             'categorical_features': preproc.categorical_features_, 'class_map': class_map,
+            'post_preprocessing_scaler': {
+                'kind': 'numeric_only_standard_scaler' if name in ('mlp', 'mlp_mc') else 'none',
+                'scaled_features': list(preproc.numeric_features_) if name in ('mlp', 'mlp_mc') else [],
+                'passthrough_features': [f for f in features if f not in set(preproc.numeric_features_)] if name in ('mlp', 'mlp_mc') else list(features),
+            },
             'scale_numeric': SCALE[name], 'test_size': .2, 'random_state': 42,
             'train_indices': train_idx.tolist(), 'test_indices': test_idx.tolist(),
+            'internal_split': {
+                'validation_size': INTERNAL_VALIDATION_SIZE,
+                'random_state': INTERNAL_SPLIT_SEED,
+                'fit_indices': train_idx[fit_pos].tolist(),
+                'validation_indices': train_idx[val_pos].tolist(),
+                'preprocessor_fit_indices': train_idx[fit_pos].tolist(),
+            },
             'commit': git('rev-parse', 'HEAD'), 'git_status': git('status', '--porcelain'),
             'command': sys.argv, 'environment': {'python': platform.python_version(),
             'numpy': np.__version__, 'pandas': pd.__version__, 'scikit-learn': sklearn.__version__},
@@ -104,6 +151,15 @@ def load_preprocessor(preproc_path, meta_path, model_name=None, mode=None):
     features = num + (ohe.get_feature_names_out(cat).tolist() if cat else [])
     if features != meta['feature_names']:
         raise ValueError('Transformed feature order mismatch')
+    scaling_contract = meta.get('post_preprocessing_scaler')
+    if scaling_contract is not None:
+        expected_numeric_only = source_name in ('mlp', 'mlp_mc')
+        expected_scaled = num if expected_numeric_only else []
+        expected_passthrough = [f for f in features if f not in set(num)] if expected_numeric_only else features
+        if (scaling_contract.get('kind') != ('numeric_only_standard_scaler' if expected_numeric_only else 'none')
+                or scaling_contract.get('scaled_features') != expected_scaled
+                or scaling_contract.get('passthrough_features') != expected_passthrough):
+            raise ValueError('Post-preprocessing scaling contract mismatch')
     return preproc, meta
 
 
@@ -146,7 +202,7 @@ def load_multiclass_split(csv_path, preproc_path, meta_path, test_size=.2, rando
 
 def record_model(directory):
     directory = Path(directory)
-    names = [n for n in (*MODEL_FILES, 'preprocessor.pkl', 'preprocessor_meta.json', 'scaler.pkl', 'metrics.json') if (directory / n).is_file()]
+    names = [n for n in (*MODEL_FILES, *AUXILIARY_MODEL_FILES, 'preprocessor.pkl', 'preprocessor_meta.json', 'scaler.pkl', 'metrics.json') if (directory / n).is_file()]
     _write_json(directory / 'model_manifest.json', {'files': {n: sha256(directory / n) for n in names}, 'command': sys.argv})
 
 
@@ -154,7 +210,7 @@ def validate_model(directory):
     directory = Path(directory)
     manifest = json.loads((directory / 'model_manifest.json').read_text(encoding='utf-8'))
     expected = manifest['files']
-    actual = {n for n in (*MODEL_FILES, 'preprocessor.pkl', 'preprocessor_meta.json', 'scaler.pkl', 'metrics.json') if (directory / n).is_file()}
+    actual = {n for n in (*MODEL_FILES, *AUXILIARY_MODEL_FILES, 'preprocessor.pkl', 'preprocessor_meta.json', 'scaler.pkl', 'metrics.json') if (directory / n).is_file()}
     required = {'preprocessor.pkl', 'preprocessor_meta.json', 'metrics.json'}
     if set(expected) != actual or not required.issubset(expected) or sum(n in expected for n in MODEL_FILES) != 1:
         raise ValueError('Model bundle is incomplete or contains unexpected artifacts')

@@ -2,7 +2,7 @@ from __future__ import annotations
 import os, sys, json, shutil
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 from iot_audit.metrics_mc import evaluate_model_multiclass
-from data_loading import record_model, validate_model, load_multiclass_split
+from data_loading import record_model, validate_model, load_multiclass_split, internal_fit_validation_indices
 import numpy as np
 import joblib
 import argparse
@@ -72,18 +72,22 @@ def main():
     X_train, X_test, y_train, y_test, feature_names, preproc, class_map = load_multiclass_split(
         args.csv, preproc_path, meta_path, model_name=model_name
     )
+    X_train = np.asarray(X_train, dtype=np.float32)
+    X_test = np.asarray(X_test, dtype=np.float32)
 
-    X_train = scaler.transform(X_train).astype(np.float32)
+    fit_idx, val_idx = internal_fit_validation_indices(y_train)
+    X_fit = scaler.transform(X_train[fit_idx]).astype(np.float32)
+    X_val = scaler.transform(X_train[val_idx]).astype(np.float32)
     X_test = scaler.transform(X_test).astype(np.float32)
 
     print("[quantize-mc] TRAIN")
-    print("min", X_train.min())
-    print("max", X_train.max())
-    print("mean", X_train.mean())
-    print("std", X_train.std())
+    print("min", X_fit.min())
+    print("max", X_fit.max())
+    print("mean", X_fit.mean())
+    print("std", X_fit.std())
 
-    print("[quantize-mc] percentiles", np.percentile(X_train, [0,1,25,50,75,99,100]))
-    max_values = np.max(np.abs(X_train), axis=0)
+    print("[quantize-mc] internal-training percentiles", np.percentile(X_fit, [0,1,25,50,75,99,100]))
+    max_values = np.max(np.abs(X_fit), axis=0)
     idx = np.argsort(max_values)[::-1][:20]
     print("\nTop 20 features by absolute scaled value:")
 
@@ -111,8 +115,24 @@ def main():
         json.dump(debug_features, f, indent=2)
 
     rng = np.random.default_rng(42)
-    calib_idx = rng.choice(X_train.shape[0], size=min(args.calib_samples, X_train.shape[0]), replace=False)
-    calib_data = X_train[calib_idx]
+    calib_idx = rng.choice(X_fit.shape[0], size=min(args.calib_samples, X_fit.shape[0]), replace=False)
+    calib_data = X_fit[calib_idx]
+    calibration_stats = {
+        "source": "internal_training_fit_partition",
+        "seed": 42,
+        "requested_samples": int(args.calib_samples),
+        "used_samples": int(len(calib_data)),
+        "n_features": int(calib_data.shape[1]),
+        "min": float(calib_data.min()),
+        "max": float(calib_data.max()),
+        "abs_percentiles": {str(p): float(np.percentile(np.abs(calib_data), p)) for p in (50, 95, 99, 99.9, 100)},
+        "per_feature_min": calib_data.min(axis=0).astype(float).tolist(),
+        "per_feature_max": calib_data.max(axis=0).astype(float).tolist(),
+        "fit_rows": int(len(fit_idx)),
+        "validation_rows_excluded": int(len(val_idx)),
+    }
+    with open(os.path.join(output_dir, "calibration_statistics.json"), "w", encoding="utf-8") as f:
+        json.dump(calibration_stats, f, indent=2)
 
     def representative_dataset():
         for row in calib_data:

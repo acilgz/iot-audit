@@ -7,6 +7,7 @@ from sklearn.preprocessing import StandardScaler
 
 from iot_audit.preprocessing import load_and_prepare_data
 from iot_audit.preprocessing_mc import load_and_prepare_multiclass
+from scripts.data_loading import NumericOnlyScaler, internal_fit_validation_indices
 
 N_ROWS = 75
 TEST_SIZE = 0.2
@@ -215,3 +216,18 @@ def test_scaling_policy_is_unchanged(tmp_path, mode, model_name, expects_scaler)
 
     scaler = preprocessor.named_transformers_["num"].named_steps["scaler"]
     assert isinstance(scaler, StandardScaler) is expects_scaler
+
+
+def test_mlp_scaler_fits_numeric_columns_on_internal_fit_only_and_preserves_onehot():
+    y = np.array([0, 1] * 10)
+    fit_idx, val_idx = internal_fit_validation_indices(y)
+    X = np.column_stack((np.arange(20, dtype=float), np.array([0, 1] * 10)))
+    scaler = NumericOnlyScaler(["duration", "proto_tcp"], ["duration"])
+    scaler.fit(X[fit_idx])
+
+    transformed_fit = scaler.transform(X[fit_idx])
+    transformed_validation = scaler.transform(X[val_idx])
+    np.testing.assert_allclose(scaler.scaler_.mean_, [X[fit_idx, 0].mean()])
+    np.testing.assert_array_equal(transformed_fit[:, 1], X[fit_idx, 1])
+    np.testing.assert_array_equal(transformed_validation[:, 1], X[val_idx, 1])
+    assert set(np.unique(transformed_validation[:, 1])) <= {0.0, 1.0}
