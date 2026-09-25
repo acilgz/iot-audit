@@ -31,7 +31,10 @@ def parse_val_and_std(val: float | str) -> tuple[float, float]:
 
 def load_all_benchmarks(input_dir: Path) -> pd.DataFrame:
     rows = []
-    csv_files = sorted(list(set(input_dir.glob("*/*/*.csv"))))
+    csv_files = sorted(
+        p for p in input_dir.rglob("inference_benchmark*.csv")
+        if p.name in {"inference_benchmark.csv", "inference_benchmark_mc.csv"}
+    )
 
     for file_path in csv_files:
         rel_path = file_path.relative_to(input_dir)
@@ -39,7 +42,10 @@ def load_all_benchmarks(input_dir: Path) -> pd.DataFrame:
         if len(parts) < 3:
             continue
 
-        platform_raw, task_raw = parts[0], parts[1].lower()
+        if len(parts) >= 4 and re.fullmatch(r"\d+", parts[0]):
+            platform_raw, task_raw = parts[1], parts[2].lower()
+        else:
+            platform_raw, task_raw = parts[0], parts[1].lower()
         if task_raw not in ["binary", "multiclass"]:
             continue
 
