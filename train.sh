@@ -6,7 +6,13 @@ if [[ $# -ne 1 || -z "${1:-}" ]]; then
     exit 1
 fi
 
-RUN_DIR="runs/$1"
+RUN_ID="$1"
+if [[ ! "$RUN_ID" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
+    echo "Invalid run_id format" >&2
+    exit 1
+fi
+
+RUN_DIR="runs/$RUN_ID"
 
 if [[ -e "$RUN_DIR" ]]; then
     echo "Error: Run $1 already exists."
