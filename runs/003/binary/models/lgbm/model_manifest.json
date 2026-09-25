@@ -1,0 +1,15 @@
+{
+  "files": {
+    "model.pkl": "d16ec7beccbb467ce05c726f8642395b56d5381b2dea70b5e673255d50e6a139",
+    "preprocessor.pkl": "09b5dcb2ffb0f4d91b1ab31e9a547a6b8198f8b3a6937cd08bef0bf3ae800316",
+    "preprocessor_meta.json": "3177afb9032696334ee4fa464e8f51cda92c6838dff32b2922d28a285c246e23",
+    "metrics.json": "fa878204e0926c48a13a094d01a2bf1d5288182e56357558d91b84de6b677524"
+  },
+  "command": [
+    "scripts/train_lgbm.py",
+    "--csv",
+    "data/train_test_network.csv",
+    "--outdir",
+    "runs/003/binary"
+  ]
+}

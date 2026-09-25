@@ -1,0 +1,102 @@
+[
+  {
+    "index": 99,
+    "feature": "ssl_cipher_TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA",
+    "max_abs_scaled_value": 410.8929443359375
+  },
+  {
+    "index": 66,
+    "feature": "http_status_code_101",
+    "max_abs_scaled_value": 410.8929443359375
+  },
+  {
+    "index": 79,
+    "feature": "weird_name_connection_originator_SYN_ack",
+    "max_abs_scaled_value": 410.8929443359375
+  },
+  {
+    "index": 115,
+    "feature": "http_trans_depth_8",
+    "max_abs_scaled_value": 410.8929443359375
+  },
+  {
+    "index": 58,
+    "feature": "ssl_version_TLSv10",
+    "max_abs_scaled_value": 410.8929443359375
+  },
+  {
+    "index": 9,
+    "feature": "dst_ip_bytes",
+    "max_abs_scaled_value": 407.2271728515625
+  },
+  {
+    "index": 14,
+    "feature": "http_response_body_len",
+    "max_abs_scaled_value": 394.5634765625
+  },
+  {
+    "index": 8,
+    "feature": "dst_pkts",
+    "max_abs_scaled_value": 330.1263122558594
+  },
+  {
+    "index": 5,
+    "feature": "missed_bytes",
+    "max_abs_scaled_value": 326.13311767578125
+  },
+  {
+    "index": 111,
+    "feature": "http_trans_depth_3",
+    "max_abs_scaled_value": 290.5443115234375
+  },
+  {
+    "index": 81,
+    "feature": "weird_name_dnp3_corrupt_header_checksum",
+    "max_abs_scaled_value": 290.5443115234375
+  },
+  {
+    "index": 82,
+    "feature": "weird_name_inappropriate_FIN",
+    "max_abs_scaled_value": 290.5443115234375
+  },
+  {
+    "index": 83,
+    "feature": "weird_name_possible_split_routing",
+    "max_abs_scaled_value": 290.5443115234375
+  },
+  {
+    "index": 112,
+    "feature": "http_trans_depth_4",
+    "max_abs_scaled_value": 290.5443115234375
+  },
+  {
+    "index": 113,
+    "feature": "http_trans_depth_5",
+    "max_abs_scaled_value": 290.5443115234375
+  },
+  {
+    "index": 114,
+    "feature": "http_trans_depth_6",
+    "max_abs_scaled_value": 290.5443115234375
+  },
+  {
+    "index": 116,
+    "feature": "http_trans_depth_9",
+    "max_abs_scaled_value": 290.5443115234375
+  },
+  {
+    "index": 71,
+    "feature": "http_status_code_403",
+    "max_abs_scaled_value": 290.5443115234375
+  },
+  {
+    "index": 109,
+    "feature": "http_trans_depth_10",
+    "max_abs_scaled_value": 290.5443115234375
+  },
+  {
+    "index": 7,
+    "feature": "src_ip_bytes",
+    "max_abs_scaled_value": 288.28955078125
+  }
+]

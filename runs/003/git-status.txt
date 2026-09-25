@@ -1,0 +1,9 @@
+ M scripts/quantize_model.py
+ M scripts/quantize_model_mc.py
+?? benchmark/001_list_benchmark.txt
+?? runs/001/int8_diagnostics/
+?? runs/001_list.txt
+?? runs/001_sha256.txt
+?? runs/002/
+?? runs/003/
+?? scripts/diagnose_mlp_mc_int8.py

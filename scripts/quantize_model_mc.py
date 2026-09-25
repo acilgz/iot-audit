@@ -76,6 +76,40 @@ def main():
     X_train = scaler.transform(X_train).astype(np.float32)
     X_test = scaler.transform(X_test).astype(np.float32)
 
+    print("[quantize-mc] TRAIN")
+    print("min", X_train.min())
+    print("max", X_train.max())
+    print("mean", X_train.mean())
+    print("std", X_train.std())
+
+    print("[quantize-mc] percentiles", np.percentile(X_train, [0,1,25,50,75,99,100]))
+    max_values = np.max(np.abs(X_train), axis=0)
+    idx = np.argsort(max_values)[::-1][:20]
+    print("\nTop 20 features by absolute scaled value:")
+
+    for i in idx:
+        print(
+            i,
+            feature_names[i],
+            max_values[i]
+        )
+
+    debug_features = [
+        {
+            "index": int(i),
+            "feature": str(feature_names[i]),
+            "max_abs_scaled_value": float(max_values[i])
+        }
+        for i in idx
+    ]
+
+    with open(
+        os.path.join(output_dir, "input_extreme_features.json"),
+        "w",
+        encoding="utf-8"
+    ) as f:
+        json.dump(debug_features, f, indent=2)
+
     rng = np.random.default_rng(42)
     calib_idx = rng.choice(X_train.shape[0], size=min(args.calib_samples, X_train.shape[0]), replace=False)
     calib_data = X_train[calib_idx]

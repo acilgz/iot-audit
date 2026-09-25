@@ -1,0 +1,15 @@
+{
+  "files": {
+    "model.pkl": "73411fe84a112288514d61db0efa10852fa3bd0882ca1b67147ee8bc75d713b0",
+    "preprocessor.pkl": "25f70a4f466526e7eaf0ecc28ecc95679505aa2470ba4d968eba2563235fe1a0",
+    "preprocessor_meta.json": "b373d6d177407882c95ced9bf9424f388f48532f155cdc90b1f52874cbf04afa",
+    "metrics.json": "4376043720e455d9f9943475f524853850a5d754cc5f736badbb4c5c6c0bc93f"
+  },
+  "command": [
+    "scripts/train_mc_rf.py",
+    "--csv",
+    "data/train_test_network.csv",
+    "--outdir",
+    "runs/003/multiclass"
+  ]
+}
