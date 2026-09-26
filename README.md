@@ -71,7 +71,7 @@ Each model is isolated under its own folder, ensuring reproducibility and tracea
 |mlp     |0.9945035418986472|0.9964034353393483|0.9883487344314986|0.9993536278679872|0.99979374717221  |160 |72  |0.33         |0.009          |0.338        |4.313912 ± 1.748964         |
 |mlp_int8|0.9709303703001729|0.9809516416983621|0.938659201119832 |0.9847192741159304|0.9945232333861591|612 |615 |0.028        |0.009          |0.037        |4.978423 ± 0.057768         |
 
-Full benchmark results: https://github.com/acilgz/iot-audit/tree/main/benchmark
+Full benchmark results [here](benchmark)
 
 > All models were trained on the same dataset (`train_test_network.csv`, ~211k flows, 44 columns).  
 > Metrics: stratified 80/20 split, consistent seed = 42.
@@ -183,10 +183,14 @@ python scripts/benchmark_bars.py --input-dir benchmark/001 --output-dir benchmar
 - Probabilities used to compute ROC/PR curves; safe handling if unavailable.
 - For fair comparison, use the same CSV and seeds.
 
-## Results (example snapshot)
-- **LGBM‑MC**: accuracy ~0.9903, macro‑F1 ~0.9694, ROC‑AUC micro ~0.99994.
-- **RF‑MC**: accuracy ~0.9897, macro‑F1 ~0.9681 (close to LGBM‑MC).
-- Inference latency per 1k flows (10k sample): `logreg_mc` ~**5.44ms**, `lgbm_mc` ~**45.39ms**.
+## Results (example run '007')
+- **LGBM-MC:** accuracy 98.95%, macro-F1 0.9662.
+- **RF-MC:** accuracy 98.87%, macro-F1 0.9651.
+- **MLP-MC FP32:** accuracy 95.21%, macro-F1 0.8995.
+- **MLP-MC INT8:** accuracy 66.78%, macro-F1 0.6057.
+- **MLP-MC input diagnostics:** Keras FP32 94.91%; quantized-dequantized inputs 66.73%; restoring numeric features 92.20%; restoring one-hot features 69.26%.
+- **MLP-MC duplicates:** 6431 of 42209 test rows (15.24%) share the selected raw input values with the effective fit partition.
+- **MLP-MC INT8 per-class recall:** class indices and names in [`007/multiclass/models/mlp_mc_int8/per_class_report.csv`](runs/007/multiclass/models/mlp_mc_int8/per_class_report.csv) and [`007/multiclass/models/mlp_mc/label_map.json`](runs/007/multiclass/models/mlp_mc/label_map.json).
 
 > Adjust thresholds for risk appetite: minimize FP for production or maximize recall on critical classes.
 

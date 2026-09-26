@@ -29,6 +29,7 @@ Thumbs.db
 .idea/
 
 !benchmark/**
+!per_class_report.csv
 
 *.pkl
 *.joblib
