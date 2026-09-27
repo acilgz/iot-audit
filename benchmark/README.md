@@ -1,10 +1,13 @@
 ## Hardware    
 apple_m1: Apple MacBook Air M1, 7 GPU cores, 8 GB LPDDR4X-4266, macOS 27.0    
 apple_m5: Apple MacBook Air M5, 8 GPU cores, 16 GB LPDDR5X-9600, macOS 27.0    
-bcm2712: Raspberry Pi 5 Model B Rev 1.0, 8 GB LPDDR4X-4267, active cooling, NVMe SSD, Debian 13 "Trixie" aarch64    
-corei7_3770: Intel Core i7-3770, 16 GB (2x8, DDR3-1600), SATA SSD, Debian 13 "Trixie" x86_64    
-corei5_7200U: Intel Core i5-7200U, 4 GB (1x4, DDR4-2133), SATA SSD, Debian 13 "Trixie" x86_64    
-ryzen7_7700: AMD Ryzen 7 7700, 64 GB (2x32, DDR5-4800), SATA SSD, Debian 13 "Trixie" x86_64    
+bcm2712: Raspberry Pi 5 Model B Rev 1.0, 8 GB LPDDR4X-4267, active cooling, NVMe SSD, Debian 13 "Trixie" aarch64 (1)    
+corei7_3770: Intel Core i7-3770, 16 GB (2x8, DDR3-1600), SATA SSD, Debian 13 "Trixie" x86_64 (2)    
+corei5_7200U: Intel Core i5-7200U, 4 GB (1x4, DDR4-2133), SATA SSD, Debian 13 "Trixie" x86_64 (2)    
+ryzen7_7700: AMD Ryzen 7 7700, 64 GB (2x32, DDR5-4800), SATA SSD, Debian 13 "Trixie" x86_64 (2)    
+    
+(1) Linux raspberrypi 6.18.50+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.18.50-1+rpt1 (2026-09-11) aarch64    
+(2) Linux debian 6.12.107+deb13-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.107-1 (2026-08-29) x86_64    
 
 ## Software    
 ### Python 3.12.14    

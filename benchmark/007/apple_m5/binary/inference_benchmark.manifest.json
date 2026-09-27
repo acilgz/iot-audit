@@ -1,0 +1,154 @@
+{
+  "device_id": "apple_m5",
+  "timestamp_utc": "2026-09-27T09:54:00.402207+00:00",
+  "platform": "macOS-27.0-arm64-arm-64bit",
+  "machine": "arm64",
+  "processor": "arm",
+  "python": "3.12.14",
+  "packages": {
+    "numpy": "1.26.4",
+    "pandas": "3.0.3",
+    "scikit-learn": "1.9.0",
+    "scipy": "1.17.1",
+    "joblib": "1.5.3",
+    "lightgbm": "4.6.0",
+    "xgboost": "3.2.0",
+    "tensorflow": "2.16.2",
+    "keras": "3.15.1",
+    "ai-edge-litert": "2.2.0"
+  },
+  "thread_environment": {
+    "OMP_NUM_THREADS": null,
+    "OPENBLAS_NUM_THREADS": null,
+    "MKL_NUM_THREADS": null,
+    "TF_NUM_INTRAOP_THREADS": null,
+    "TF_NUM_INTEROP_THREADS": null
+  },
+  "dataset_sha256": "26ddc513552de36de6428b2e578efaed2b57504c716dfba847cc0109a64e1974",
+  "result_sha256": "d768475c93deadefd04c517ce449c31ab6fcaa2502e9e9ab38bae52b932e4468",
+  "sample_size": 10000,
+  "sampling_seed": 42,
+  "num_runs": 5,
+  "observation_unit": "physical_device",
+  "command": [
+    "scripts/compare_models.py",
+    "--csv",
+    "data/train_test_network.csv",
+    "--models-dir",
+    "runs/007/binary",
+    "--outdir",
+    "benchmark/007/apple_m5/binary",
+    "--models",
+    "rf",
+    "lgbm",
+    "xgb",
+    "logreg",
+    "mlp",
+    "mlp_int8",
+    "--benchmark",
+    "--device-id",
+    "apple_m5",
+    "--sample_size",
+    "10000",
+    "--num_runs",
+    "5"
+  ],
+  "models": {
+    "rf": {
+      "files": {
+        "model.pkl": "7f3312cd5ae760e8e6b1649c0c72dab419b31952ef591b95b9ceabe805730d30",
+        "preprocessor.pkl": "3a41a3c3c2e2011bc3a3f689cc73caff29eaaeb2c6959e1cf6ba15f9d9cd323b",
+        "preprocessor_meta.json": "1f00739ba64a74b8c7a15fd062c0846e2292c4f595a264dcaa6575e13424f35a",
+        "metrics.json": "de9ff0d7d31c83bdbec9045eebc658e02a0935332434ad43b90a0e46c08eda07"
+      },
+      "command": [
+        "scripts/train_rf.py",
+        "--csv",
+        "data/train_test_network.csv",
+        "--outdir",
+        "runs/007/binary"
+      ]
+    },
+    "lgbm": {
+      "files": {
+        "model.pkl": "dbe2cce9d02a7c828c9a8581f5ed2f4cdcc1adde9e900485ec5c9dccd2d6ad77",
+        "preprocessor.pkl": "3a41a3c3c2e2011bc3a3f689cc73caff29eaaeb2c6959e1cf6ba15f9d9cd323b",
+        "preprocessor_meta.json": "688b402b2fb776920fddcd5163f7627f9d7fe7b3ed801b2f1592aadb63502b9a",
+        "metrics.json": "fa878204e0926c48a13a094d01a2bf1d5288182e56357558d91b84de6b677524"
+      },
+      "command": [
+        "scripts/train_lgbm.py",
+        "--csv",
+        "data/train_test_network.csv",
+        "--outdir",
+        "runs/007/binary"
+      ]
+    },
+    "xgb": {
+      "files": {
+        "model.pkl": "79dbd72900cffb98ebda1cd8bf9854a56fa3f5873a7998726a60b4906a700a4a",
+        "preprocessor.pkl": "3a41a3c3c2e2011bc3a3f689cc73caff29eaaeb2c6959e1cf6ba15f9d9cd323b",
+        "preprocessor_meta.json": "e6ed043d1c1b3b527f5871b93edbfd7b3b99d223d1de6e86c5e04abc998f00a3",
+        "metrics.json": "2a1d67978460fac8abf1e77c9750fef28085e9a0e2fcc0ef54c9a59f1491e6d7"
+      },
+      "command": [
+        "scripts/train_xgb.py",
+        "--csv",
+        "data/train_test_network.csv",
+        "--outdir",
+        "runs/007/binary"
+      ]
+    },
+    "logreg": {
+      "files": {
+        "model.pkl": "aeaa55f0e29cd6a6cc2ce0da8cf94a5a0582ecbf73555e834aae94c5243181ad",
+        "preprocessor.pkl": "7924215791b244d563e3d6fa6f91438e99c8eb0a94059717b85c7937c5093838",
+        "preprocessor_meta.json": "1c58515797076d95359581c87e0e73f2788d356f5c14e398412d84e64e6a06d2",
+        "metrics.json": "04139a98b2f5a1402aec4d55ed3ebcce67ba5ca92374badde411d330ebfd3fa6"
+      },
+      "command": [
+        "scripts/train_logreg.py",
+        "--csv",
+        "data/train_test_network.csv",
+        "--outdir",
+        "runs/007/binary"
+      ]
+    },
+    "mlp": {
+      "files": {
+        "model.keras": "7c6dcc4e4ee4aa83fc69a64cf620ad2c4ad447cf541e76b92574ca5e2c639e72",
+        "preprocessor.pkl": "3a41a3c3c2e2011bc3a3f689cc73caff29eaaeb2c6959e1cf6ba15f9d9cd323b",
+        "preprocessor_meta.json": "fa3d6ce9a35c38f81f86455aeb3f49c810a95a542a15e74822ada81cd177f1e9",
+        "scaler.pkl": "996fe8268f2c476aab1c403f45cb39792d36d0ec7434c2e2f8969a9118fb85c9",
+        "metrics.json": "ead01f1992fed05cece42e3e5c690341397823d7d950789e161f0d495553dcc9"
+      },
+      "command": [
+        "scripts/train_mlp.py",
+        "--csv",
+        "data/train_test_network.csv",
+        "--outdir",
+        "runs/007/binary"
+      ]
+    },
+    "mlp_int8": {
+      "files": {
+        "model.tflite": "8516df9fb6fef964a04297f0467bb4fbc40b2dcb93846a0348d9f54c22efafe9",
+        "input_extreme_features.json": "8cfb99547c0bf46cfd7b477f488709d885d19e405c49cc4684894a3df2dc4724",
+        "calibration_statistics.json": "322f0c49b34bfee239dab02e766964ae256b10f0ee5017bd2061011d65b89a14",
+        "preprocessor.pkl": "3a41a3c3c2e2011bc3a3f689cc73caff29eaaeb2c6959e1cf6ba15f9d9cd323b",
+        "preprocessor_meta.json": "fa3d6ce9a35c38f81f86455aeb3f49c810a95a542a15e74822ada81cd177f1e9",
+        "scaler.pkl": "372de0e73629fa444252fc26afe4dd8669ad50adfe57d7aa5f330fc5599543fa",
+        "metrics.json": "cebda6ef58c140e1a0f3fe9ef1b821e3d043a4839b4820cd630563afd032e61c"
+      },
+      "command": [
+        "scripts/quantize_model.py",
+        "--input_dir",
+        "runs/007/binary/models/mlp",
+        "--csv",
+        "data/train_test_network.csv",
+        "--calib_samples",
+        "1000"
+      ]
+    }
+  }
+}
