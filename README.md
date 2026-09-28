@@ -118,16 +118,19 @@ uv pip install -r requirements.txt
 # data/train_test_network.csv
 
 # 4) Train once per run
-bash train.sh 001
+bash train.sh 010
 
 # 5) Benchmark once per machine
-bash benchmark.sh 001 apple_m5
+bash benchmark.sh 010 apple_m5
 
 # 6) Mann-Whitney lgbm/xgb
-python scripts/run_mann-whitney.py --benchmark benchmark/001 --aarch64 bcm2712,apple_m1,apple_m5 --x64 corei7_3770,corei5_7200U,ryzen7_7700
+python scripts/run_mann-whitney.py --benchmark benchmark/010 --aarch64 bcm2712,apple_m1,apple_m5 --x64 corei7_3770,corei5_7200U,ryzen7_7700
 
-# 7) Plot platform comparison bars
-python scripts/benchmark_bars.py --style yerr --input-dir benchmark/001 --output-dir benchmark/001/charts
+# 7) Audit duplicate inputs
+python scripts/audit_split_duplicates.py --run-dir runs/010 --csv data/train_test_network.csv --output reports/run010-recheck/duplicate-audit.json
+
+# 8) Plot platform comparison bars
+python scripts/benchmark_bars.py --style yerr --input-dir benchmark/010 --output-dir benchmark/010/charts
 ```
 
 ## Artifact layout
