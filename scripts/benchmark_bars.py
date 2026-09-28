@@ -182,7 +182,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input-dir", type=Path, default=Path("benchmark"))
     parser.add_argument("--output-dir", type=Path, default=Path("benchmark/charts"))
-    parser.add_argument("--style", choices=["overlay", "yerr", "text"], default="overlay")
+    parser.add_argument("--style", choices=["overlay", "yerr", "text"], default="yerr")
     args = parser.parse_args()
 
     data = load_all_benchmarks(args.input_dir)

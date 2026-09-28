@@ -127,7 +127,7 @@ bash benchmark.sh 001 apple_m5
 python scripts/run_mann-whitney.py --benchmark benchmark/001 --aarch64 bcm2712,apple_m1,apple_m5 --x64 corei7_3770,corei5_7200U,ryzen7_7700
 
 # 7) Plot platform comparison bars
-python scripts/benchmark_bars.py --input-dir benchmark/001 --output-dir benchmark/001/charts
+python scripts/benchmark_bars.py --style yerr --input-dir benchmark/001 --output-dir benchmark/001/charts
 ```
 
 ## Artifact layout
