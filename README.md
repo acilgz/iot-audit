@@ -62,7 +62,7 @@ Each model is isolated under its own folder, ensuring reproducibility and tracea
 
 ## 📊 Benchmark Summary (run '007')
 
-|Model|Accuracy|F1-Pos|F1-Neg|ROC-AUC|PR-AUC|FP|FN|Model Size (MB)|Preproc Size (MB)|Total Size (MB)|Apple M1 (1)|Apple M5 (1)|BCM2712 (1)|Core i5-7200U (1)|Core i7-3770 (1)|Ryzen 7 7700 (1)|
+|Model|Accuracy|F1-Pos|F1-Neg|ROC-AUC|PR-AUC|FP|FN|Model Size (MiB)|Preproc Size (MiB)|Model + Preproc (MiB)|Apple M1 (1)|Apple M5 (1)|BCM2712 (1)|Core i5-7200U (1)|Core i7-3770 (1)|Ryzen 7 7700 (1)|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |rf|0.998839|0.999239|0.997548|0.999994|0.999998|31|18|23.957|0.009|23.966|7.502 ± 0.396|5.098 ± 0.207|23.305 ± 0.861|19.725 ± 0.300|13.209 ± 0.429|5.713 ± 0.168|
 |lgbm|0.999266|0.999519|0.998451|0.999980|0.999994|11|20|2.749|0.009|2.758|10.014 ± 0.133|6.060 ± 0.665|31.517 ± 0.412|18.618 ± 0.033|11.023 ± 0.043|3.745 ± 0.019|
@@ -71,13 +71,42 @@ Each model is isolated under its own folder, ensuring reproducibility and tracea
 |mlp|0.994930|0.996682|0.989254|0.999399|0.999803|150|64|0.327|0.009|0.335|3.054 ± 0.035|1.931 ± 0.020|10.132 ± 0.129|8.342 ± 0.290|7.084 ± 0.288|3.042 ± 0.238|
 |mlp_int8|0.987159|0.991555|0.973221|0.998651|0.999301|151|391|0.028|0.009|0.037|2.893 ± 0.149|1.767 ± 0.088|8.898 ± 0.067|8.154 ± 0.172|7.258 ± 0.208|2.684 ± 0.043|
 
-(1) ms/1k, mean ± std. deviation
+(1) Warm batch processing time: preprocessing + prediction, in **ms/1k flows**, measured on a batch of 10,000 rows sampled from the **full CSV** (seed 42).
+Values are mean ± population SD (`ddof=0`) of five repeats on the same device.
+Each physical device is one independent observation; repeats are averaged and do not represent additional devices.
+These measurements do not include all the elements of a production IDS such as packet capture, feature extraction from packets or queueing and do not establish end-to-end, single-flow real-time latency.
 
-Full benchmark results [here](benchmark)
+File sizes are in **MiB (1,048,576 bytes)**: `model.pkl`, `model.keras` or `model.tflite`, plus `preprocessor.pkl`. The total excludes the separate MLP `scaler.pkl`, metadata and runtime memory. It does not represent RAM utilization. Each total is rounded after adding the original byte sizes.
 
-> All models were trained on the same dataset (`train_test_network.csv`, ~211k flows, 44 columns).  
-> Metrics: stratified 80/20 split, consistent seed = 42.
-> total_ms_per_1k: lower is better.
+In both binary and multiclass, MLP INT8 has lower mean total time than MLP FP32 on five of the six tested devices (FP32 is faster on the Core i7-3770).    
+[Run 007 benchmark CSVs and manifests](benchmark/007) link timings to model hashes.     
+[Run 001](benchmark/001) is a separate historical comparison.    
+[Complete run data for 001 and 007 on the Releases page](../../releases)      
+
+## Evaluation protocol
+
+The dataset contains 211,043 rows. `label` and `type` are removed from input X before training in order to prevent data leakage. The appropriate target is supplied separately as Y.    
+The stratified outer split (seed 42) contains **168,834 training rows and 42,209 test rows**.    
+Within each classification type, all models use the recorded outer test indices; binary and multiclass stratification can produce different indices.
+
+| Pipeline | Rows used to fit the classifier | Rows used to fit preprocessing | Numerical scaling |
+|---|---:|---:|---|
+| RF, LGBM, XGB | 168,834 outer-training rows | 135,067-row internal subset | None |
+| LogReg | 168,834 outer-training rows | 135,067-row internal subset | StandardScaler inside preprocessing, fitted on that subset |
+| MLP FP32 | 135,067 internal-fit rows; 33,767 validation rows for early stopping | 135,067 internal-fit rows | Separate scaler on numerical features only, fitted on internal fit |
+| MLP INT8 | Converted from the corresponding MLP FP32 | Reuses its preprocessing and scaler | Same transformations; calibration uses 1,000 internal-fit rows |
+
+Feature selection, imputation and one-hot encoding are learned on the recorded preprocessing-fit subset before transforming the other partitions.    
+Only MLP holds the 33,767 rows out of classifier fitting for validation.    
+The other classifiers are also trained on those rows. One-hot outputs remain binary (0/1) before INT8 input quantization.
+
+| Purpose | Evaluation sample |
+|---|---|
+| Final accuracy, F1, ROC/PR and per-class results | Entire outer test: 42,209 rows |
+| INT8 diagnosis and runtime/batch parity | Same first 10,000 rows in the recorded MLP internal-validation order |
+| Cross-device timing | 10,000 rows sampled from the complete CSV, seed 42; may overlap training/test |
+
+The diagnostic sample and timing sample have equal sizes but different origins and purposes.
 
 ---
 
@@ -115,89 +144,104 @@ uv pip install -U pip
 uv pip install -r requirements.txt
 
 # 3) Put data
-# data/train_test_network.csv
+# cp "$HOME/Downloads/train_test_network.csv" data/train_test_network.csv
 
-# 4) Train once per run
-bash train.sh 010
+# 4) Choose a new, unused run ID
+export RUN_ID="010"
 
-# 5) Benchmark once per machine
-bash benchmark.sh 010 apple_m5
+# 5) Train once per run
+bash train.sh ${RUN_ID}
 
-# 6) Mann-Whitney lgbm/xgb
-python scripts/run_mann-whitney.py --benchmark benchmark/010 --aarch64 bcm2712,apple_m1,apple_m5 --x64 corei7_3770,corei5_7200U,ryzen7_7700
+# 6) Benchmark once per machine
+bash benchmark.sh ${RUN_ID} apple_m5
 
-# 7) Audit duplicate inputs
-python scripts/audit_split_duplicates.py --run-dir runs/010 --csv data/train_test_network.csv --output reports/run010-recheck/duplicate-audit.json
+# 7) Mann-Whitney lgbm/xgb
+python scripts/run_mann-whitney.py --benchmark benchmark/${RUN_ID} --aarch64 bcm2712,apple_m1,apple_m5 --x64 corei7_3770,corei5_7200U,ryzen7_7700
 
 # 8) Plot platform comparison bars
-python scripts/benchmark_bars.py --style yerr --input-dir benchmark/010 --output-dir benchmark/010/charts
+python scripts/benchmark_bars.py --style yerr --input-dir benchmark/${RUN_ID} --output-dir benchmark/${RUN_ID}/charts
 ```
 
 ## Artifact layout
 
-```
-  train/
-  models/          # Moved model artifacts here (instead of inside reports/)
-    rf|lgbm|xgb|logreg/
-      model.pkl
-      preprocessor.pkl
-      metrics.json
-      leakage_report.json
-      feature_importances.csv
-  figures/
-    rf|lgbm|xgb|logreg|mlp/
-      roc_curve.png, pr_curve.png, confusion_matrix.png, feature_importances_top30.png
-  summary/
-    charts/        # New subfolder for all generated charts and plots
-      accuracy.png
-      f1_pos.png
-      roc_auc.png
-      fp.png
-      fn.png
-      latency_total_ms_per_1k.png
-    summary_models.csv
-    inference_benchmark*.csv
-    lgbm_xgb_ratios_raw.csv
-
-  train_mc/
-  models/          # Moved model artifacts here (instead of inside reports_mc/)
-    <model>_mc/
-      model.pkl, preprocessor.pkl, metrics.json, per_class_report.csv, label_map.json, feature_importances.csv
-  figures/
-    <model>_mc/
-      confusion_matrix.png, pr_micro.png, pr_<k>_<class>.png, feature_importances_top30.png
-  summary/
-    charts/        # New subfolder for all generated charts and plots
-      accuracy.png
-      macro_f1.png
-      weighted_f1.png
-      roc_auc_micro.png
-      roc_auc_macro.png
-      pr_auc_micro.png
-      pr_auc_macro.png
-      total_size_mb.png
-      per_class_f1_*.png
-    summary_models_mc.csv
-    per_class_report_merged.csv
-    inference_benchmark_mc*.csv
+```text
+runs/<run_id>/
+  commit.txt, git-status.txt, environment.txt, python-version.txt
+  <binary|multiclass>/models/<model>/
+    model_manifest.json, preprocessor_meta.json, metrics.json
+    model.pkl* | model.keras* | model.tflite*
+    preprocessor.pkl*, scaler.pkl* (MLP only)
+    per_class_report.csv, label_map.json
+  audit/duplicate-audit.json, input-groups.json
+  int8_diagnostics/runtime_batch_comparison.json
+  logs/
+  benchmark-logs/<device>/
+benchmark/<run_id>/<device>/<binary|multiclass>/
+  inference_benchmark{,_mc}.csv
+  inference_benchmark{,_mc}.manifest.json
+  summary/summary_models{,_mc}.csv
+benchmark/<run_id>/charts/
 ```
 
-## Reproducibility & Notes
-- Stratified split (80/20).
-- Known leakage columns are dropped (e.g., `type` in binary task).
-- Probabilities used to compute ROC/PR curves; safe handling if unavailable.
-- For fair comparison, use the same CSV and seeds.
+\* Binary model files are excluded by .gitignore.
 
-## Results (example run '007')
-- **LGBM-MC:** accuracy 98.95%, macro-F1 0.9662.
-- **RF-MC:** accuracy 98.87%, macro-F1 0.9651.
-- **MLP-MC FP32:** accuracy 95.21%, macro-F1 0.8995.
-- **MLP-MC INT8:** accuracy 66.78%, macro-F1 0.6057.
-- **MLP-MC input diagnostics:** Keras FP32 94.91%; quantized-dequantized inputs 66.73%; restoring numeric features 92.20%; restoring one-hot features 69.26%.
-- **MLP-MC duplicates:** 6431 of 42209 test rows (15.24%) share the selected raw input values with the effective fit partition.
-- **MLP-MC INT8 per-class recall:** class indices and names in [`007/multiclass/models/mlp_mc_int8/per_class_report.csv`](runs/007/multiclass/models/mlp_mc_int8/per_class_report.csv) and [`007/multiclass/models/mlp_mc/label_map.json`](runs/007/multiclass/models/mlp_mc/label_map.json).
+Run 007 data:    
+[Training commit](runs/007/commit.txt)    
+[Environment](runs/007/environment.txt)    
+[Execution logs](runs/007/logs)    
 
-> Adjust thresholds for risk appetite: minimize FP for production or maximize recall on critical classes.
+Complete data for runs 001 and 007, including the models, preprocessor, scaler, and hashes, are available in [Releases](../../releases).
+
+## Results: run 007, outer test
+
+Multiclass results on 42,209 test rows.
+
+| Model | Accuracy | Macro-F1 |
+|---|---:|---:|
+| lgbm_mc | 98.946% | 0.96620 |
+| rf_mc | 98.870% | 0.96506 |
+| xgb_mc | 98.932% | 0.96514 |
+| logreg_mc | 82.584% | 0.76799 |
+| mlp_mc | 95.207% | 0.89949 |
+| mlp_mc_int8 | 66.782% | 0.60574 |
+
+Run 001 is kept as a historical baseline: multiclass FP32 95.193% / 0.89823 macro-F1; INT8 48.800% / 0.31760. Run 007 improves INT8 accuracy and macro-F1, while the gap from FP32 remains substantial. The history and corrections do not identify the isolated causal effect of changing one-hot scaling.
+
+### INT8 diagnosis: validation, 10,000 rows
+
+Keras FP32: **94.91%**    
+Keras with quantized/dequantized inputs: **66.73%***    
+INT8: **66.93%**.    
+Keras with quantized/dequantized inputs, restoring only numerical features: **92.20%***    
+Keras with quantized/dequantized inputs, restoring only one-hot features: **69.26%***     
+
+\* These results are for diagnostic purposes only; they do not represent a deployable INT8 model.   
+
+The loss in numerical-input resolution accounts for most of the observed loss: **129,921 of 160,000 numerical values (81.20%)** were non-zero before quantization and were rounded to zero after dequantization. Only **5 values** were clipped. The [input-group report](runs/007/audit/input-groups.json) records feature-level errors. The [runtime report](runs/007/int8_diagnostics/runtime_batch_comparison.json) records identical probabilities and classes for TF Lite/LiteRT with batch 1/10,000 on the same validation observations.    
+
+[INT8 per-class recall](runs/007/multiclass/models/mlp_mc_int8/per_class_report.csv) is linked to [class indices and names](runs/007/multiclass/models/mlp_mc/label_map.json).
+
+### Duplicate inputs and limits
+
+The [duplicate audit](runs/007/audit/duplicate-audit.json) compares the 32 selected raw inputs, before imputation/OHE and without targets. Rows with at least one matching input in the other partition are counted; not pairs.
+
+| Comparison | Binary | Multiclass |
+|---|---:|---:|
+| Outer train → test | 6,869 / 42,209 (16.2738%) | 6,963 / 42,209 (16.4965%) |
+| MLP effective fit → test | 6,331 / 42,209 (14.9992%) | 6,431 / 42,209 (15.2361%) |
+| MLP effective fit → validation | 5,091 / 33,767 (15.0769%) | 5,189 / 33,767 (15.3671%) |
+
+The fit-based figures refer to MLP fitting, not to the full classifier-training set of every model.    
+Input repetition limits the generalization measured by the random split. It is distinct from the corrected use of target-derived input columns.    
+
+This study uses one dataset and one training seed, without a chronological split or testing on a secondary, independent dataset.
+
+### Hardware comparison
+
+Mann–Whitney compares one LGBM/XGB mean-total-time ratio per device: three aarch64 systems versus three x86_64 systems, separately for binary and multiclass. Both tasks give **U = 9, exact one-sided p = 0.05**, for the direction **larger ratios on the tested aarch64 systems**. See the [binary](benchmark/007/lgbm_xgb_mann-whitney.csv) and [multiclass](benchmark/007/lgbm_xgb_mann-whitney_mc.csv) reports.
+Benchmark data for every system in each class (aarch64 and x86_64) must be collected before running `run_mann-whitney.py`.   
+
+N.B.: This is an exploratory comparison of six complete systems, including other factors such as the OS/software, other hardware differences, and thermal constraints. It does not isolate the effect of the ISA.
 
 ## 📚 Dataset: TON_IoT Network Dataset
 
