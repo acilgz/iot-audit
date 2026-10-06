@@ -411,7 +411,7 @@ def main():
     if df["fn"].notna().any():
         plot_bar(df, "fn", os.path.join(summary_dir, "fn.png"), "False Negatives by Model")
     if df["fn"].notna().any():
-        plot_bar(df, "total_size_mb", os.path.join(summary_dir, "total_size_mb.png"),"Model+Preproc Size (MB)")
+        plot_bar(df, "total_size_mb", os.path.join(summary_dir, "total_size_mb.png"),"Model+Preproc Size (MiB)")
 
     if args.benchmark:
         bdf = benchmark_inference(args.models_dir, args.csv, args.models, sample_size=args.sample_size, num_runs=args.num_runs)

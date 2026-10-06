@@ -417,7 +417,7 @@ def main():
     plot_bar(df, "roc_auc_macro", os.path.join(summary_dir, "roc_auc_macro.png"), "ROC AUC (macro) by Model")
     plot_bar(df, "pr_auc_micro", os.path.join(summary_dir, "pr_auc_micro.png"), "PR AUC (micro) by Model")
     plot_bar(df, "pr_auc_macro", os.path.join(summary_dir, "pr_auc_macro.png"), "PR AUC (macro) by Model")
-    plot_bar(df, "total_size_mb", os.path.join(summary_dir, "total_size_mb.png"), "Model+Preproc Size (MB)")
+    plot_bar(df, "total_size_mb", os.path.join(summary_dir, "total_size_mb.png"), "Model+Preproc Size (MiB)")
 
     pct = per_class_table(args.models_dir, args.models)
     if not pct.empty:
